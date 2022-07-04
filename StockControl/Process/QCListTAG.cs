@@ -116,7 +116,7 @@ namespace StockControl
             {
                 radGridView1.AutoGenerateColumns = false;
 
-                radGridView1.DataSource = db.sp_46_QCSelectWO_09_QCTAGSelect(QCNo).ToList();
+                radGridView1.DataSource = db.sp_46_QCSelectWO_09_QCTAGSelect2(QCNo).ToList();
           
                 foreach (var x in radGridView1.Rows)
                 {                 

@@ -183,18 +183,24 @@ namespace StockControl
                                 tb_QCCheckMachine qc2 = db.tb_QCCheckMachines.Where(q => q.WONo.Equals(WO) && q.FormISO.Equals(FormISO) && q.UMC.Equals(MC) && q.DayN.Equals(DN)).FirstOrDefault();
                                 if (qc2 != null)
                                 {
-                                    qc.SC = "OK";
-                                    qc.CreateBy = dbClss.UserID;
-                                    qc.CreateDate = DateTime.Now;
-                                    qc.TAGScan = TAG;
-                                    qc.DayN = DN;
+                                    qc2.SC = "OK";
+                                    qc2.CreateBy = dbClss.UserID;
+                                    qc2.CreateDate = DateTime.Now;
+                                    qc2.TAGScan = TAG;
+                                    qc2.DayN = DN;
                                     db.SubmitChanges();
                                 }
                                 else
                                 {
-                                    tb_QCCheckMachine qc3 = db.tb_QCCheckMachines.Where(q => q.WONo.Equals(WO) && q.FormISO.Equals(FormISO) && q.UMC.Equals(MC)).FirstOrDefault();
-                                    if (qc3 != null)
+                                    tb_QCCheckMachine qc3 = db.tb_QCCheckMachines.Where(q => q.WONo.Equals(WO) && q.FormISO.Equals(FormISO) && q.UMC.Equals(MC) && q.DayN.Equals(DN)).FirstOrDefault();
+                                    if (qc3 == null)
                                     {
+                                        tb_QCGroupPart qcg = db.tb_QCGroupParts.Where(p => p.FormISO.Equals(FormISO) && p.PartNo.Equals(PartNo) && p.UseMachine.Equals(MC)).FirstOrDefault();
+                                        if(qcg!=null)
+                                        {
+                                            Seqa = Convert.ToInt32(qcg.Seq);
+                                        }
+
                                         tb_QCCheckMachine qn = new tb_QCCheckMachine();
                                         qn.WONo = WO;
                                         qn.FormISO = FormISO;
@@ -211,6 +217,7 @@ namespace StockControl
                                     }
                                 }
                             }
+                            db.sp_46_QCUpdate_Machine_Seq(WO, PartNo, FormISO);
                         }
                     }
                 }
@@ -240,6 +247,7 @@ namespace StockControl
                // date1 = Convert.ToDateTime("08:30:00");
                 TimeSpan ts = new TimeSpan(date1.Hour, date1.Minute, date1.Second);
                 if (ts.TotalMinutes >= 510 && ts.TotalMinutes < 1230)
+                //if (ts.TotalMinutes >= 510 && ts.TotalMinutes < 650)
                 {
                     DayN = "D";
                 }
@@ -500,7 +508,7 @@ namespace StockControl
                                 FormISO = qh.FormISO;
                                 QHNo = qh.QCNo;
                                 Excel.Range Ap = worksheet.get_Range("AE10");
-                                Ap.Value2 = Convert.ToString(qh.ApproveBy);
+                                Ap.Value2 = db.QC_GetUserName(qh.ApproveBy);// Convert.ToString(qh.ApproveBy);
 
 
                                 Excel.Range CheckBy1 = worksheet.get_Range("E23");
@@ -583,10 +591,18 @@ namespace StockControl
                                 cRow = 22;
                                 int NewR = 0;
                                 int NewR2 = 0;
+                                string CheckValueSetup = "";
+                                int A35 = 0;
+                                int A36 = 0;
+                                int A37 = 0;
+                                int A38 = 0;
+                                int D23 = 0;
+                                int N23 = 0;
                                 for (int II = 23; II <= 55; II++)
                                 {
                                     cRow += 1;
                                     crow2 += 1;
+                                    CheckValueSetup = "";
                                     ////Line 1 //
                                     if (II != 29)
                                     {
@@ -605,7 +621,11 @@ namespace StockControl
                                         //}
 
                                         Excel.Range Line1 = worksheet.get_Range("AE" + NewR.ToString());
-                                        Line1.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, NewR2);
+                                        CheckValueSetup= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, II);
+                                        Line1.Value2 = CheckValueSetup;
+
+                                        
+                                        
 
                                         if (II == 48 || II == 49)
                                         {
@@ -622,30 +642,95 @@ namespace StockControl
 
                                         NewR2 = II;
                                         NewR = crow2;
-                                        //if (II >= 47)
-                                        //{
-                                        //    NewR2 = II + 5;
-                                        //    if (II >= 52)
-                                        //    {
-                                        //        NewR2 = II - 5;
-                                        //        NewR = NewR - 1;
-                                        //    }
+                                      
 
-                                        //}
-
-                                        var rss = db.sp_46_QCGetValue2601_20(qh.WONo, NewR2).FirstOrDefault();
+                                        var rss = db.sp_46_QCGetValue2601_20(qh.WONo, II).FirstOrDefault();
                                         if (rss != null)
                                         {
-                                            Excel.Range Line2 = worksheet.get_Range("AG" + II.ToString());
-                                            Line2.Value2 = rss.DayN;
-                                            Excel.Range Line3 = worksheet.get_Range("AH" + II.ToString());
-                                            Line3.Value2 = rss.NightN;
+                                            if (!rss.DayN.Equals(""))
+                                            {
+                                                Excel.Range Line2 = worksheet.get_Range("AG" + II.ToString());
+                                                Line2.Value2 = rss.DayN;
+                                                D23 = 1;
+                                            }
+                                            if (!rss.NightN.Equals(""))
+                                            {
+                                                Excel.Range Line3 = worksheet.get_Range("AH" + II.ToString());
+                                                Line3.Value2 = rss.NightN;
+                                                N23 = 1;
+                                            }
+                                            //Skip1//////////////////////////////////////
+                                            if (CheckValueSetup.Contains("ไม่มี"))
+                                            {
+                                                if (D23 > 0)
+                                                {
+                                                    Excel.Range LineVS1 = worksheet.get_Range("AG" + II.ToString());
+                                                    LineVS1.Value2 = "P";
+                                                }
+                                                if (N23 > 0)
+                                                {
+                                                    Excel.Range LineVS2 = worksheet.get_Range("AH" + II.ToString());
+                                                    LineVS2.Value2 = "P";
+                                                }
+                                            }
+                                            //Skip2//////////////////////////////////////
+                                            if (II == 35)
+                                            {
+                                                if(rss.DayN.Equals("P"))
+                                                {
+                                                    A35 = 1;
+                                                }
+                                                if(rss.NightN.Equals("P"))
+                                                {
+                                                    A36 = 1;
+                                                }
+                                            }
+                                            if (II == 38)
+                                            {
+                                                if (rss.DayN.Equals("P"))
+                                                {
+                                                    A37 = 1;
+                                                }
+                                                if (rss.NightN.Equals("P"))
+                                                {
+                                                    A38 = 1;
+                                                }
+                                            }
+                                            if(II == 36)
+                                            {
+                                                if(A35==1)
+                                                {
+                                                    Excel.Range Line36 = worksheet.get_Range("AG" + II.ToString());
+                                                    Line36.Value2 = "P";
+                                                }
+                                                if(A36==1)
+                                                {
+                                                    Excel.Range Line36 = worksheet.get_Range("AH" + II.ToString());
+                                                    Line36.Value2 = "P";
+                                                }
+                                            }
+                                            if(II == 39)
+                                            {
+                                                if(A37==1)
+                                                {
+                                                    Excel.Range Line39 = worksheet.get_Range("AG" + II.ToString());
+                                                    Line39.Value2 = "P";
+                                                }
+                                                if(A38==1)
+                                                {
+                                                    Excel.Range Line39 = worksheet.get_Range("AH" + II.ToString());
+                                                    Line39.Value2 = "P";
+                                                }
+                                            }
+
+                                            /////////////////////////////////////////////
+
                                         }
                                     }
                                     else
                                     {
                                         Excel.Range Line2 = worksheet.get_Range("AG42");
-                                        Line2.Value2 = db.get_QC_DATAPoint(qh.QCNo, "", 42);
+                                        Line2.Value2 = db.get_QC_DATAPoint_AG(qh.WONo, 42);
                                     }
 
                                  
@@ -664,36 +749,36 @@ namespace StockControl
                                 string DDN3 = db.get_QC_ValueRM22(WO, "LOCTITE 414", 22);
 
                                 //Step 1
-                                if (DDN1.Equals("D"))
+                                if (DDN1.Equals("D") || DDN1.Equals("A"))
                                 {
                                     Excel.Range LoctiteQ1 = worksheet.get_Range("Q42");
                                     LoctiteQ1.Value2 = "P";
                                 }
-                                else if (DDN1.Equals("N"))
+                                if (DDN1.Equals("N") || DDN1.Equals("A"))
                                 {
                                     Excel.Range LoctiteR1 = worksheet.get_Range("R42");
                                     LoctiteR1.Value2 = "P";
                                 }
 
                                 //Step 2
-                                if (DDN2.Equals("D"))
+                                if (DDN2.Equals("D") || DDN2.Equals("A"))
                                 {
                                     Excel.Range LoctiteQ2 = worksheet.get_Range("Q43");
                                     LoctiteQ2.Value2 = "P";
                                 }
-                                else if (DDN2.Equals("N"))
+                                if (DDN2.Equals("N") || DDN2.Equals("A"))
                                 {
                                     Excel.Range LoctiteR2 = worksheet.get_Range("R43");
                                     LoctiteR2.Value2 = "P";
                                 }
 
                                 //Step 3
-                                if (DDN3.Equals("D"))
+                                if (DDN3.Equals("D") || DDN3.Equals("A"))
                                 {
                                     Excel.Range LoctiteQ3 = worksheet.get_Range("Q44");
                                     LoctiteQ3.Value2 = "P";
                                 }
-                                else if (DDN3.Equals("N"))
+                                if (DDN3.Equals("N") || DDN3.Equals("A"))
                                 {
                                     Excel.Range LoctiteR3 = worksheet.get_Range("R44");
                                     LoctiteR3.Value2 = "P";
@@ -710,26 +795,33 @@ namespace StockControl
                             if (gTime.Count > 0)
                             {
                                 var g = gTime.FirstOrDefault();
+                                DateTime Chtime = Convert.ToDateTime(g.BomTime);
+                                DateTime Chtime2 = Convert.ToDateTime(g.PrintTime);
+                                if (g.BomTime==g.PrintTime)
+                                {
+                                    Chtime2 = Convert.ToDateTime(g.PrintTime).AddMinutes(30);
+                                }
+                                
                                 Excel.Range AB = worksheet.get_Range("AB9");
-                                AB.Value2 = Convert.ToDecimal(DValue.ChangeModel).ToString("####") + " นาที";
+                                AB.Value2 = Math.Abs(Convert.ToDecimal((Chtime-Chtime2).TotalMinutes)).ToString("####") + " นาที";
 
                                 if (!g.StartTime.Equals(""))
                                 {
                                     Excel.Range StartT = worksheet.get_Range("N7");
-                                    StartT.Value2 = Convert.ToDateTime(g.StartTime).ToString("HH:mm");
+                                    StartT.Value2 = Convert.ToDateTime(Chtime2).ToString("HH:mm");
 
                                     Excel.Range EndT = worksheet.get_Range("AA7");
                                     EndT.Value2 = Convert.ToDateTime(g.EndTime).ToString("HH:mm");
 
-                                    int ChanP = 0;
-                                    int.TryParse(Convert.ToInt32(DValue.ChangeModel).ToString(), out ChanP);
-                                    if (ChanP > 0)
-                                    {
-                                        DateTime Chtime = Convert.ToDateTime(g.StartTime).AddMinutes(ChanP * -1);
+                                   // int ChanP = 0;
+                                    //int.TryParse(Convert.ToInt32(DValue.ChangeModel).ToString(), out ChanP);
+                                   // if (ChanP > 0)
+                                   // {
+                                        
                                         Excel.Range O9 = worksheet.get_Range("O9");
-                                        O9.Value2 = "'" + Convert.ToDateTime(g.BomTime).ToString("HH:mm") + "-" + Convert.ToDateTime(g.StartTime).ToString("HH:mm");
+                                        O9.Value2 = "'" + Convert.ToDateTime(g.BomTime).ToString("HH:mm") + "-" + Convert.ToDateTime(Chtime2).ToString("HH:mm");
 
-                                    }
+                                    //}
 
                                 }
                             }
@@ -834,149 +926,7 @@ namespace StockControl
                     ////////////////////////////////////////
 
 
-                    //var listPart = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FormISO) && q.PartNo.Equals(PartNo)).OrderBy(o => o.Seq).ToList();
-                    //foreach (var rd in listPart)
-                    //{
 
-                    //    if (CountRow == 0)
-                    //    {
-                    //        //if (rd.Seq.Equals(48))
-                    //        //{
-                    //        //    Excel.Range CRemark = worksheet.get_Range("A13");
-                    //        //    CRemark.Value2 = "Remark  " + rd.SetData;
-                    //        //    CountRow += 1;
-                    //        //}
-                    //    }
-
-                    //    if (rd.Seq < 22)
-                    //    {
-                    //        row1 += 1;
-                    //        Seq += 1;
-                    //        if (row1 <= 38)
-                    //        {
-
-                    //            Excel.Range Col0 = worksheet.get_Range("G" + row1.ToString(), "G" + row1.ToString());
-                    //            Excel.Range Col1 = worksheet.get_Range("L" + row1.ToString(), "L" + row1.ToString());
-                    //            if (Seq.Equals(rd.Seq))
-                    //            {
-                    //                Col0.Value2 = rd.TopPic;
-                    //                Col1.Value2 = rd.SetData;
-                    //                if (!rd.SetData.Equals(""))
-                    //                {
-                    //                    try
-                    //                    {
-                    //                        var gValue = db.sp_46_QCGetValue2601(WO, rd.SetData).FirstOrDefault();
-
-                    //                        LotNo = "";
-                    //                        LotNo = Convert.ToString(gValue.Lot);
-                    //                        if (gValue.CountA > 0)
-                    //                        {
-                    //                            if (DN.Equals("D"))
-                    //                            {
-                    //                                Excel.Range Check1 = worksheet.get_Range("Q" + row1.ToString(), "Q" + row1.ToString());
-                    //                                Check1.Value2 = "P";
-                    //                            }
-                    //                            else
-                    //                            {
-                    //                                Excel.Range Check2 = worksheet.get_Range("R" + row1.ToString(), "R" + row1.ToString());
-                    //                                Check2.Value2 = "P";
-                    //                            }
-
-                    //                            if (!LotNo.Equals(""))
-                    //                            {
-                    //                                Excel.Range Check3 = worksheet.get_Range("S" + row1.ToString(), "S" + row1.ToString());
-                    //                                Check3.Value2 = LotNo;
-                    //                            }
-                    //                        }
-                    //                    }
-                    //                    catch (Exception ex) { MessageBox.Show(ex.Message); }
-                    //                }
-
-                    //            }
-                    //            if (row1 == 18)
-                    //                row1 += 1;
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        row2 += 1;
-                    //        seq2 += 1;
-                    //        PV = "P";
-                    //        if (row2 == 25 || row2 == 43)
-                    //            row2 += 1;
-                    //        if (seq2.Equals(rd.Seq) && rd.Seq != 48)
-                    //        {
-                    //            if (row2 != 31 || row2 != 42)
-                    //            {
-                    //                Excel.Range Col2 = worksheet.get_Range("AA" + row2.ToString(), "AA" + row2.ToString());
-                    //                Col2.Value2 = rd.TopPic;
-                    //            }
-                    //            if (row2 != 24 || row2 != 42)
-                    //            {
-                    //                Excel.Range Col3 = worksheet.get_Range("AE" + row2.ToString(), "AE" + row2.ToString());
-                    //                Col3.Value2 = rd.SetData;
-
-                    //            }
-
-                    //            if (row2 != 42 && row2 != 43)
-                    //            {
-                    //                tb_QCNGPoint ngq = db.tb_QCNGPoints.Where(w => w.QCNo.Equals(QHNo) && w.SeqNo.Equals(rd.Seq)).FirstOrDefault();
-                    //                if (ngq != null)
-                    //                {
-                    //                    PV = "O";
-                    //                }
-
-                    //                if (DN.Equals("D"))
-                    //                {
-                    //                    Excel.Range Check2 = worksheet.get_Range("AF" + row2.ToString(), "AF" + row2.ToString());
-                    //                    Check2.Value2 = PV;
-                    //                }
-                    //                else
-                    //                {
-                    //                    Excel.Range Check2 = worksheet.get_Range("AG" + row2.ToString(), "AG" + row2.ToString());
-                    //                    Check2.Value2 = PV;
-                    //                }
-
-                    //                if (row2 == 35)
-                    //                {
-                    //                    Excel.Range Check2 = worksheet.get_Range("AG" + row2.ToString(), "AG" + row2.ToString());
-                    //                    Check2.Value2 = rd.SetData;
-                    //                }
-                    //            }
-
-
-
-                    //        }
-                    //    }
-
-
-
-                    //}
-
-                    /*
-                    for (int j = 0; j <= 50; j++)
-                    {
-                        row1 += 1;
-                        Excel.Range Col0 = worksheet.get_Range("B" + row1.ToString(), "B" + row1.ToString());
-                        // Excel.Range Col1 = worksheet.get_Range("E" + row1.ToString(), "E" + row1.ToString());
-                        Excel.Range Col2 = worksheet.get_Range("F" + row1.ToString(), "F" + row1.ToString());
-                        Excel.Range Col3 = worksheet.get_Range("C" + row1.ToString(), "C" + row1.ToString());
-                        string Value1 = Convert.ToString(Col0.Value2);
-                        if (Value1 == null)
-                        {
-                            Value1 = "";
-                        }
-                        if (!Convert.ToString(Value1).Equals(""))
-                        {
-                            Seq = 0;
-                            int.TryParse(Value1, out Seq);
-                            Col2.Value = db.QC_GetTemplate(FormISO, txtPartNo.Text, Seq);
-                            Col3.Value = txtPartNo.Text.ToUpper();
-
-                        }
-
-                    }
-                    */
                 }
 
                 excelBook.SaveAs(tempfile);
@@ -1007,11 +957,22 @@ namespace StockControl
             try
             {
 
-                // MessageBox.Show(QCNo1);
+
                 string DATA = AppDomain.CurrentDomain.BaseDirectory;
                 string tempPath = System.IO.Path.GetTempPath();
                 string FileName = "FM-QA-056.xlsx";
-               // FileName = "FM-QA-056_02_1.xlsx";
+                // FileName = "FM-QA-056_02_1.xlsx";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    tb_ProductionHD pd = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO) && p.LineName2.Equals("TW10-CB")).FirstOrDefault();
+                    if (pd != null)
+                    {
+                        FileName = "FM-QA-056_CM.xlsx";
+                        PrintData5601CM(WO, PartNo, QCNo1);
+                        return;
+                    }
+                }
+
                 string tempfile = tempPath + FileName;
                 DATA = DATA + @"QC\" + FileName;
 
@@ -1043,7 +1004,7 @@ namespace StockControl
                 string QHNo = QCNo1;
                 string FormISO = "";
                 string DN = "";
-                string cIssueBy1 = "";                
+                string cIssueBy1 = "";
                 string cCheckBy1 = "";
 
 
@@ -1060,6 +1021,10 @@ namespace StockControl
                     var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
                     if (DValue != null)
                     {
+
+                        //Sampling inspection report BRAKE CHAMBER
+                        //Sampling inspection report piggyback
+
                         DN = DValue.DayNight;
                         Excel.Range CPart = worksheet.get_Range("C3");
                         CPart.Value2 = DValue.NAME;
@@ -1080,9 +1045,9 @@ namespace StockControl
                             tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
                             if (qh != null)
                             {
-                              
+
                                 Excel.Range App = worksheet.get_Range("I3");
-                                App.Value2 = db.QC_GetUserName(qh.ApproveBy);                        
+                                App.Value2 = db.QC_GetUserName(qh.ApproveBy);
                                 if (!qh.ApproveBy.Equals(""))
                                 {
                                     Excel.Range Appdate = worksheet.get_Range("I5");
@@ -1094,7 +1059,7 @@ namespace StockControl
                                 FormISO = qh.FormISO;
                                 //////////Find UserName////////////
                                 var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QHNo)).ToList();
-                               
+
 
                                 foreach (var rd in uc)
                                 {
@@ -1118,9 +1083,331 @@ namespace StockControl
 
                                     //}
                                 }
-                                   
+                                //Pass/Not Pass
+                                if (!qh.ApproveBy.Equals(""))
+                                {
+                                    if (db.QC_CheckNG(QHNo) == "P")
+                                    {
+                                        Excel.Range L6x = worksheet.get_Range("L6");
+                                        L6x.Value2 = L6;
+                                    }
+                                    else
+                                    {
+                                        Excel.Range I6x = worksheet.get_Range("I6");
+                                        I6x.Value2 = I6;
+                                    }
+                                }
+
                             }
-                            
+
+                        }
+                        catch (Exception ex) { MessageBox.Show("1." + ex.Message); }
+
+
+
+
+                    }
+
+                    ////////////////////////////////////////
+                    int countA = 0;
+                    string col = "";
+                    string col2x = "";
+                    var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelect(QHNo).ToList();
+                    if (listPoint.Count > 0)
+                    {
+                        foreach (var rs in listPoint)
+                        {
+                            countA += 1;
+                            // MessageBox.Show(countA.ToString());
+                            if (countA <= 2)
+                            {
+                                row1 = 9;
+                                col = "I";
+                                col2x = "G";
+                                if (countA == 2)
+                                {
+                                    col = "L";
+                                    col2x = "H";
+                                }
+
+
+
+                                var listPart = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FormISO) && q.PartNo.Equals(DValue.CODE)).OrderBy(o => o.Seq).ToList();
+                                foreach (var rd in listPart)
+                                {
+                                    //Start Insert Checkmark                            
+
+                                    //if (rd.Seq <= 14)
+                                    //{
+                                    row1 += 1;
+
+                                    Excel.Range SetDT = worksheet.get_Range("D" + row1.ToString());
+                                    SetDT.Value2 = db.get_QC_SetDataMaster(FormISO, rd.PartNo, rd.Seq);
+                                    //Start G=7,H=
+                                    if (!rd.SetData.Equals(""))
+                                    {
+                                        try
+                                        {
+                                            var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+
+                                            PV = "P";
+                                            if (gValue.CountA > 0)
+                                            {
+                                                PV = "O";
+                                                if (gValue.CountA == 99)
+                                                    PV = "";
+                                            }
+                                            if (countA == 2 && row1 == 10)
+                                                PV = "";
+
+                                            if (rd.Seq >= 6 && rd.Seq <= 7)
+                                            {
+                                                PV = "";
+                                                Excel.Range Col02 = worksheet.get_Range(col2x + row1.ToString());
+                                                Col02.Value2 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                Excel.Range Col0K = worksheet.get_Range(col + row1.ToString());
+                                                string ValueP = db.get_QC_DATAPointValue4(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                if (ValueP == "OK")
+                                                {
+                                                    Col0K.Value2 = "P";
+                                                }
+                                                else if (ValueP == "NG")
+                                                {
+                                                    Col0K.Value2 = "O";
+                                                    I6 = "";
+                                                    L6 = "P";
+                                                }
+
+                                            }
+                                            else if (rd.Seq == 8)
+                                            {
+
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    if (ValueInvalid == "")
+                                                        ValueInvalid = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                    Excel.Range Col8 = worksheet.get_Range(col + row1.ToString());
+                                                    Col8.Value2 = "O";// db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                Excel.Range Col0 = worksheet.get_Range(col + row1.ToString());
+                                                Col0.Value2 = PV;
+                                            }
+
+                                        }
+                                        catch (Exception ex) { MessageBox.Show(ex.Message); }
+
+
+                                    }
+                                    else
+                                    {
+                                        if (rd.Seq == 8)
+                                        {
+                                            if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                            {
+                                                if (ValueInvalid == "")
+                                                    ValueInvalid = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                else
+                                                    ValueInvalid = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                Excel.Range Col8 = worksheet.get_Range(col + row1.ToString());
+                                                Col8.Value2 = "O";// db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                            }
+                                        }
+                                    }
+
+                                }//foreach
+                            }//cunt A
+                        }//for
+                    }
+
+                    //if(I6=="P")
+                    //{
+                    //    L6 = db.QC_CheckNG(QHNo);
+                    //    if(L6=="P")
+                    //    {
+                    //        I6 = "";
+                    //    }
+                    //}
+
+                    Excel.Range Col82 = worksheet.get_Range("D17");
+                    Col82.Value2 = ValueInvalid;
+
+
+
+
+
+
+
+                }
+
+                excelBook.SaveAs(tempfile);
+                excelBook.Close(false);
+                excelApp.Quit();
+
+                releaseObject(worksheet);
+                releaseObject(excelBook);
+                releaseObject(excelApp);
+                Marshal.FinalReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                GC.GetTotalMemory(false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.GetTotalMemory(true);
+                System.Diagnostics.Process.Start(tempfile);
+
+            }
+            catch (Exception ex) { MessageBox.Show("2." + ex.Message); }
+
+        }
+        public static void PrintData5601CM(string WO, string PartNo, string QCNo1)
+        {
+            try
+            {
+
+
+                string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = System.IO.Path.GetTempPath();
+                string FileName = "FM-QA-056_CM.xlsx"; 
+                string tempfile = tempPath + FileName;
+                DATA = DATA + @"QC\" + FileName;
+
+                if (File.Exists(tempfile))
+                {
+                    try
+                    {
+                        File.Delete(tempfile);
+                    }
+                    catch { }
+                }
+
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                  DATA, 0, true, 5,
+                  "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                  0, true);
+                Excel.Sheets sheets = excelBook.Worksheets;
+                Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+
+                // progressBar1.Maximum = 51;
+                // progressBar1.Minimum = 1;
+                int row1 = 8;
+                int row2 = 9;
+                int Seq = 0;
+                int seq2 = 21;
+                int CountRow = 0;
+                string PV = "P";
+                string QHNo = QCNo1;
+                string FormISO = "";
+                string DN = "";
+                string cIssueBy1 = "";
+                string cCheckBy1 = "";
+
+
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    string Value1 = "";
+                    string Value2 = "";
+                    string LotNo = "";
+                    string RefValue1 = "";
+                    string I6 = "P";
+                    string L6 = "";
+                    string ValueInvalid = "";
+                    ///////////////SETValue/////////////////
+                    var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                    if (DValue != null)
+                    {
+
+                        //Sampling inspection report BRAKE CHAMBER
+                        //Sampling inspection report piggyback
+
+                        DN = DValue.DayNight;
+                        Excel.Range CPart = worksheet.get_Range("C3");
+                        CPart.Value2 = DValue.NAME;
+                        Excel.Range CStamp = worksheet.get_Range("C2");
+                        CStamp.Value2 = DValue.CODE;
+                        Excel.Range CName = worksheet.get_Range("C4");
+                        CName.Value2 = DValue.OrderQty;
+
+                        Excel.Range CDate = worksheet.get_Range("C5");
+                        CDate.Value2 = DValue.LotNo;
+
+                        Excel.Range CWO = worksheet.get_Range("C6");
+                        CWO.Value2 = WO;
+
+
+                        try
+                        {
+                            tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if (qh != null)
+                            {
+
+                                Excel.Range App = worksheet.get_Range("I3");
+                                App.Value2 = db.QC_GetUserName(qh.ApproveBy);
+                                if (!qh.ApproveBy.Equals(""))
+                                {
+                                    Excel.Range Appdate = worksheet.get_Range("I5");
+                                    Appdate.Value2 = qh.ApproveDate;
+                                }
+
+                                QHNo = qh.QCNo;
+                                RefValue1 = qh.RefValue1;
+                                FormISO = qh.FormISO;
+                                //////////Find UserName////////////
+                                var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QHNo)).ToList();
+
+
+                                foreach (var rd in uc)
+                                {
+                                    DN = dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+
+                                    if (rd.UDesc.Equals("Inspector"))
+                                    {
+                                        cIssueBy1 = rd.UserName;
+                                        Excel.Range K3 = worksheet.get_Range("L3");
+                                        K3.Value2 = cIssueBy1;
+                                        Excel.Range K5 = worksheet.get_Range("L5");
+                                        K5.Value2 = rd.ScanDate;
+                                    }
+                                    //if (rd.UDesc.Equals("Check By"))
+                                    //{
+                                    //    cCheckBy1 = rd.UserName;
+                                    //    Excel.Range I3 = worksheet.get_Range("K3");
+                                    //    I3.Value2 = cCheckBy1;
+                                    //    Excel.Range I5 = worksheet.get_Range("K5");
+                                    //    I5.Value2 = rd.ScanDate;
+
+                                    //}
+                                }
+                                //Pass/Not Pass
+                                if (!qh.ApproveBy.Equals(""))
+                                {
+                                    if (db.QC_CheckNG(QHNo) == "P")
+                                    {
+                                        Excel.Range L6x = worksheet.get_Range("L6");
+                                        L6x.Value2 = L6;
+                                    }
+                                    else
+                                    {
+                                        Excel.Range I6x = worksheet.get_Range("I6");
+                                        I6x.Value2 = I6;
+                                    }
+                                }
+
+                            }
+
                         }
                         catch (Exception ex) { MessageBox.Show("1." + ex.Message); }
 
@@ -1161,9 +1448,30 @@ namespace StockControl
                                     //if (rd.Seq <= 14)
                                     //{
                                     row1 += 1;
-                                   
+
+                                    
+
+                                    string SetValueHD= db.get_QC_SetDataMaster2(FormISO, rd.PartNo, rd.Seq);
+                                    Excel.Range SetHD = worksheet.get_Range("B" + row1.ToString());
+                                    SetHD.Value2 = SetValueHD;                                   
+
+                                    string setValueDT= db.get_QC_SetDataMaster(FormISO, rd.PartNo, rd.Seq);
                                     Excel.Range SetDT = worksheet.get_Range("D" + row1.ToString());
-                                    SetDT.Value2 = db.get_QC_SetDataMaster(FormISO, rd.PartNo, rd.Seq);
+                                    SetDT.Value2 = setValueDT;
+                                    if (setValueDT.Contains("Æ"))
+                                    {                                                                               
+                                        int addint = setValueDT.IndexOf("Æ");
+                                        // SetDT.Characters[5, 10].Font.Color = Color.Red; // "Symbol";//AngsanaUPC
+                                        SetDT.Characters[0, 2].Font.Name = "Symbol";//
+                                        SetDT.Characters[2, setValueDT.Length-2].Font.Name = "Angsana New";                                     
+                                    }
+
+
+
+                                    Excel.Range SetHDA = worksheet.get_Range("A" + row1.ToString());
+                                    SetHDA.Value2 = rd.Seq.ToString();
+                                    
+
                                     //Start G=7,H=
                                     if (!rd.SetData.Equals(""))
                                     {
@@ -1176,19 +1484,22 @@ namespace StockControl
                                             {
                                                 PV = "O";
                                                 if (gValue.CountA == 99)
-                                                    PV = "";                                   
+                                                    PV = "";
                                             }
-                                            if (countA == 2 && row1==10)
-                                                   PV = "";
+                                            //if (countA == 2 && row1 == 10)
+                                            //    PV = "";
 
-                                            if (rd.Seq >= 6 && rd.Seq <= 7)
+                                            if (rd.SetDate2.Equals("Yes"))
                                             {
                                                 PV = "";
                                                 Excel.Range Col02 = worksheet.get_Range(col2x + row1.ToString());
                                                 Col02.Value2 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
 
                                                 Excel.Range Col0K = worksheet.get_Range(col + row1.ToString());
-                                                string ValueP= db.get_QC_DATAPointValue4(QHNo, rs.BarcodeTag, rd.Seq);
+                                                //Col0K.Value2 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                //Col0K.Font.Name = "Angsana New";// new Font("Arial", 9, FontStyle.Regular);
+                                                //Col0K.Font.Size = 9;
+                                                 string ValueP =  db.get_QC_DATAPointValue4(QHNo, rs.BarcodeTag, rd.Seq);
 
                                                 if (ValueP == "OK")
                                                 {
@@ -1200,20 +1511,27 @@ namespace StockControl
                                                     I6 = "";
                                                     L6 = "P";
                                                 }
+                                              //  Excel.Range Col0 = worksheet.get_Range(col + row1.ToString());
+                                               // Col0.Value2 = PV;
 
                                             }
-                                            else if(rd.Seq==8)
+                                            else if (SetValueHD.ToUpper().Equals("OTHER"))
                                             {
-                                               
-                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                
+                                                string RMak = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                if (RMak != "")
                                                 {
-                                                    if(ValueInvalid=="")
-                                                        ValueInvalid= db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    if (ValueInvalid == "")
+                                                        ValueInvalid = RMak;
                                                     else
-                                                        ValueInvalid =ValueInvalid+ ","+ db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                        ValueInvalid = ValueInvalid + "," + RMak;
 
                                                     Excel.Range Col8 = worksheet.get_Range(col + row1.ToString());
                                                     Col8.Value2 = "O";// db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                    
+                                                    Excel.Range Col9 = worksheet.get_Range("D21");
+                                                    Col9.Value2 = ValueInvalid;// db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
                                                 }
                                             }
                                             else
@@ -1221,26 +1539,31 @@ namespace StockControl
 
                                                 Excel.Range Col0 = worksheet.get_Range(col + row1.ToString());
                                                 Col0.Value2 = PV;
-                                            }                                            
+                                            }
+
+                                           
 
                                         }
-                                        catch (Exception ex) { MessageBox.Show(ex.Message); }                                
-                                        
+                                        catch (Exception ex) { MessageBox.Show(ex.Message); }
+
 
                                     }
                                     else
                                     {
-                                        if (rd.Seq == 8)
+                                        if (SetValueHD.ToUpper().Equals("OTHER"))
                                         {
-                                            if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                            string RMak = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                            if (RMak != "")
                                             {
                                                 if (ValueInvalid == "")
-                                                    ValueInvalid = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    ValueInvalid = RMak;
                                                 else
-                                                    ValueInvalid = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    ValueInvalid = ValueInvalid + "," + RMak;
 
                                                 Excel.Range Col8 = worksheet.get_Range(col + row1.ToString());
                                                 Col8.Value2 = "O";// db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                Excel.Range Col9 = worksheet.get_Range("D21");
+                                                Col9.Value2 = ValueInvalid;// db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
                                             }
                                         }
                                     }
@@ -1250,23 +1573,21 @@ namespace StockControl
                         }//for
                     }
 
-                    if(I6=="P")
-                    {
-                        L6 = db.QC_CheckNG(QHNo);
-                        if(L6=="P")
-                        {
-                            I6 = "";
-                        }
-                    }
+                    //if(I6=="P")
+                    //{
+                    //    L6 = db.QC_CheckNG(QHNo);
+                    //    if(L6=="P")
+                    //    {
+                    //        I6 = "";
+                    //    }
+                    //}
 
                     Excel.Range Col82 = worksheet.get_Range("D17");
                     Col82.Value2 = ValueInvalid;
 
-                    //Pass/Not Pass
-                    Excel.Range I6x = worksheet.get_Range("I6");
-                    I6x.Value2 = I6;
-                    Excel.Range L6x = worksheet.get_Range("L6");
-                    L6x.Value2 = L6;
+
+
+
 
 
 
@@ -1291,10 +1612,9 @@ namespace StockControl
                 GC.GetTotalMemory(true);
                 System.Diagnostics.Process.Start(tempfile);
 
+            }
+            catch (Exception ex) { MessageBox.Show("2." + ex.Message); }
         }
-            catch(Exception ex) { MessageBox.Show("2."+ex.Message); }
-
-}
         public static void PrintData5501(string WO, string PartNo, string QCNo1)
         {
             try
@@ -1306,6 +1626,16 @@ namespace StockControl
                 string FileName = "FM-QA-055.xlsx";
                 string tempfile = tempPath + FileName;
                 DATA = DATA + @"QC\" + FileName;
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    tb_ProductionHD pd = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO) && p.LineName2.Equals("TW10-CB")).FirstOrDefault();
+                    if (pd != null)
+                    {
+                        FileName = "FM-QA-055_CM.xlsx";
+                        PrintData5501CM(WO, PartNo, QCNo1);
+                        return;
+                    }
+                }
 
                 if (File.Exists(tempfile))
                 {
@@ -1326,6 +1656,8 @@ namespace StockControl
                 Excel.Worksheet worksheet2 = (Excel.Worksheet)sheets.get_Item(2);
                 Excel.Worksheet worksheet3 = (Excel.Worksheet)sheets.get_Item(3);
                 Excel.Worksheet worksheet4 = (Excel.Worksheet)sheets.get_Item(4);
+                Excel.Worksheet worksheet5 = (Excel.Worksheet)sheets.get_Item(5);
+                Excel.Worksheet worksheet6 = (Excel.Worksheet)sheets.get_Item(6);
 
                 // progressBar1.Maximum = 51;
                 // progressBar1.Minimum = 1;
@@ -1352,6 +1684,7 @@ namespace StockControl
                     string PartName = "";
                     string Remark = "";
                     bool chek24 = true;
+                    decimal CKQty = 0;
                     ///////////////SETValue/////////////////
                     var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
                     if (DValue != null)
@@ -1363,37 +1696,114 @@ namespace StockControl
                         CStamp.Value2 = DValue.CODE;
                         Excel.Range CName = worksheet.get_Range("C4");
                         CName.Value2 = DValue.NAME;
-                        Excel.Range QD = worksheet.get_Range("D4");
+                        Excel.Range QD = worksheet.get_Range("F4");
                         QD.Value2 = DValue.OrderQty;
-                        Excel.Range CDate = worksheet.get_Range("I4");
+                        Excel.Range CDate = worksheet.get_Range("D4");
                         CDate.Value2 = DValue.LotNo;
-                        //WorkSheet2
-                        Excel.Range CStamp2 = worksheet2.get_Range("A4");
-                        CStamp2.Value2 = DValue.CODE;
-                        Excel.Range CName2 = worksheet2.get_Range("C4");
-                        CName2.Value2 = DValue.NAME;
-                        Excel.Range QD2 = worksheet2.get_Range("D4");
-                        QD2.Value2 = DValue.OrderQty;
-                        Excel.Range CDate2 = worksheet2.get_Range("I4");
-                        CDate2.Value2 = DValue.LotNo;
-                        //WorkSheet3
-                        Excel.Range CStamp3 = worksheet3.get_Range("A4");
-                        CStamp3.Value2 = DValue.CODE;
-                        Excel.Range CName3 = worksheet3.get_Range("C4");
-                        CName3.Value2 = DValue.NAME;
-                        Excel.Range QD3 = worksheet3.get_Range("D4");
-                        QD3.Value2 = DValue.OrderQty;
-                        Excel.Range CDate3 = worksheet3.get_Range("I4");
-                        CDate3.Value2 = DValue.LotNo;
-                        //WorkSheet4
-                        Excel.Range CStamp4 = worksheet4.get_Range("A4");
-                        CStamp4.Value2 = DValue.CODE;
-                        Excel.Range CName4 = worksheet4.get_Range("C4");
-                        CName4.Value2 = DValue.NAME;
-                        Excel.Range QD4 = worksheet4.get_Range("D4");
-                        QD4.Value2 = DValue.OrderQty;
-                        Excel.Range CDate4 = worksheet4.get_Range("I4");
-                        CDate4.Value2 = DValue.LotNo;
+                        tb_QCHD qcd = db.tb_QCHDs.Where(p => p.QCNo.Equals(QCNo1)).FirstOrDefault();
+                        if (qcd != null)
+                        {
+                            CKQty = Convert.ToDecimal(db.get_QCSumQtyTAGNG(QCNo1, "", 96));
+                            Excel.Range PDQ1 = worksheet.get_Range("I4");
+                            PDQ1.Value2 = CKQty;
+                            Excel.Range QCOK1 = worksheet.get_Range("M4");
+                            QCOK1.Value2 = qcd.OKQty;
+                            Excel.Range QCNG1 = worksheet.get_Range("Q4");
+                            QCNG1.Value2 = qcd.NGQty;
+
+
+
+                            //WorkSheet2
+                            Excel.Range CStamp2 = worksheet2.get_Range("A4");
+                            CStamp2.Value2 = DValue.CODE;
+                            Excel.Range CName2 = worksheet2.get_Range("C4");
+                            CName2.Value2 = DValue.NAME;
+                            Excel.Range QD2 = worksheet2.get_Range("F4");
+                            QD2.Value2 = DValue.OrderQty;
+                            Excel.Range CDate2 = worksheet2.get_Range("D4");
+                            CDate2.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ2 = worksheet2.get_Range("I4");
+                            PDQ2.Value2 = CKQty;
+                            Excel.Range QCOK2 = worksheet2.get_Range("M4");
+                            QCOK2.Value2 = qcd.OKQty;
+                            Excel.Range QCNG2 = worksheet2.get_Range("Q4");
+                            QCNG2.Value2 = qcd.NGQty;
+
+
+                            //WorkSheet3
+                            Excel.Range CStamp3 = worksheet3.get_Range("A4");
+                            CStamp3.Value2 = DValue.CODE;
+                            Excel.Range CName3 = worksheet3.get_Range("C4");
+                            CName3.Value2 = DValue.NAME;
+                            Excel.Range QD3 = worksheet3.get_Range("F4");
+                            QD3.Value2 = DValue.OrderQty;
+                            Excel.Range CDate3 = worksheet3.get_Range("D4");
+                            CDate3.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ3 = worksheet3.get_Range("I4");
+                            PDQ3.Value2 = CKQty;
+                            Excel.Range QCOK3 = worksheet3.get_Range("M4");
+                            QCOK3.Value2 = qcd.OKQty;
+                            Excel.Range QCNG3 = worksheet3.get_Range("Q4");
+                            QCNG3.Value2 = qcd.NGQty;
+
+
+                            //WorkSheet4
+                            Excel.Range CStamp4 = worksheet4.get_Range("A4");
+                            CStamp4.Value2 = DValue.CODE;
+                            Excel.Range CName4 = worksheet4.get_Range("C4");
+                            CName4.Value2 = DValue.NAME;
+                            Excel.Range QD4 = worksheet4.get_Range("F4");
+                            QD4.Value2 = DValue.OrderQty;
+                            Excel.Range CDate4 = worksheet4.get_Range("D4");
+                            CDate4.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ4 = worksheet4.get_Range("I4");
+                            PDQ4.Value2 = CKQty;
+                            Excel.Range QCOK4 = worksheet4.get_Range("M4");
+                            QCOK4.Value2 = qcd.OKQty;
+                            Excel.Range QCNG4 = worksheet4.get_Range("Q4");
+                            QCNG4.Value2 = qcd.NGQty;
+
+                            //WorkSheet5
+                            Excel.Range CStamp5 = worksheet5.get_Range("A4");
+                            CStamp5.Value2 = DValue.CODE;
+                            Excel.Range CName5 = worksheet5.get_Range("C4");
+                            CName5.Value2 = DValue.NAME;
+                            Excel.Range QD5 = worksheet5.get_Range("F4");
+                            QD5.Value2 = DValue.OrderQty;
+                            Excel.Range CDate5 = worksheet5.get_Range("D4");
+                            CDate5.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ5 = worksheet5.get_Range("I4");
+                            PDQ5.Value2 = CKQty;
+                            Excel.Range QCOK5 = worksheet5.get_Range("M4");
+                            QCOK5.Value2 = qcd.OKQty;
+                            Excel.Range QCNG5 = worksheet5.get_Range("Q4");
+                            QCNG5.Value2 = qcd.NGQty;
+
+
+                            //WorkSheet6
+                            Excel.Range CStamp6 = worksheet6.get_Range("A4");
+                            CStamp6.Value2 = DValue.CODE;
+                            Excel.Range CName6 = worksheet6.get_Range("C4");
+                            CName6.Value2 = DValue.NAME;
+                            Excel.Range QD6 = worksheet6.get_Range("F4");
+                            QD6.Value2 = DValue.OrderQty;
+                            Excel.Range CDate6 = worksheet6.get_Range("D4");
+                            CDate6.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ6 = worksheet6.get_Range("I4");
+                            PDQ6.Value2 = CKQty;
+                            Excel.Range QCOK6 = worksheet6.get_Range("M4");
+                            QCOK6.Value2 = qcd.OKQty;
+                            Excel.Range QCNG6 = worksheet6.get_Range("Q4");
+                            QCNG6.Value2 = qcd.NGQty;
+
+
+                        }
+                        
 
 
                         chek24 = false;
@@ -1425,6 +1835,12 @@ namespace StockControl
 
                             Excel.Range G194 = worksheet4.get_Range("G19");
                             G194.Value2 = "P";
+
+                            Excel.Range G195 = worksheet5.get_Range("G19");
+                            G195.Value2 = "P";
+
+                            Excel.Range G196 = worksheet6.get_Range("G19");
+                            G196.Value2 = "P";
                         }
                         else
                         {
@@ -1440,6 +1856,12 @@ namespace StockControl
                                 G163.Value2 = "P";
                                 Excel.Range G164 = worksheet4.get_Range("G16");
                                 G164.Value2 = "P";
+                                Excel.Range G165 = worksheet5.get_Range("G16");
+                                G165.Value2 = "P";
+                                Excel.Range G166 = worksheet6.get_Range("G16");
+                                G166.Value2 = "P";
+
+
                             }
                             else if (PartName.Contains("20-24"))
                             {
@@ -1451,8 +1873,13 @@ namespace StockControl
                                 G172.Value2 = "P";
                                 Excel.Range G173 = worksheet3.get_Range("G17");
                                 G173.Value2 = "P";
-                                Excel.Range G174 = worksheet3.get_Range("G17");
+                                Excel.Range G174 = worksheet4.get_Range("G17");
                                 G174.Value2 = "P";
+                                Excel.Range G175 = worksheet5.get_Range("G17");
+                                G175.Value2 = "P";
+                                Excel.Range G176 = worksheet6.get_Range("G17");
+                                G176.Value2 = "P";
+
                             }
                             else if (PartName.Contains("24-24"))
                             {
@@ -1466,6 +1893,10 @@ namespace StockControl
                                 G183.Value2 = "P";
                                 Excel.Range G184 = worksheet4.get_Range("G18");
                                 G184.Value2 = "P";
+                                Excel.Range G185 = worksheet5.get_Range("G18");
+                                G185.Value2 = "P";
+                                Excel.Range G186 = worksheet6.get_Range("G18");
+                                G186.Value2 = "P";
                             }
                         }
 
@@ -1475,6 +1906,8 @@ namespace StockControl
 
                         try
                         {
+                            string U6 = "P";
+                            string U7 = "";
                             tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
                             if (qh != null)
                             {
@@ -1484,9 +1917,47 @@ namespace StockControl
                                 Excel.Range T22 = worksheet2.get_Range("T2");
                                 T22.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
                                 Excel.Range T23 = worksheet3.get_Range("T2");
-                                T23.Value2 = qh.ApproveBy;
+                                T23.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
                                 Excel.Range T24 = worksheet4.get_Range("T2");
                                 T24.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+                                Excel.Range T25 = worksheet5.get_Range("T2");
+                                T25.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+                                Excel.Range T26 = worksheet6.get_Range("T2");
+                                T26.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+
+                                if (qh.ApproveBy!="")
+                                {
+                                    if (db.QC_CheckNG(qh.QCNo) == "P")
+                                    {
+                                        Excel.Range APD = worksheet.get_Range("AC4");
+                                        APD.Value2 = "P";
+                                        Excel.Range APD2 = worksheet2.get_Range("AC4");
+                                        APD2.Value2 = "P";
+                                        Excel.Range APD3 = worksheet3.get_Range("AC4");
+                                        APD3.Value2 = "P";
+                                        Excel.Range APD4 = worksheet4.get_Range("AC4");
+                                        APD4.Value2 = "P";
+                                        Excel.Range APD5 = worksheet5.get_Range("AC4");
+                                        APD5.Value2 = "P";
+                                        Excel.Range APD6 = worksheet6.get_Range("AC4");
+                                        APD6.Value2 = "P";
+                                    }
+                                    else
+                                    {
+                                        Excel.Range APD = worksheet.get_Range("U4");
+                                        APD.Value2 = "P";
+                                        Excel.Range APD2 = worksheet2.get_Range("U4");
+                                        APD2.Value2 = "P";
+                                        Excel.Range APD3 = worksheet3.get_Range("U4");
+                                        APD3.Value2 = "P";
+                                        Excel.Range APD4 = worksheet4.get_Range("U4");
+                                        APD4.Value2 = "P";
+                                        Excel.Range APD5 = worksheet5.get_Range("U4");
+                                        APD5.Value2 = "P";
+                                        Excel.Range APD6 = worksheet6.get_Range("U4");
+                                        APD6.Value2 = "P";
+                                    }
+                                }
 
                                 if (!Convert.ToString(qh.ApproveBy).Equals(""))
                                 {
@@ -1498,6 +1969,10 @@ namespace StockControl
                                     APD3.Value2 = qh.ApproveDate;
                                     Excel.Range APD4 = worksheet4.get_Range("T3");
                                     APD4.Value2 = qh.ApproveDate;
+                                    Excel.Range APD5 = worksheet5.get_Range("T3");
+                                    APD5.Value2 = qh.ApproveDate;
+                                    Excel.Range APD6 = worksheet6.get_Range("T3");
+                                    APD6.Value2 = qh.ApproveDate;
 
                                 }
                                 var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QHNo)).ToList();
@@ -1529,6 +2004,20 @@ namespace StockControl
                                             AH24.Value2 = rd.UserName;
                                             Excel.Range AH34 = worksheet4.get_Range("AH3");
                                             AH34.Value2 = rd.ScanDate;
+
+                                            Excel.Range AH25 = worksheet5.get_Range("AH2");
+                                            AH25.Value2 = rd.UserName;
+                                            Excel.Range AH35 = worksheet5.get_Range("AH3");
+                                            AH35.Value2 = rd.ScanDate;
+
+                                            Excel.Range AH26 = worksheet6.get_Range("AH2");
+                                            AH26.Value2 = rd.UserName;
+                                            Excel.Range AH36 = worksheet6.get_Range("AH3");
+                                            AH36.Value2 = rd.ScanDate;
+
+
+
+
                                         }
                                         else if (CRow == 2)
                                         {
@@ -1551,6 +2040,18 @@ namespace StockControl
                                             AE24.Value2 = rd.UserName;
                                             Excel.Range AE34 = worksheet4.get_Range("AE3");
                                             AE34.Value2 = rd.ScanDate;
+
+                                            Excel.Range AE25 = worksheet5.get_Range("AE2");
+                                            AE25.Value2 = rd.UserName;
+                                            Excel.Range AE35 = worksheet5.get_Range("AE3");
+                                            AE35.Value2 = rd.ScanDate;
+
+                                            Excel.Range AE26 = worksheet6.get_Range("AE2");
+                                            AE26.Value2 = rd.UserName;
+                                            Excel.Range AE36 = worksheet6.get_Range("AE3");
+                                            AE36.Value2 = rd.ScanDate;
+
+
                                         }
                                         else if (CRow==3)
                                         {
@@ -1571,6 +2072,16 @@ namespace StockControl
                                             AB24.Value2 = rd.UserName;
                                             Excel.Range AB34 = worksheet4.get_Range("AB3");
                                             AB34.Value2 = rd.ScanDate;
+
+                                            Excel.Range AB25 = worksheet5.get_Range("AB2");
+                                            AB25.Value2 = rd.UserName;
+                                            Excel.Range AB35 = worksheet5.get_Range("AB3");
+                                            AB35.Value2 = rd.ScanDate;
+
+                                            Excel.Range AB26 = worksheet6.get_Range("AB2");
+                                            AB26.Value2 = rd.UserName;
+                                            Excel.Range AB36 = worksheet6.get_Range("AB3");
+                                            AB36.Value2 = rd.ScanDate;
                                         }
                                     }
 
@@ -1647,6 +2158,14 @@ namespace StockControl
                                 else if (TG <= 100)
                                 {
                                     CP = TG - 75;
+                                }
+                                else if (TG <= 125)
+                                {
+                                    CP = TG - 100;
+                                }
+                                else if (TG <= 150)
+                                {
+                                    CP = TG - 125;
                                 }
 
                                 var listPart = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FormISO) && q.PartNo.Equals(DValue.CODE)).OrderBy(o => o.Seq).ToList();
@@ -1770,6 +2289,52 @@ namespace StockControl
                                                 Col04.Value2 = PV;
                                                 
                                             }
+                                            else if (TG <= 125)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (row1 == 15)
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid4 == "")
+                                                        ValueInvalid4 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid4 = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+
+                                                Excel.Range Col05 = worksheet5.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col05.Value2 = PV;
+
+                                            }
+                                            else if (TG <= 150)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (row1 == 15)
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid4 == "")
+                                                        ValueInvalid4 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid4 = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+
+                                                Excel.Range Col06 = worksheet6.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col06.Value2 = PV;
+
+                                            }
 
                                             if (!Remark.Equals(""))
                                             {
@@ -1794,6 +2359,16 @@ namespace StockControl
                                                 {
                                                     Excel.Range Col14 = worksheet4.get_Range("AF" + Convert.ToString(row1));
                                                     Col14.Value2 = Remark;
+                                                }
+                                                else if (TG <= 125)
+                                                {
+                                                    Excel.Range Col15 = worksheet5.get_Range("AF" + Convert.ToString(row1));
+                                                    Col15.Value2 = Remark;
+                                                }
+                                                else if (TG <= 150)
+                                                {
+                                                    Excel.Range Col16 = worksheet6.get_Range("AF" + Convert.ToString(row1));
+                                                    Col16.Value2 = Remark;
                                                 }
                                             }                                                                                            
 
@@ -1826,7 +2401,7 @@ namespace StockControl
                                 GNG2.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
                                 Excel.Range GOK2 = worksheet2.get_Range(Getcolumn(CP + 6) + "20");
                                 GOK2.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
-                                Excel.Range C15 = worksheet.get_Range("C15");
+                                Excel.Range C15 = worksheet2.get_Range("C15");
                                 C15.Value2 = ValueInvalid2;
                             }
                             else if (TG <= 75)
@@ -1835,7 +2410,7 @@ namespace StockControl
                                 GNG3.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
                                 Excel.Range GOK3 = worksheet3.get_Range(Getcolumn(CP + 6) + "20");
                                 GOK3.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
-                                Excel.Range C15 = worksheet.get_Range("C15");
+                                Excel.Range C15 = worksheet3.get_Range("C15");
                                 C15.Value2 = ValueInvalid3;
                             }
                             else if (TG <= 100)
@@ -1844,7 +2419,25 @@ namespace StockControl
                                 GNG4.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
                                 Excel.Range GOK4 = worksheet4.get_Range(Getcolumn(CP + 6) + "20");
                                 GOK4.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
-                                Excel.Range C15 = worksheet.get_Range("C15");
+                                Excel.Range C15 = worksheet4.get_Range("C15");
+                                C15.Value2 = ValueInvalid4;
+                            }
+                            else if (TG <= 125)
+                            {
+                                Excel.Range GNG5 = worksheet5.get_Range(Getcolumn(CP + 6) + "21");
+                                GNG5.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK5 = worksheet5.get_Range(Getcolumn(CP + 6) + "20");
+                                GOK5.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                Excel.Range C15 = worksheet5.get_Range("C15");
+                                C15.Value2 = ValueInvalid4;
+                            }
+                            else if (TG <= 150)
+                            {
+                                Excel.Range GNG6 = worksheet6.get_Range(Getcolumn(CP + 6) + "21");
+                                GNG6.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK6 = worksheet6.get_Range(Getcolumn(CP + 6) + "20");
+                                GOK6.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                Excel.Range C15 = worksheet6.get_Range("C15");
                                 C15.Value2 = ValueInvalid4;
                             }
                         }//for
@@ -1862,12 +2455,16 @@ namespace StockControl
                 releaseObject(worksheet2);
                 releaseObject(worksheet3);
                 releaseObject(worksheet4);
+                releaseObject(worksheet5);
+                releaseObject(worksheet6);
                 releaseObject(excelBook);
                 releaseObject(excelApp);
                 Marshal.FinalReleaseComObject(worksheet);
                 Marshal.FinalReleaseComObject(worksheet2);
                 Marshal.FinalReleaseComObject(worksheet3);
                 Marshal.FinalReleaseComObject(worksheet4);
+                Marshal.FinalReleaseComObject(worksheet5);
+                Marshal.FinalReleaseComObject(worksheet6);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
@@ -1883,15 +2480,16 @@ namespace StockControl
             catch { }
 
         }
-        public static void PrintData035(string WO, string PartNo, string QCNo1)
+        public static void PrintData5501CM(string WO, string PartNo, string QCNo1)
         {
             try
             {
-
+                //Step Report 055
+              //  MessageBox.Show("eeed");
 
                 string DATA = AppDomain.CurrentDomain.BaseDirectory;
                 string tempPath = System.IO.Path.GetTempPath();
-                string FileName = "FM-PD-035.xls";
+                string FileName = "FM-QA-055CM.xlsx";
                 string tempfile = tempPath + FileName;
                 DATA = DATA + @"QC\" + FileName;
 
@@ -1911,6 +2509,881 @@ namespace StockControl
                   0, true);
                 Excel.Sheets sheets = excelBook.Worksheets;
                 Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+                Excel.Worksheet worksheet2 = (Excel.Worksheet)sheets.get_Item(2);
+                Excel.Worksheet worksheet3 = (Excel.Worksheet)sheets.get_Item(3);
+                Excel.Worksheet worksheet4 = (Excel.Worksheet)sheets.get_Item(4);
+                Excel.Worksheet worksheet5 = (Excel.Worksheet)sheets.get_Item(5);
+                Excel.Worksheet worksheet6 = (Excel.Worksheet)sheets.get_Item(6);
+
+                // progressBar1.Maximum = 51;
+                // progressBar1.Minimum = 1;
+                int row1 = 6;
+                int row2 = 9;
+                int Seq = 0;
+                int seq2 = 21;
+                int CountRow = 0;
+                string PV = "P";
+                string QHNo = QCNo1;
+                string FormISO = "";
+                int NGQ = 0;
+                string DN = "";
+                string ValueInvalid = "";
+                string ValueInvalid2 = "";
+                string ValueInvalid3 = "";
+                string ValueInvalid4 = "";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    string Value1 = "";
+                    string Value2 = "";
+                    string LotNo = "";
+                    string RefValue1 = "";
+                    string PartName = "";
+                    string Remark = "";
+                    bool chek24 = true;
+                    decimal CKQty = 0;
+                    int PackI = 6;
+                    ///////////////SETValue/////////////////
+                    var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                    if (DValue != null)
+                    {
+                        DN = DValue.DayNight;
+                        PartName = DValue.NAME;
+                        //WorkSheet1
+                        Excel.Range CStamp = worksheet.get_Range("A4");
+                        CStamp.Value2 = DValue.CODE;
+                        Excel.Range CName = worksheet.get_Range("C4");
+                        CName.Value2 = DValue.NAME;
+                        Excel.Range QD = worksheet.get_Range("F4");
+                        QD.Value2 = DValue.OrderQty;
+                        Excel.Range CDate = worksheet.get_Range("D4");
+                        CDate.Value2 = DValue.LotNo;
+                        tb_QCHD qcd = db.tb_QCHDs.Where(p => p.QCNo.Equals(QCNo1)).FirstOrDefault();
+                        if (qcd != null)
+                        {
+                            CKQty = Convert.ToDecimal(db.get_QCSumQtyTAGNG(QCNo1, "", 96));
+                            Excel.Range PDQ1 = worksheet.get_Range("I4");
+                            PDQ1.Value2 = CKQty;
+                            Excel.Range QCOK1 = worksheet.get_Range("M4");
+                            QCOK1.Value2 = qcd.OKQty;
+                            Excel.Range QCNG1 = worksheet.get_Range("Q4");
+                            QCNG1.Value2 = qcd.NGQty;
+
+                            tb_QCTAG tcg = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if(tcg!=null)
+                            {
+                                string[] TAG = tcg.BarcodeTag.Split(',');
+                                if(TAG[2]=="4")
+                                {
+                                    PackI = 4;
+                                }
+                            }
+
+
+
+                            //WorkSheet2
+                            Excel.Range CStamp2 = worksheet2.get_Range("A4");
+                            CStamp2.Value2 = DValue.CODE;
+                            Excel.Range CName2 = worksheet2.get_Range("C4");
+                            CName2.Value2 = DValue.NAME;
+                            Excel.Range QD2 = worksheet2.get_Range("F4");
+                            QD2.Value2 = DValue.OrderQty;
+                            Excel.Range CDate2 = worksheet2.get_Range("D4");
+                            CDate2.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ2 = worksheet2.get_Range("I4");
+                            PDQ2.Value2 = CKQty;
+                            Excel.Range QCOK2 = worksheet2.get_Range("M4");
+                            QCOK2.Value2 = qcd.OKQty;
+                            Excel.Range QCNG2 = worksheet2.get_Range("Q4");
+                            QCNG2.Value2 = qcd.NGQty;
+
+
+                            //WorkSheet3
+                            Excel.Range CStamp3 = worksheet3.get_Range("A4");
+                            CStamp3.Value2 = DValue.CODE;
+                            Excel.Range CName3 = worksheet3.get_Range("C4");
+                            CName3.Value2 = DValue.NAME;
+                            Excel.Range QD3 = worksheet3.get_Range("F4");
+                            QD3.Value2 = DValue.OrderQty;
+                            Excel.Range CDate3 = worksheet3.get_Range("D4");
+                            CDate3.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ3 = worksheet3.get_Range("I4");
+                            PDQ3.Value2 = CKQty;
+                            Excel.Range QCOK3 = worksheet3.get_Range("M4");
+                            QCOK3.Value2 = qcd.OKQty;
+                            Excel.Range QCNG3 = worksheet3.get_Range("Q4");
+                            QCNG3.Value2 = qcd.NGQty;
+
+
+                            //WorkSheet4
+                            Excel.Range CStamp4 = worksheet4.get_Range("A4");
+                            CStamp4.Value2 = DValue.CODE;
+                            Excel.Range CName4 = worksheet4.get_Range("C4");
+                            CName4.Value2 = DValue.NAME;
+                            Excel.Range QD4 = worksheet4.get_Range("F4");
+                            QD4.Value2 = DValue.OrderQty;
+                            Excel.Range CDate4 = worksheet4.get_Range("D4");
+                            CDate4.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ4 = worksheet4.get_Range("I4");
+                            PDQ4.Value2 = CKQty;
+                            Excel.Range QCOK4 = worksheet4.get_Range("M4");
+                            QCOK4.Value2 = qcd.OKQty;
+                            Excel.Range QCNG4 = worksheet4.get_Range("Q4");
+                            QCNG4.Value2 = qcd.NGQty;
+
+                            //WorkSheet5
+                            Excel.Range CStamp5 = worksheet5.get_Range("A4");
+                            CStamp5.Value2 = DValue.CODE;
+                            Excel.Range CName5 = worksheet5.get_Range("C4");
+                            CName5.Value2 = DValue.NAME;
+                            Excel.Range QD5 = worksheet5.get_Range("F4");
+                            QD5.Value2 = DValue.OrderQty;
+                            Excel.Range CDate5 = worksheet5.get_Range("D4");
+                            CDate5.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ5 = worksheet5.get_Range("I4");
+                            PDQ5.Value2 = CKQty;
+                            Excel.Range QCOK5 = worksheet5.get_Range("M4");
+                            QCOK5.Value2 = qcd.OKQty;
+                            Excel.Range QCNG5 = worksheet5.get_Range("Q4");
+                            QCNG5.Value2 = qcd.NGQty;
+
+
+                            //WorkSheet6
+                            Excel.Range CStamp6 = worksheet6.get_Range("A4");
+                            CStamp6.Value2 = DValue.CODE;
+                            Excel.Range CName6 = worksheet6.get_Range("C4");
+                            CName6.Value2 = DValue.NAME;
+                            Excel.Range QD6 = worksheet6.get_Range("F4");
+                            QD6.Value2 = DValue.OrderQty;
+                            Excel.Range CDate6 = worksheet6.get_Range("D4");
+                            CDate6.Value2 = DValue.LotNo;
+
+                            Excel.Range PDQ6 = worksheet6.get_Range("I4");
+                            PDQ6.Value2 = CKQty;
+                            Excel.Range QCOK6 = worksheet6.get_Range("M4");
+                            QCOK6.Value2 = qcd.OKQty;
+                            Excel.Range QCNG6 = worksheet6.get_Range("Q4");
+                            QCNG6.Value2 = qcd.NGQty;
+
+
+                        }
+                        
+
+                        chek24 = false;
+                        string GP5 = "";
+                        string GP6 = "";
+                       
+
+                        
+                            if (PackI==6)
+                            {
+                               // GP5 = "16-24";
+                               // GP6 = "A";
+                                Excel.Range G16 = worksheet.get_Range("G19");
+                                G16.Value2 = "P";
+                                Excel.Range G162 = worksheet2.get_Range("G19");
+                                G162.Value2 = "P";
+                                Excel.Range G163 = worksheet3.get_Range("G19");
+                                G163.Value2 = "P";
+                                Excel.Range G164 = worksheet4.get_Range("G19");
+                                G164.Value2 = "P";
+                                Excel.Range G165 = worksheet5.get_Range("G19");
+                                G165.Value2 = "P";
+                                Excel.Range G166 = worksheet6.get_Range("G19");
+                                G166.Value2 = "P";
+
+
+                            }
+                            else if (PackI==4)
+                            {
+                               // GP5 = "20-24";
+                               // GP6 = "B";
+                                Excel.Range G17 = worksheet.get_Range("G20");
+                                G17.Value2 = "P";
+                                Excel.Range G172 = worksheet2.get_Range("G20");
+                                G172.Value2 = "P";
+                                Excel.Range G173 = worksheet3.get_Range("G20");
+                                G173.Value2 = "P";
+                                Excel.Range G174 = worksheet4.get_Range("G20");
+                                G174.Value2 = "P";
+                                Excel.Range G175 = worksheet5.get_Range("G20");
+                                G175.Value2 = "P";
+                                Excel.Range G176 = worksheet6.get_Range("G20");
+                                G176.Value2 = "P";
+
+                            }
+                            
+                        
+
+
+
+
+
+                        try
+                        {
+                            string U6 = "P";
+                            string U7 = "";
+                            tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if (qh != null)
+                            {
+                                FormISO = qh.FormISO;
+                                Excel.Range T2 = worksheet.get_Range("T2");
+                                T2.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+                                Excel.Range T22 = worksheet2.get_Range("T2");
+                                T22.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+                                Excel.Range T23 = worksheet3.get_Range("T2");
+                                T23.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+                                Excel.Range T24 = worksheet4.get_Range("T2");
+                                T24.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+                                Excel.Range T25 = worksheet5.get_Range("T2");
+                                T25.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+                                Excel.Range T26 = worksheet6.get_Range("T2");
+                                T26.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
+
+                                if (qh.ApproveBy != "")
+                                {
+                                    if (db.QC_CheckNG(qh.QCNo) == "P")
+                                    {
+                                        Excel.Range APD = worksheet.get_Range("AC4");
+                                        APD.Value2 = "P";
+                                        Excel.Range APD2 = worksheet2.get_Range("AC4");
+                                        APD2.Value2 = "P";
+                                        Excel.Range APD3 = worksheet3.get_Range("AC4");
+                                        APD3.Value2 = "P";
+                                        Excel.Range APD4 = worksheet4.get_Range("AC4");
+                                        APD4.Value2 = "P";
+                                        Excel.Range APD5 = worksheet5.get_Range("AC4");
+                                        APD5.Value2 = "P";
+                                        Excel.Range APD6 = worksheet6.get_Range("AC4");
+                                        APD6.Value2 = "P";
+                                    }
+                                    else
+                                    {
+                                        Excel.Range APD = worksheet.get_Range("U4");
+                                        APD.Value2 = "P";
+                                        Excel.Range APD2 = worksheet2.get_Range("U4");
+                                        APD2.Value2 = "P";
+                                        Excel.Range APD3 = worksheet3.get_Range("U4");
+                                        APD3.Value2 = "P";
+                                        Excel.Range APD4 = worksheet4.get_Range("U4");
+                                        APD4.Value2 = "P";
+                                        Excel.Range APD5 = worksheet5.get_Range("U4");
+                                        APD5.Value2 = "P";
+                                        Excel.Range APD6 = worksheet6.get_Range("U4");
+                                        APD6.Value2 = "P";
+                                    }
+                                }
+
+                                if (!Convert.ToString(qh.ApproveBy).Equals(""))
+                                {
+                                    Excel.Range APD = worksheet.get_Range("T3");
+                                    APD.Value2 = qh.ApproveDate;
+                                    Excel.Range APD2 = worksheet2.get_Range("T3");
+                                    APD2.Value2 = qh.ApproveDate;
+                                    Excel.Range APD3 = worksheet3.get_Range("T3");
+                                    APD3.Value2 = qh.ApproveDate;
+                                    Excel.Range APD4 = worksheet4.get_Range("T3");
+                                    APD4.Value2 = qh.ApproveDate;
+                                    Excel.Range APD5 = worksheet5.get_Range("T3");
+                                    APD5.Value2 = qh.ApproveDate;
+                                    Excel.Range APD6 = worksheet6.get_Range("T3");
+                                    APD6.Value2 = qh.ApproveDate;
+
+                                }
+                                var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                int CRow = 0;
+                                foreach (var rd in uc)
+                                {
+                                    DN = dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+                                    CRow += 1;
+                                    if (rd.UDesc.Equals("Inspector"))
+                                    {
+                                        if (CRow == 1)
+                                        {
+                                            Excel.Range AH2 = worksheet.get_Range("AH2");
+                                            AH2.Value2 = rd.UserName;
+                                            Excel.Range AH3 = worksheet.get_Range("AH3");
+                                            AH3.Value2 = rd.ScanDate;
+                                            //work1
+                                            Excel.Range AH22 = worksheet2.get_Range("AH2");
+                                            AH22.Value2 = rd.UserName;
+                                            Excel.Range AH32 = worksheet2.get_Range("AH3");
+                                            AH32.Value2 = rd.ScanDate;
+
+                                            Excel.Range AH23 = worksheet3.get_Range("AH2");
+                                            AH23.Value2 = rd.UserName;
+                                            Excel.Range AH33 = worksheet3.get_Range("AH3");
+                                            AH33.Value2 = rd.ScanDate;
+
+                                            Excel.Range AH24 = worksheet4.get_Range("AH2");
+                                            AH24.Value2 = rd.UserName;
+                                            Excel.Range AH34 = worksheet4.get_Range("AH3");
+                                            AH34.Value2 = rd.ScanDate;
+
+                                            Excel.Range AH25 = worksheet5.get_Range("AH2");
+                                            AH25.Value2 = rd.UserName;
+                                            Excel.Range AH35 = worksheet5.get_Range("AH3");
+                                            AH35.Value2 = rd.ScanDate;
+
+                                            Excel.Range AH26 = worksheet6.get_Range("AH2");
+                                            AH26.Value2 = rd.UserName;
+                                            Excel.Range AH36 = worksheet6.get_Range("AH3");
+                                            AH36.Value2 = rd.ScanDate;
+
+
+
+
+                                        }
+                                        else if (CRow == 2)
+                                        {
+                                            Excel.Range AE2 = worksheet.get_Range("AE2");
+                                            AE2.Value2 = rd.UserName;
+                                            Excel.Range AE3 = worksheet.get_Range("AE3");
+                                            AE3.Value2 = rd.ScanDate;
+                                            //work1
+                                            Excel.Range AE22 = worksheet2.get_Range("AE2");
+                                            AE22.Value2 = rd.UserName;
+                                            Excel.Range AE32 = worksheet2.get_Range("AE3");
+                                            AE32.Value2 = rd.ScanDate;
+
+                                            Excel.Range AE23 = worksheet3.get_Range("AE2");
+                                            AE23.Value2 = rd.UserName;
+                                            Excel.Range AE33 = worksheet3.get_Range("AE3");
+                                            AE33.Value2 = rd.ScanDate;
+
+                                            Excel.Range AE24 = worksheet4.get_Range("AE2");
+                                            AE24.Value2 = rd.UserName;
+                                            Excel.Range AE34 = worksheet4.get_Range("AE3");
+                                            AE34.Value2 = rd.ScanDate;
+
+                                            Excel.Range AE25 = worksheet5.get_Range("AE2");
+                                            AE25.Value2 = rd.UserName;
+                                            Excel.Range AE35 = worksheet5.get_Range("AE3");
+                                            AE35.Value2 = rd.ScanDate;
+
+                                            Excel.Range AE26 = worksheet6.get_Range("AE2");
+                                            AE26.Value2 = rd.UserName;
+                                            Excel.Range AE36 = worksheet6.get_Range("AE3");
+                                            AE36.Value2 = rd.ScanDate;
+
+
+                                        }
+                                        else if (CRow == 3)
+                                        {
+                                            Excel.Range AB2 = worksheet.get_Range("AB2");
+                                            AB2.Value2 = rd.UserName;
+                                            Excel.Range AB3 = worksheet.get_Range("AB3");
+                                            AB3.Value2 = rd.ScanDate;
+                                            //work1
+                                            Excel.Range AB22 = worksheet2.get_Range("AB2");
+                                            AB22.Value2 = rd.UserName;
+                                            Excel.Range AB32 = worksheet2.get_Range("AB3");
+                                            AB32.Value2 = rd.ScanDate;
+                                            Excel.Range AB23 = worksheet3.get_Range("AB2");
+                                            AB23.Value2 = rd.UserName;
+                                            Excel.Range AB33 = worksheet3.get_Range("AB3");
+                                            AB33.Value2 = rd.ScanDate;
+                                            Excel.Range AB24 = worksheet4.get_Range("AB2");
+                                            AB24.Value2 = rd.UserName;
+                                            Excel.Range AB34 = worksheet4.get_Range("AB3");
+                                            AB34.Value2 = rd.ScanDate;
+
+                                            Excel.Range AB25 = worksheet5.get_Range("AB2");
+                                            AB25.Value2 = rd.UserName;
+                                            Excel.Range AB35 = worksheet5.get_Range("AB3");
+                                            AB35.Value2 = rd.ScanDate;
+
+                                            Excel.Range AB26 = worksheet6.get_Range("AB2");
+                                            AB26.Value2 = rd.UserName;
+                                            Excel.Range AB36 = worksheet6.get_Range("AB3");
+                                            AB36.Value2 = rd.ScanDate;
+                                        }
+                                    }
+
+                                    //if (rd.UDesc.Equals("Check By"))
+                                    //{
+                                    //    if(CRow==1)
+                                    //    {
+                                    //        Excel.Range X2 = worksheet.get_Range("X2");
+                                    //        X2.Value2 = rd.UserName;
+                                    //        Excel.Range X3 = worksheet.get_Range("X3");
+                                    //        X3.Value2 = rd.ScanDate;
+                                    //        //work1
+                                    //        Excel.Range X22 = worksheet2.get_Range("X2");
+                                    //        X22.Value2 = rd.UserName;
+                                    //        Excel.Range X32 = worksheet2.get_Range("X3");
+                                    //        X32.Value2 = rd.ScanDate;
+
+                                    //        Excel.Range X23 = worksheet3.get_Range("X2");
+                                    //        X23.Value2 = rd.UserName;
+                                    //        Excel.Range X33 = worksheet3.get_Range("X3");
+                                    //        X33.Value2 = rd.ScanDate;
+
+                                    //        Excel.Range X24 = worksheet4.get_Range("X2");
+                                    //        X24.Value2 = rd.UserName;
+                                    //        Excel.Range X34 = worksheet4.get_Range("X3");
+                                    //        X34.Value2 = rd.ScanDate;
+                                    //    }
+
+                                    //}
+                                }
+
+                                QHNo = qh.QCNo;
+                                RefValue1 = qh.RefValue1;
+                            }
+
+                        }
+                        catch { }
+
+                    }
+
+                    ////////////////////////////////////////
+
+                    //Insert Header//
+                    int rx = 6;
+                    var listPart2 = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FormISO) && q.PartNo.Equals(DValue.CODE)).OrderBy(o => o.Seq).ToList();
+                    foreach (var rd in listPart2)
+                    {
+                        rx += 1;
+                        string SetValueHD = db.get_QC_SetDataMaster2(FormISO, rd.PartNo, rd.Seq);
+                        Excel.Range SetHD = worksheet.get_Range("B" + rx.ToString());
+                        SetHD.Value2 = SetValueHD;
+
+                        string setValueDT = db.get_QC_SetDataMaster(FormISO, rd.PartNo, rd.Seq);
+                        Excel.Range SetDT = worksheet.get_Range("C" + rx.ToString());
+                        SetDT.Value2 = setValueDT;
+
+                        if (setValueDT.Contains("Æ"))
+                        {
+                            int addint = setValueDT.IndexOf("Æ");
+                            // SetDT.Characters[5, 10].Font.Color = Color.Red; // "Symbol";//AngsanaUPC
+                            SetDT.Characters[addint, 2].Font.Name = "Symbol";//
+                          //  SetDT.Characters[2, setValueDT.Length - 2].Font.Name = "Angsana New";
+                        }
+
+                        //Excel.Range SetHDA = worksheet.get_Range("A" + row1.ToString());
+                        //SetHDA.Value2 = rd.Seq.ToString();
+
+                    }
+
+
+                    ///////////////////////////////////////
+                    int SOK = 0;
+                    int SNG = 0;
+                    int countA = 0;
+                    int TG = 0;
+                    int CP = 0;
+                    int rowOther = 0;
+                    var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelect(QCNo1).ToList();
+                    if (listPoint.Count > 0)
+                    {
+                        foreach (var rs in listPoint)
+                        {
+                            SOK = 0;
+                            SNG = 0;
+                            countA += 1;
+                            TG = 0;
+                            string[] PPTAG = rs.ofTAG.Split('o');
+                            TG = Convert.ToInt32(PPTAG[0]);
+                            // MessageBox.Show(countA.ToString());
+                            if (TG > 0)
+                            {
+                                row1 = 6;
+                                rowOther = 0;
+                                if (TG <= 25)
+                                {
+                                    CP = TG;
+                                }
+                                else if (TG <= 50)
+                                {
+                                    CP = TG - 25;
+                                }
+                                else if (TG <= 75)
+                                {
+                                    CP = TG - 50;
+                                }
+                                else if (TG <= 100)
+                                {
+                                    CP = TG - 75;
+                                }
+                                else if (TG <= 125)
+                                {
+                                    CP = TG - 100;
+                                }
+                                else if (TG <= 150)
+                                {
+                                    CP = TG - 125;
+                                }
+
+                                var listPart = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FormISO) && q.PartNo.Equals(DValue.CODE)).OrderBy(o => o.Seq).ToList();
+                                foreach (var rd in listPart)
+                                {
+                                    //Start Insert Checkmark  
+                                    row1 += 1;
+
+                                    
+                                    
+
+                                    //Start G=7,H=
+                                    if (!rd.TopPic.Equals(""))
+                                    {
+                                        if(rd.TopPic.Equals("OTHER"))
+                                        {
+                                            rowOther = row1;
+                                        }
+                                        /////
+                                        try
+                                        {
+                                            Remark = "";
+                                            var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                            PV = "P";
+
+                                            if (gValue.CountA > 0)
+                                            {
+
+                                                PV = "O";
+                                                if (gValue.CountA == 99)
+                                                    PV = "";
+                                            }
+                                            var NValue = db.sp_46_QCGetValue55501(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                            Remark = NValue.Remark;
+
+                                            //Excel.Range Col0 = worksheet.get_Range(Getcolumn(CP+6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                            //Col0.Value2 = PV;
+                                            if (TG <= 25)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (rd.TopPic.Equals("OTHER"))
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid == "")
+                                                        ValueInvalid = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                }
+                                                Excel.Range Col0 = worksheet.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col0.Value2 = PV;
+
+                                            }
+                                            else if (TG <= 50)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (rd.TopPic.Equals("OTHER"))
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid2 == "")
+                                                        ValueInvalid2 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid2 = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+
+                                                Excel.Range Col02 = worksheet2.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col02.Value2 = PV;
+
+                                            }
+                                            else if (TG <= 75)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (rd.TopPic.Equals("OTHER"))
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid3 == "")
+                                                        ValueInvalid3 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid3 = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+
+                                                Excel.Range Col03 = worksheet3.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col03.Value2 = PV;
+
+                                            }
+                                            else if (TG <= 100)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (rd.TopPic.Equals("OTHER"))
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid4 == "")
+                                                        ValueInvalid4 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid4 = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+
+                                                Excel.Range Col04 = worksheet4.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col04.Value2 = PV;
+
+                                            }
+                                            else if (TG <= 125)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (rd.TopPic.Equals("OTHER"))
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid4 == "")
+                                                        ValueInvalid4 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid4 = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+
+                                                Excel.Range Col05 = worksheet5.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col05.Value2 = PV;
+
+                                            }
+                                            else if (TG <= 150)
+                                            {
+                                                if (PV.Equals("P"))
+                                                {
+                                                    if (rd.TopPic.Equals("OTHER"))
+                                                    {
+                                                        PV = "";
+                                                    }
+                                                }
+                                                ////
+                                                if (db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq) != "")
+                                                {
+                                                    PV = "O";
+                                                    if (ValueInvalid4 == "")
+                                                        ValueInvalid4 = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    else
+                                                        ValueInvalid4 = ValueInvalid + "," + db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                }
+
+                                                Excel.Range Col06 = worksheet6.get_Range(Getcolumn(CP + 6) + row1.ToString(), Getcolumn(CP + 6) + row1.ToString());
+                                                Col06.Value2 = PV;
+
+                                            }
+
+                                            if (!Remark.Equals(""))
+                                            {
+                                                if (TG <= 25)
+                                                {
+                                                    Excel.Range Col1 = worksheet.get_Range("AF" + Convert.ToString(row1));
+                                                    Col1.Value2 = Remark;
+                                                }
+                                                else if (TG <= 50)
+                                                {
+
+                                                    Excel.Range Col12 = worksheet2.get_Range("AF" + Convert.ToString(row1));
+                                                    Col12.Value2 = Remark;
+                                                }
+                                                else if (TG <= 75)
+                                                {
+
+                                                    Excel.Range Col13 = worksheet3.get_Range("AF" + Convert.ToString(row1));
+                                                    Col13.Value2 = Remark;
+                                                }
+                                                else if (TG <= 100)
+                                                {
+                                                    Excel.Range Col14 = worksheet4.get_Range("AF" + Convert.ToString(row1));
+                                                    Col14.Value2 = Remark;
+                                                }
+                                                else if (TG <= 125)
+                                                {
+                                                    Excel.Range Col15 = worksheet5.get_Range("AF" + Convert.ToString(row1));
+                                                    Col15.Value2 = Remark;
+                                                }
+                                                else if (TG <= 150)
+                                                {
+                                                    Excel.Range Col16 = worksheet6.get_Range("AF" + Convert.ToString(row1));
+                                                    Col16.Value2 = Remark;
+                                                }
+                                            }
+
+                                        }
+                                        catch (Exception ex) { MessageBox.Show(ex.Message); }
+                                        //}
+
+
+
+
+                                    }
+                                    //SumNG//
+                                }//foreach
+                            }//cunt A
+
+                            //Find count Tag
+                            if (TG <= 25)
+                            {
+                                Excel.Range GNG = worksheet.get_Range(Getcolumn(CP + 6) + "22");
+                                GNG.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK = worksheet.get_Range(Getcolumn(CP + 6) + "21");
+                                GOK.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                if (rowOther > 0)
+                                {
+                                    Excel.Range C15 = worksheet.get_Range("C" + rowOther.ToString());
+                                    C15.Value2 = ValueInvalid;
+                                }
+                            }
+                            else if (TG <= 50)
+                            {
+                                Excel.Range GNG2 = worksheet2.get_Range(Getcolumn(CP + 6) + "22");
+                                GNG2.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK2 = worksheet2.get_Range(Getcolumn(CP + 6) + "21");
+                                GOK2.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                if (rowOther > 0)
+                                {
+                                    Excel.Range C15 = worksheet2.get_Range("C" + rowOther.ToString());
+                                    C15.Value2 = ValueInvalid2;
+                                }
+                            }
+                            else if (TG <= 75)
+                            {
+                                Excel.Range GNG3 = worksheet3.get_Range(Getcolumn(CP + 6) + "22");
+                                GNG3.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK3 = worksheet3.get_Range(Getcolumn(CP + 6) + "21");
+                                GOK3.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                if (rowOther > 0)
+                                {
+                                    Excel.Range C15 = worksheet3.get_Range("C" + rowOther.ToString());
+                                    C15.Value2 = ValueInvalid3;
+                                }
+                            }
+                            else if (TG <= 100)
+                            {
+                                Excel.Range GNG4 = worksheet4.get_Range(Getcolumn(CP + 6) + "22");
+                                GNG4.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK4 = worksheet4.get_Range(Getcolumn(CP + 6) + "21");
+                                GOK4.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                if (rowOther > 0)
+                                {
+                                    Excel.Range C15 = worksheet4.get_Range("C" + rowOther.ToString());
+                                    C15.Value2 = ValueInvalid4;
+                                }
+                            }
+                            else if (TG <= 125)
+                            {
+                                Excel.Range GNG5 = worksheet5.get_Range(Getcolumn(CP + 6) + "22");
+                                GNG5.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK5 = worksheet5.get_Range(Getcolumn(CP + 6) + "21");
+                                GOK5.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                if (rowOther > 0)
+                                {
+                                    Excel.Range C15 = worksheet5.get_Range("C" + rowOther.ToString());
+                                    C15.Value2 = ValueInvalid4;
+                                }
+                            }
+                            else if (TG <= 150)
+                            {
+                                Excel.Range GNG6 = worksheet6.get_Range(Getcolumn(CP + 6) + "22");
+                                GNG6.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3);
+                                Excel.Range GOK6 = worksheet6.get_Range(Getcolumn(CP + 6) + "21");
+                                GOK6.Value2 = db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 4);
+                                if (rowOther > 0)
+                                {
+                                    Excel.Range C15 = worksheet6.get_Range("C" + rowOther.ToString());
+                                    C15.Value2 = ValueInvalid4;
+                                }
+                            }
+                        }//for
+                    }
+
+
+
+                }
+
+                excelBook.SaveAs(tempfile);
+                excelBook.Close(false);
+                excelApp.Quit();
+
+                releaseObject(worksheet);
+                releaseObject(worksheet2);
+                releaseObject(worksheet3);
+                releaseObject(worksheet4);
+                releaseObject(worksheet5);
+                releaseObject(worksheet6);
+                releaseObject(excelBook);
+                releaseObject(excelApp);
+                Marshal.FinalReleaseComObject(worksheet);
+                Marshal.FinalReleaseComObject(worksheet2);
+                Marshal.FinalReleaseComObject(worksheet3);
+                Marshal.FinalReleaseComObject(worksheet4);
+                Marshal.FinalReleaseComObject(worksheet5);
+                Marshal.FinalReleaseComObject(worksheet6);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                GC.GetTotalMemory(false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.GetTotalMemory(true);
+                System.Diagnostics.Process.Start(tempfile);
+
+            }
+            catch(Exception e) { MessageBox.Show(e.Message); }
+
+        }
+        public static void PrintData035(string WO, string PartNo, string QCNo1)
+        {
+            try
+            {
+
+
+                string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = System.IO.Path.GetTempPath();
+                string FileName = "FM-PD-035.xlsx";
+                string tempfile = tempPath + FileName;
+                DATA = DATA + @"QC\" + FileName;
+
+                if (File.Exists(tempfile))
+                {
+                    try
+                    {
+                        File.Delete(tempfile);
+                    }
+                    catch { }
+                }
+
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                  DATA, 0, true, 5,
+                  "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                  0, true);
+                Excel.Sheets sheets = excelBook.Worksheets;
+                Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+                Excel.Worksheet worksheet2 = (Excel.Worksheet)sheets.get_Item(2);
+                Excel.Worksheet worksheet3 = (Excel.Worksheet)sheets.get_Item(3);
+                Excel.Worksheet worksheet4 = (Excel.Worksheet)sheets.get_Item(4);
 
                 // progressBar1.Maximum = 51;
                 // progressBar1.Minimum = 1;
@@ -1928,11 +3401,12 @@ namespace StockControl
                 string cCheckBy4 = "";
                 string cCheckBy5 = "";
                 string cCheckBy6 = "";
-                //string DN1 = "";
-                //string DN2 = "";
-                //string DN3 = "";
-                //string P30 = "บริเวณพ่นสีต้องไม่มีคราบกาวจากการติดกาวที่ Diaphragm (No.30)";
-
+                string []SetData = new string[10];
+                
+                bool PAGE1 = true;
+                bool PAGE2 = false;
+                bool PAGE3 = false;
+                bool PAGE4 = false;
                 bool chek24 = true;
                 string DN = "";
                 string LotMark = "";// "Lot ที่ตอกสามารถอ่านได้อย่างชัดเจน ( " +")";
@@ -1956,18 +3430,84 @@ namespace StockControl
                     var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
                     if (DValue != null)
                     {
-                        DN = DValue.DayNight;
-                        PartName = DValue.NAME;
-                        Excel.Range CStamp = worksheet.get_Range("N3");
-                        CStamp.Value2 = DValue.CODE;
-                        Excel.Range CName = worksheet.get_Range("N4");
-                        CName.Value2 = DValue.NAME;
+                        var PTAGList = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QHNo)).ToList();
+                        if(PTAGList.Count>40)
+                        {
+                            PAGE2 = true;
+                        }
+                        if(PTAGList.Count>80)
+                        {
+                            PAGE3 = true;
+                        }
+                        if(PTAGList.Count>120)
+                        {
+                            PAGE4 = true;
+                        }
 
-                        Excel.Range W5 = worksheet.get_Range("W5");
-                        W5.Value2 = DValue.PORDER;
+                        if (PAGE1)
+                        {
+                            DN = DValue.DayNight;
+                            PartName = DValue.NAME;
+                            Excel.Range CStamp = worksheet.get_Range("Y3");
+                            CStamp.Value2 = DValue.CODE;
+                            Excel.Range CName = worksheet.get_Range("Y4");
+                            CName.Value2 = DValue.NAME;
 
-                        Excel.Range AE5 = worksheet.get_Range("AE5");
-                        AE5.Value2 = DValue.LotNo;
+                            Excel.Range W5 = worksheet.get_Range("W5");
+                            W5.Value2 = DValue.PORDER;
+
+                            Excel.Range AE5 = worksheet.get_Range("AE5");
+                            AE5.Value2 = DValue.LotNo;
+                        }
+                        if(PAGE2)
+                        {
+                            DN = DValue.DayNight;
+                            PartName = DValue.NAME;
+                            Excel.Range CStamp = worksheet2.get_Range("Y3");
+                            CStamp.Value2 = DValue.CODE;
+                            Excel.Range CName = worksheet2.get_Range("Y4");
+                            CName.Value2 = DValue.NAME;
+
+                            Excel.Range W5 = worksheet2.get_Range("W5");
+                            W5.Value2 = DValue.PORDER;
+
+                            Excel.Range AE5 = worksheet2.get_Range("AE5");
+                            AE5.Value2 = DValue.LotNo;
+                        }
+                        if (PAGE3)
+                        {
+                            DN = DValue.DayNight;
+                            PartName = DValue.NAME;
+
+                            Excel.Range CStamp = worksheet3.get_Range("Y3");
+                            CStamp.Value2 = DValue.CODE;
+
+                            Excel.Range CName = worksheet3.get_Range("Y4");
+                            CName.Value2 = DValue.NAME;
+
+                            Excel.Range W5 = worksheet3.get_Range("W5");
+                            W5.Value2 = DValue.PORDER;
+
+                            Excel.Range AE5 = worksheet3.get_Range("AE5");
+                            AE5.Value2 = DValue.LotNo;
+                        }
+                        if (PAGE4)
+                        {
+                            DN = DValue.DayNight;
+                            PartName = DValue.NAME;
+
+                            Excel.Range CStamp = worksheet4.get_Range("Y3");
+                            CStamp.Value2 = DValue.CODE;
+
+                            Excel.Range CName = worksheet4.get_Range("Y4");
+                            CName.Value2 = DValue.NAME;
+
+                            Excel.Range W5 = worksheet4.get_Range("W5");
+                            W5.Value2 = DValue.PORDER;
+
+                            Excel.Range AE5 = worksheet4.get_Range("AE5");
+                            AE5.Value2 = DValue.LotNo;
+                        }
 
                         LotMark = "Lot ที่ตอกสามารถอ่านได้อย่างชัดเจน (  "+ DValue.LotNo+"   )";
                         if (DValue.CODE.Length > 0)
@@ -2089,74 +3629,264 @@ namespace StockControl
                                 RefValue2 = qh.RefValue2;
                                 RefValue3 = qh.RefValue3;
 
-                                Excel.Range app = worksheet.get_Range("AJ4");
-                                app.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;
-                                
-                               
+                                if (PAGE1)
+                                {
+                                    Excel.Range app = worksheet.get_Range("AJ4");
+                                    app.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;                                
+
                                     Excel.Range check1 = worksheet.get_Range("AT5");
-                                    check1.Value2 = cCheckBy1;                               
+                                    check1.Value2 = cCheckBy1;
                                     Excel.Range check4 = worksheet.get_Range("AW5");
-                                    check4.Value2 = cCheckBy4; 
-                               
-                                    Excel.Range check2 = worksheet.get_Range("AO20");
-                                    check2.Value2 = cCheckBy2;                               
-                                    Excel.Range check5 = worksheet.get_Range("AT20");
-                                    check5.Value2 = cCheckBy5;  
-                               
-                                    Excel.Range check3 = worksheet.get_Range("AO25");
-                                    check3.Value2 = cCheckBy3;                               
-                                    Excel.Range check6 = worksheet.get_Range("AT25");
+                                    check4.Value2 = cCheckBy4;
+
+                                    Excel.Range check2 = worksheet.get_Range("AO22");
+                                    check2.Value2 = cCheckBy2;
+                                    Excel.Range check5 = worksheet.get_Range("AT22");
+                                    check5.Value2 = cCheckBy5;
+
+                                    Excel.Range check3 = worksheet.get_Range("AO27");
+                                    check3.Value2 = cCheckBy3;
+                                    Excel.Range check6 = worksheet.get_Range("AT27");
                                     check6.Value2 = cCheckBy6;
-                                
+                                    
+                                    Excel.Range QD1 = worksheet.get_Range("K5");
+                                    QD1.Value2 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    
+                                    Excel.Range order = worksheet.get_Range("J4");
+                                    order.Value2 = qh.OrderQty;// db.get_QCSumQtyTAGNG(qh.QCNo, "", 98);
+                                    Excel.Range J16 = worksheet.get_Range("J16");
+                                    J16.Value2 = GP5;
 
+                                    Excel.Range KNG = worksheet.get_Range("K4");
+                                    KNG.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 1);
+                                    Excel.Range Rework = worksheet.get_Range("M4");
+                                    Rework.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 2);
+                                    
 
-                                Excel.Range QD1 = worksheet.get_Range("K5");
-                                QD1.Value2 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    Excel.Range B7 = worksheet.get_Range("B7");
+                                    SetData[0]= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 1);
+                                    B7.Value2 = SetData[0];
 
+                                    Excel.Range B8 = worksheet.get_Range("B8");
+                                    B8.Value2 = Line1Part;// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 2);
 
+                                    Excel.Range B9 = worksheet.get_Range("B9");
+                                    SetData[1]= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 3);
+                                    B9.Value2 = SetData[1];
 
+                                    Excel.Range B10 = worksheet.get_Range("B10");
+                                    SetData[2]= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 4);
+                                    B10.Value2 = SetData[2];
 
-                                Excel.Range order = worksheet.get_Range("J4");
-                                order.Value2 = qh.OrderQty;//db.get_QCSumQtyTAGNG(qh.QCNo, "", 99);
-                                Excel.Range J16 = worksheet.get_Range("J16");
-                                J16.Value2 = GP5;
+                                    Excel.Range B11 = worksheet.get_Range("B11");
+                                    SetData[3]= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 5) + " \n " + LotMark;
+                                    B11.Value2 = SetData[3];
 
-                                Excel.Range B7 = worksheet.get_Range("B7");
-                                B7.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 1);
+                                    Excel.Range B12 = worksheet.get_Range("B12");
+                                    SetData[4]= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 6);
+                                    B12.Value2 = SetData[4];
 
-                                Excel.Range B8 = worksheet.get_Range("B8");
-                                B8.Value2 = Line1Part;// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 2);
+                                    Excel.Range B13 = worksheet.get_Range("B13");
+                                    SetData[5]= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 7);
+                                    B13.Value2 = SetData[5];
 
-                                Excel.Range B9 = worksheet.get_Range("B9");
-                                B9.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 3);
+                                    Excel.Range B14 = worksheet.get_Range("B14");
+                                    SetData[6]= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 8);
+                                    B14.Value2 = SetData[6];
 
-                                Excel.Range B10 = worksheet.get_Range("B10");
-                                B10.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 4);
+                                    C9 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
+                                    Excel.Range B15 = worksheet.get_Range("B15");
+                                    B15.Value2 = C9;
+                                }
 
-                                Excel.Range B11 = worksheet.get_Range("B11");
-                                B11.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 5) + " \n " + LotMark;
+                                if(PAGE2)
+                                {
+                                    Excel.Range app = worksheet2.get_Range("AJ4");
+                                    app.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;                                
 
-                                Excel.Range B12 = worksheet.get_Range("B12");
-                                B12.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 6);
+                                    Excel.Range check1 = worksheet2.get_Range("AT5");
+                                    check1.Value2 = cCheckBy1;
+                                    Excel.Range check4 = worksheet2.get_Range("AW5");
+                                    check4.Value2 = cCheckBy4;
 
-                                Excel.Range B13 = worksheet.get_Range("B13");
-                                B13.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 7);
+                                    Excel.Range check2 = worksheet2.get_Range("AO22");
+                                    check2.Value2 = cCheckBy2;
+                                    Excel.Range check5 = worksheet2.get_Range("AT22");
+                                    check5.Value2 = cCheckBy5;
 
-                                Excel.Range B14 = worksheet.get_Range("B14");
-                                B14.Value2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 8);
+                                    Excel.Range check3 = worksheet2.get_Range("AO27");
+                                    check3.Value2 = cCheckBy3;
+                                    Excel.Range check6 = worksheet2.get_Range("AT27");
+                                    check6.Value2 = cCheckBy6;
 
-                                C9= db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
-                                Excel.Range B15 = worksheet.get_Range("B15");
-                                B15.Value2 = C9;
+                                    Excel.Range QD1 = worksheet2.get_Range("K5");
+                                    QD1.Value2 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
 
+                                    Excel.Range order = worksheet2.get_Range("J4");
+                                    order.Value2 = qh.OrderQty;//db.get_QCSumQtyTAGNG(qh.QCNo, "", 99);
+                                    Excel.Range J16 = worksheet2.get_Range("J16");
+                                    J16.Value2 = GP5;
 
+                                    Excel.Range KNG = worksheet2.get_Range("K4");
+                                    KNG.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 1);
+                                    Excel.Range Rework = worksheet2.get_Range("M4");
+                                    Rework.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 2);
 
+                                    Excel.Range B7 = worksheet2.get_Range("B7");
+                                    B7.Value2 = SetData[0];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 1);
 
+                                    Excel.Range B8 = worksheet2.get_Range("B8");
+                                    B8.Value2 = Line1Part;// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 2);
+
+                                    Excel.Range B9 = worksheet2.get_Range("B9");
+                                    B9.Value2 = SetData[1];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 3);
+
+                                    Excel.Range B10 = worksheet2.get_Range("B10");
+                                    B10.Value2 = SetData[2];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 4);
+
+                                    Excel.Range B11 = worksheet2.get_Range("B11");
+                                    B11.Value2 = SetData[3];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 5) + " \n " + LotMark;
+
+                                    Excel.Range B12 = worksheet2.get_Range("B12");
+                                    B12.Value2 = SetData[4];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 6);
+
+                                    Excel.Range B13 = worksheet2.get_Range("B13");
+                                    B13.Value2 = SetData[5];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 7);
+
+                                    Excel.Range B14 = worksheet2.get_Range("B14");
+                                    B14.Value2 = SetData[6];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 8);
+
+                                  //  C9 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
+                                    Excel.Range B15 = worksheet2.get_Range("B15");
+                                    B15.Value2 = C9;
+                                }
+                                if (PAGE3)
+                                {
+                                    Excel.Range app = worksheet3.get_Range("AJ4");
+                                    app.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;                                
+
+                                    Excel.Range check1 = worksheet3.get_Range("AT5");
+                                    check1.Value2 = cCheckBy1;
+                                    Excel.Range check4 = worksheet3.get_Range("AW5");
+                                    check4.Value2 = cCheckBy4;
+
+                                    Excel.Range check2 = worksheet3.get_Range("AO22");
+                                    check2.Value2 = cCheckBy2;
+                                    Excel.Range check5 = worksheet3.get_Range("AT22");
+                                    check5.Value2 = cCheckBy5;
+
+                                    Excel.Range check3 = worksheet3.get_Range("AO27");
+                                    check3.Value2 = cCheckBy3;
+                                    Excel.Range check6 = worksheet3.get_Range("AT27");
+                                    check6.Value2 = cCheckBy6;
+
+                                    Excel.Range QD1 = worksheet3.get_Range("K5");
+                                    QD1.Value2 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+
+                                    Excel.Range order = worksheet3.get_Range("J4");
+                                    order.Value2 = qh.OrderQty;//db.get_QCSumQtyTAGNG(qh.QCNo, "", 99);
+                                    Excel.Range J16 = worksheet3.get_Range("J16");
+                                    J16.Value2 = GP5;
+
+                                    Excel.Range KNG = worksheet3.get_Range("K4");
+                                    KNG.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 1);
+                                    Excel.Range Rework = worksheet3.get_Range("M4");
+                                    Rework.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 2);
+
+                                    Excel.Range B7 = worksheet3.get_Range("B7");
+                                    B7.Value2 = SetData[0];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 1);
+
+                                    Excel.Range B8 = worksheet3.get_Range("B8");
+                                    B8.Value2 = Line1Part;// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 2);
+
+                                    Excel.Range B9 = worksheet3.get_Range("B9");
+                                    B9.Value2 = SetData[1];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 3);
+
+                                    Excel.Range B10 = worksheet3.get_Range("B10");
+                                    B10.Value2 = SetData[2];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 4);
+
+                                    Excel.Range B11 = worksheet3.get_Range("B11");
+                                    B11.Value2 = SetData[3];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 5) + " \n " + LotMark;
+
+                                    Excel.Range B12 = worksheet3.get_Range("B12");
+                                    B12.Value2 = SetData[4];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 6);
+
+                                    Excel.Range B13 = worksheet3.get_Range("B13");
+                                    B13.Value2 = SetData[5];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 7);
+
+                                    Excel.Range B14 = worksheet3.get_Range("B14");
+                                    B14.Value2 = SetData[6];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 8);
+
+                                    //  C9 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
+                                    Excel.Range B15 = worksheet3.get_Range("B15");
+                                    B15.Value2 = C9;
+                                }
+                                if(PAGE4)
+                                {
+                                    Excel.Range app = worksheet4.get_Range("AJ4");
+                                    app.Value2 = db.QC_GetUserName(qh.ApproveBy); //qh.ApproveBy;                                
+
+                                    Excel.Range check1 = worksheet4.get_Range("AT5");
+                                    check1.Value2 = cCheckBy1;
+                                    Excel.Range check4 = worksheet4.get_Range("AW5");
+                                    check4.Value2 = cCheckBy4;
+
+                                    Excel.Range check2 = worksheet4.get_Range("AO22");
+                                    check2.Value2 = cCheckBy2;
+                                    Excel.Range check5 = worksheet4.get_Range("AT22");
+                                    check5.Value2 = cCheckBy5;
+
+                                    Excel.Range check3 = worksheet4.get_Range("AO27");
+                                    check3.Value2 = cCheckBy3;
+                                    Excel.Range check6 = worksheet4.get_Range("AT27");
+                                    check6.Value2 = cCheckBy6;
+
+                                    Excel.Range QD1 = worksheet4.get_Range("K5");
+                                    QD1.Value2 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+
+                                    Excel.Range order = worksheet4.get_Range("J4");
+                                    order.Value2 = qh.OrderQty;//db.get_QCSumQtyTAGNG(qh.QCNo, "", 99);
+                                    Excel.Range J16 = worksheet4.get_Range("J16");
+                                    J16.Value2 = GP5;
+
+                                    Excel.Range KNG = worksheet4.get_Range("K4");
+                                    KNG.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 1);
+                                    Excel.Range Rework = worksheet4.get_Range("M4");
+                                    Rework.Value2 = db.get_QCSumQtyNG_RE(qh.QCNo, 2);
+
+                                    Excel.Range B7 = worksheet4.get_Range("B7");
+                                    B7.Value2 = SetData[0];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 1);
+
+                                    Excel.Range B8 = worksheet4.get_Range("B8");
+                                    B8.Value2 = Line1Part;// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 2);
+
+                                    Excel.Range B9 = worksheet4.get_Range("B9");
+                                    B9.Value2 = SetData[1];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 3);
+
+                                    Excel.Range B10 = worksheet4.get_Range("B10");
+                                    B10.Value2 = SetData[2];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 4);
+
+                                    Excel.Range B11 = worksheet4.get_Range("B11");
+                                    B11.Value2 = SetData[3];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 5) + " \n " + LotMark;
+
+                                    Excel.Range B12 = worksheet4.get_Range("B12");
+                                    B12.Value2 = SetData[4];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 6);
+
+                                    Excel.Range B13 = worksheet4.get_Range("B13");
+                                    B13.Value2 = SetData[5];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 7);
+
+                                    Excel.Range B14 = worksheet4.get_Range("B14");
+                                    B14.Value2 = SetData[6];// db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 8);
+
+                                    //  C9 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
+                                    Excel.Range B15 = worksheet4.get_Range("B15");
+                                    B15.Value2 = C9;
+                                }
 
                             }
 
                         }
-                        catch { }
+                        catch (Exception ex) { MessageBox.Show("first " + ex.Message); }
 
 
 
@@ -2166,16 +3896,48 @@ namespace StockControl
                     ////////////////////////////////////////
 
                     int countA = 0;
+                    int CountB = 0;
+                    int CountC = 0;
+                    int CountD = 0;
                     int TAG2 = 0;
                     int CA = 0;
+                    int TG2 = 0;
+                    int NGA = 0;
+                    int NGB = 0;
+                    int NGC = 0;
+                    string TAGOf1 = "";
+                    string TAGOf2 = "";
+                    string TAGOf3 = "";
+
+                    int CountTAG = 0;
                     var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelect(QHNo).ToList();
+                    CountTAG = listPoint.Count;
                     if (listPoint.Count > 0)
                     {
                         foreach (var rs in listPoint)
                         {
                             countA += 1;
+                            if (countA > 40)
+                            {
+                                CountB += 1;
+                            }
+                            if(countA>80)
+                            {
+                                CountC += 1;
+                            }
+                            if (countA > 120)
+                            {
+                                CountD += 1;
+                            }
+                            
+
+                            TG = 0;
+                            
                             string[] PPTAG = rs.BarcodeTag.Split(',');
                             TG = Convert.ToInt32(PPTAG[2]);
+
+                            //string[] PPTAG2 = rs.ofTAG.Split('o');
+                            //TG2 = Convert.ToInt32(PPTAG2[0]);
 
                             if (chek24)
                             {
@@ -2185,64 +3947,499 @@ namespace StockControl
                             {
                                 TAG2 += TG;
                             }
-                            // MessageBox.Show(countA.ToString());
-                            if (countA <= 24)
+                            TG2 = 0;
+                            TG2 = Convert.ToInt32(db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3));
+
+                            if (listPoint.Count == countA)
                             {
-                                row1 = 6;
+                                NGA = TG;
+                                TAGOf1 = PPTAG[5];
+                            }
+                            if ((listPoint.Count - 1) == countA)
+                            {
+                                NGB = TG;
+                                TAGOf2 = PPTAG[5];
+                            }
+                            if ((listPoint.Count - 2) == countA)
+                            {
+                                NGC = TG;
+                                TAGOf3 = PPTAG[5];
+                            }
+
+                            row1 = 6;
+                                Seq = 0;
                                 var listPart = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FormISO) && q.PartNo.Equals(DValue.CODE)).OrderBy(o => o.Seq).ToList();
                                 CA = listPart.Count();
                                 foreach (var rd in listPart)
                                 {
-                                    //Start Insert Checkmark  
+                                    
                                     row1 += 1;
                                     Seq += 1;
-                                    //Start G=7,H=
-                                    if (!rd.SetData.Equals("") && row1<=15)
+                                if (!rd.SetData.Equals("") && row1 <= 15)
+                                {
+                                    try
                                     {
-                                        try
-                                        {
-                                            //Remark = "";
-                                            var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
-                                            PV = "P";
 
-                                            if (gValue.CountA > 0)
-                                            {
-                                                PV = "O";
-                                                if(gValue.CountA==99)
-                                                {
-                                                    PV = "";
-                                                }
-                                            }
-                                            if(rd.Seq.Equals(9) && C9.Equals(""))
+                                        var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                        PV = "P";
+
+                                        if (gValue.CountA > 0)
+                                        {
+                                            PV = "O";
+                                            
+                                            if (gValue.CountA == 99)
                                             {
                                                 PV = "";
                                             }
-                                            //var NValue = db.sp_46_QCGetValue55501(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
-                                            //Remark = NValue.Remark;
-                                            
-                                            Excel.Range Col0 = worksheet.get_Range(Getcolumn(countA + 10) + row1.ToString(), Getcolumn(countA + 10) + row1.ToString());
-                                            Col0.Value2 = PV;                                              
-                                           
-
                                         }
-                                        catch (Exception ex) { MessageBox.Show(ex.Message); }
-                                        //}
+                                        if (rd.Seq.Equals(9) && C9.Equals(""))
+                                        {
+                                            PV = "";
+                                        }
+
+                                        if (countA <= 40)
+                                        {
+
+                                            Excel.Range Col0 = worksheet.get_Range(Getcolumn(countA + 10) + row1.ToString(), Getcolumn(countA + 10) + row1.ToString());
+                                            Col0.Value2 = PV;
+                                        }
+                                        if (countA > 40 && countA <= 80)
+                                        {
+                                            Excel.Range Col0 = worksheet2.get_Range(Getcolumn(CountB + 10) + row1.ToString(), Getcolumn(CountB + 10) + row1.ToString());
+                                            Col0.Value2 = PV;
+                                        }
+                                        if (countA > 80 && countA <= 120)
+                                        {
+                                            Excel.Range Col0 = worksheet3.get_Range(Getcolumn(CountC + 10) + row1.ToString(), Getcolumn(CountC + 10) + row1.ToString());
+                                            Col0.Value2 = PV;
+                                        }
+                                        if (countA > 120 && countA <= 160)
+                                        {
+                                            Excel.Range Col0 = worksheet4.get_Range(Getcolumn(CountD + 10) + row1.ToString(), Getcolumn(CountD + 10) + row1.ToString());
+                                            Col0.Value2 = PV;
+                                        }
+
 
 
 
 
                                     }
-                                    //SumNG//
+                                    catch { }
+                                     //catch (Exception ex) { MessageBox.Show("Mid " + ex.Message); }
 
-                                    //  NGQ = db.get_QCSumQtyTAGNG(QHNo,rs.BarcodeTag,
-                                    Excel.Range CSum = worksheet.get_Range(Getcolumn(countA + 10) + "16");
-                                    CSum.Value2 = TAG2;
+                                }
+                                //SumNG//       
 
+                                if (countA <= 40)
+                                {
+                                    //NG Qty//
 
+                                    ////////
+                                    Excel.Range CSum = worksheet.get_Range(Getcolumn(countA + 10) + "17");
+                                    CSum.Value2 = (TG - TG2);//.ToString();// TAG2.ToString();
 
-                                }//foreach
-                            }//cunt A
+                                    Excel.Range CSum1 = worksheet.get_Range(Getcolumn(countA + 10) + "18");
+                                    CSum1.Value2 = TG2;//.ToString();// TAG2.ToString();
+
+                                }
+                                else if (countA > 40 && countA <= 80)
+                                {
+                                    if (PAGE2)
+                                    {
+                                        //NG Qty//
+
+                                        ////////
+                                        Excel.Range CSum = worksheet2.get_Range(Getcolumn(CountB + 10) + "17");
+                                        CSum.Value2 = (TG - TG2);//.ToString();//TAG2.ToString(); ;
+
+                                        Excel.Range CSum1 = worksheet2.get_Range(Getcolumn(CountB + 10) + "18");
+                                        CSum1.Value2 = TG2;//.ToString();// TAG2.ToString();
+                                    }
+                                }
+                                else if (countA > 80 && countA <= 120)
+                                {
+                                    if (PAGE3)
+                                    {
+                                        ////NG Qty//
+
+                                        //////////
+                                        Excel.Range CSum = worksheet3.get_Range(Getcolumn(CountC + 10) + "17");
+                                        CSum.Value2 = (TG - TG2);//.ToString();// TAG2.ToString();
+
+                                        Excel.Range CSum1 = worksheet3.get_Range(Getcolumn(CountC + 10) + "18");
+                                        CSum1.Value2 = TG2;//.ToString();// TAG2.ToString();
+                                    }
+                                }
+                                else if (countA > 120 && countA <= 160)
+                                {
+                                    if (PAGE4)
+                                    {
+                                        ////NG Qty//
+
+                                        //////////
+                                        Excel.Range CSum = worksheet4.get_Range(Getcolumn(CountD + 10) + "17");
+                                        CSum.Value2 = (TG - TG2);//.ToString();// TAG2.ToString();
+
+                                        Excel.Range CSum1 = worksheet4.get_Range(Getcolumn(CountD + 10) + "18");
+                                        CSum1.Value2 = TG2;//.ToString();// TAG2.ToString();
+                                    }
+                                }
+                                
+                            }//foreach 
+                            //}//cunt A //Page 1 End
+                      
                         }//for
+
+                        ////NGQty and Remark//
+                        int RM = 0;
+                        int TNG1 = 0;
+                        int TNG2 = 0;
+                        int TNG3 = 0;
+                        tb_QCProblem qcp = db.tb_QCProblems.Where(p => p.QCNo.Equals(QHNo) && !p.NGQty.Equals(0)).FirstOrDefault();
+                        if (qcp!=null)
+                        {
+                            var tgf = db.tb_QCTAGs.Where(s => s.QCNo.Equals(QHNo)).ToList();
+                            foreach (var tf in tgf)
+                            {
+                                if (tf.ofTAG.Equals(TAGOf1))
+                                {
+                                    TNG1 = Convert.ToInt32(tf.NGQty);
+                                }
+                                else if (tf.ofTAG.Equals(TAGOf2))
+                                {
+                                    TNG2 = Convert.ToInt32(tf.NGQty);
+                                }
+                                else if (tf.ofTAG.Equals(TAGOf3))
+                                {
+                                    TNG3 = Convert.ToInt32(tf.NGQty);
+                                }
+                            }
+
+                            if (countA <= 40)
+                            {
+                                //NG Qty//
+                                //Excel.Range CSumA = worksheet.get_Range(Getcolumn(countA + 10) + "16");
+                                //CSumA.Value2 = Convert.ToString(qcp.NGQty);
+                                ////////
+                                Excel.Range CSum = worksheet.get_Range("B16");
+                                CSum.Value2 = qcp.ProblemName;
+                                ///////////////////////////////
+                                if (qcp.NGQty > 0)
+                                {
+                                    if(NGA<(qcp.NGQty+ TNG1))
+                                    {
+                                        Excel.Range CSum0 = worksheet.get_Range(Getcolumn(countA + 10) + "16");
+                                        CSum0.Value2 = "O";
+                                        Excel.Range CSumA = worksheet.get_Range(Getcolumn(countA + 10) + "17");
+                                        CSumA.Value2 = 0;
+                                        Excel.Range CSumB = worksheet.get_Range(Getcolumn(countA + 10) + "18");
+                                        CSumB.Value2 = NGA;
+                                        RM = (Convert.ToInt32(qcp.NGQty)+ TNG1) - NGA;
+                                        if(RM>0)
+                                        {
+                                            if (NGB < (RM + TNG2))
+                                            {
+                                                Excel.Range CSum01 = worksheet.get_Range(Getcolumn(countA - 1 + 10) + "16");
+                                                CSum01.Value2 = "O";
+                                                Excel.Range CSumD = worksheet.get_Range(Getcolumn((countA - 1) + 10) + "17");
+                                                CSumD.Value2 = 0;
+                                                Excel.Range CSumE = worksheet.get_Range(Getcolumn((countA - 1) + 10) + "18");
+                                                CSumE.Value2 = NGB;
+                                                RM = (RM+ TNG2) - NGB;
+                                                if (RM > 0)
+                                                {
+                                                    if (NGC < (RM+TNG3))
+                                                    {
+                                                        Excel.Range CSum02 = worksheet.get_Range(Getcolumn(countA - 2 + 10) + "16");
+                                                        CSum02.Value2 = "O";
+                                                        Excel.Range CSumF = worksheet.get_Range(Getcolumn((countA - 2) + 10) + "17");
+                                                        CSumF.Value2 = 0;
+                                                        Excel.Range CSumG = worksheet.get_Range(Getcolumn((countA - 2) + 10) + "18");
+                                                        CSumG.Value2 = NGC;
+                                                    }
+                                                    else
+                                                    {
+                                                        Excel.Range CSum02 = worksheet.get_Range(Getcolumn(countA - 2 + 10) + "16");
+                                                        CSum02.Value2 = "O";
+                                                        Excel.Range CSumF = worksheet.get_Range(Getcolumn((countA - 2) + 10) + "17");
+                                                        CSumF.Value2 = NGC - (RM+ TNG3);
+                                                        Excel.Range CSumG = worksheet.get_Range(Getcolumn((countA - 2) + 10) + "18");
+                                                        CSumG.Value2 = RM+ TNG3;
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Excel.Range CSum01 = worksheet.get_Range(Getcolumn(countA - 1 + 10) + "16");
+                                                CSum01.Value2 = "O";
+                                                Excel.Range CSumD = worksheet.get_Range(Getcolumn((countA - 1) + 10) + "17");
+                                                CSumD.Value2 = NGB - (RM + TNG2);
+                                                Excel.Range CSumE = worksheet.get_Range(Getcolumn((countA - 1) + 10) + "18");
+                                                CSumE.Value2 = (RM + TNG2);
+                                            }
+                                        }
+                                                                                
+
+                                    }
+                                    else
+                                    {
+                                        Excel.Range CSum0 = worksheet.get_Range(Getcolumn(countA + 10) + "16");
+                                        CSum0.Value2 = "O";
+                                        Excel.Range CSumA = worksheet.get_Range(Getcolumn(countA + 10) + "17");
+                                        CSumA.Value2 = NGA - (qcp.NGQty+ TNG1);
+                                        Excel.Range CSumB = worksheet.get_Range(Getcolumn(countA + 10) + "18");
+                                        CSumB.Value2 = (qcp.NGQty+ TNG1);
+                                    }
+                                    
+                                }
+
+                            }
+                            else if (countA > 40 && countA <= 80)
+                            {
+                                if (PAGE2)
+                                {
+                                    //NG Qty//
+                                    //Excel.Range CSumA = worksheet2.get_Range(Getcolumn(CountB + 10) + "16");
+                                    //CSumA.Value2 = Convert.ToString(qcp.NGQty);
+                                    ////////
+                                    Excel.Range CSum = worksheet2.get_Range("B16");
+                                    CSum.Value2 = qcp.ProblemName;
+
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty+ TNG1))
+                                        {
+                                            Excel.Range CSum0 = worksheet2.get_Range(Getcolumn(CountB + 10) + "16");
+                                            CSum0.Value2 = "O";
+                                            Excel.Range CSumA = worksheet2.get_Range(Getcolumn(CountB + 10) + "17");
+                                            CSumA.Value2 = 0;
+                                            Excel.Range CSumB = worksheet2.get_Range(Getcolumn(CountB + 10) + "18");
+                                            CSumB.Value2 = NGA;
+                                            RM = (Convert.ToInt32(qcp.NGQty)+ TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM+ TNG2))
+                                                {
+                                                    Excel.Range CSum1 = worksheet2.get_Range(Getcolumn((CountB - 1) + 10) + "16");
+                                                    CSum1.Value2 = "O";
+                                                    Excel.Range CSumD = worksheet2.get_Range(Getcolumn((CountB - 1) + 10) + "17");
+                                                    CSumD.Value2 = 0;
+                                                    Excel.Range CSumE = worksheet2.get_Range(Getcolumn((CountB - 1) + 10) + "18");
+                                                    CSumE.Value2 = NGB;
+                                                    RM = (RM+ TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM+ TNG3))
+                                                        {
+                                                            Excel.Range CSum2 = worksheet2.get_Range(Getcolumn((CountB - 2) + 10) + "16");
+                                                            CSum2.Value2 = "O";
+                                                            Excel.Range CSumF = worksheet2.get_Range(Getcolumn((CountB - 2) + 10) + "17");
+                                                            CSumF.Value2 = 0;
+                                                            Excel.Range CSumG = worksheet2.get_Range(Getcolumn((CountB - 2) + 10) + "18");
+                                                            CSumG.Value2 = NGC;
+                                                        }
+                                                        else
+                                                        {
+                                                            Excel.Range CSum2 = worksheet2.get_Range(Getcolumn((CountB - 2) + 10) + "16");
+                                                            CSum2.Value2 = "O";
+                                                            Excel.Range CSumF = worksheet2.get_Range(Getcolumn((CountB - 2) + 10) + "17");
+                                                            CSumF.Value2 = NGC - (RM + TNG3);
+                                                            Excel.Range CSumG = worksheet2.get_Range(Getcolumn((CountB - 2) + 10) + "18");
+                                                            CSumG.Value2 = RM+ TNG3;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Excel.Range CSum1 = worksheet2.get_Range(Getcolumn((CountB-1) + 10) + "16");
+                                                    CSum1.Value2 = "O";
+                                                    Excel.Range CSumD = worksheet2.get_Range(Getcolumn((CountB - 1) + 10) + "17");
+                                                    CSumD.Value2 = NGB - (RM+ TNG2);
+                                                    Excel.Range CSumE = worksheet2.get_Range(Getcolumn((CountB - 1) + 10) + "18");
+                                                    CSumE.Value2 = RM+ TNG2;
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            Excel.Range CSum0 = worksheet2.get_Range(Getcolumn(CountB + 10) + "16");
+                                            CSum0.Value2 = "O";
+                                            Excel.Range CSumA = worksheet2.get_Range(Getcolumn(CountB + 10) + "17");
+                                            CSumA.Value2 = NGA - (qcp.NGQty+ TNG1);
+                                            Excel.Range CSumB = worksheet2.get_Range(Getcolumn(CountB + 10) + "18");
+                                            CSumB.Value2 = qcp.NGQty+ TNG1;
+                                        }
+
+                                    }
+                                }
+                            }
+                            else if (countA > 80 && countA <= 120)
+                            {
+                                if (PAGE3)
+                                {
+                                    //NG Qty//
+                                    //Excel.Range CSumA = worksheet3.get_Range(Getcolumn(CountC + 10) + "16");
+                                    //CSumA.Value2 = Convert.ToString(qcp.NGQty);
+                                    ////////
+                                    Excel.Range CSum = worksheet3.get_Range("B16");
+                                    CSum.Value2 = qcp.ProblemName;
+
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty+ TNG1))
+                                        {
+                                            Excel.Range CSum0 = worksheet3.get_Range(Getcolumn(CountC + 10) + "16");
+                                            CSum0.Value2 = "O";
+                                            Excel.Range CSumA = worksheet3.get_Range(Getcolumn(CountC + 10) + "17");
+                                            CSumA.Value2 = 0;
+                                            Excel.Range CSumB = worksheet3.get_Range(Getcolumn(CountC + 10) + "18");
+                                            CSumB.Value2 = NGA;
+                                            RM = (Convert.ToInt32(qcp.NGQty)+ TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM+ TNG2))
+                                                {
+                                                    Excel.Range CSum1 = worksheet3.get_Range(Getcolumn((CountC - 1) + 10) + "16");
+                                                    CSum1.Value2 = "O";
+                                                    Excel.Range CSumD = worksheet3.get_Range(Getcolumn((CountC - 1) + 10) + "17");
+                                                    CSumD.Value2 = 0;
+                                                    Excel.Range CSumE = worksheet3.get_Range(Getcolumn((CountC - 1) + 10) + "18");
+                                                    CSumE.Value2 = NGB;
+                                                    RM = (RM+ TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM+ TNG3))
+                                                        {
+                                                            Excel.Range CSum2 = worksheet3.get_Range(Getcolumn((CountC - 2) + 10) + "16");
+                                                            CSum2.Value2 = "O";
+                                                            Excel.Range CSumF = worksheet3.get_Range(Getcolumn((CountC - 2) + 10) + "17");
+                                                            CSumF.Value2 = 0;
+                                                            Excel.Range CSumG = worksheet3.get_Range(Getcolumn((CountC - 2) + 10) + "18");
+                                                            CSumG.Value2 = NGC;
+                                                        }
+                                                        else
+                                                        {
+                                                            Excel.Range CSum2 = worksheet3.get_Range(Getcolumn((CountC - 2) + 10) + "16");
+                                                            CSum2.Value2 = "O";
+                                                            Excel.Range CSumF = worksheet3.get_Range(Getcolumn((CountC - 2) + 10) + "17");
+                                                            CSumF.Value2 = NGC - (RM + TNG3);
+                                                            Excel.Range CSumG = worksheet3.get_Range(Getcolumn((CountC - 2) + 10) + "18");
+                                                            CSumG.Value2 = RM+ TNG3;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Excel.Range CSum1 = worksheet3.get_Range(Getcolumn((CountC-1) + 10) + "16");
+                                                    CSum1.Value2 = "O";
+                                                    Excel.Range CSumD = worksheet3.get_Range(Getcolumn((CountC - 1) + 10) + "17");
+                                                    CSumD.Value2 = NGB - (RM+ TNG2);
+                                                    Excel.Range CSumE = worksheet3.get_Range(Getcolumn((CountC - 1) + 10) + "18");
+                                                    CSumE.Value2 = RM+ TNG2;
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            Excel.Range CSum0 = worksheet3.get_Range(Getcolumn(CountC + 10) + "16");
+                                            CSum0.Value2 = "O";
+                                            Excel.Range CSumA = worksheet3.get_Range(Getcolumn(CountC + 10) + "17");
+                                            CSumA.Value2 = NGA - (qcp.NGQty+ TNG1);
+                                            Excel.Range CSumB = worksheet3.get_Range(Getcolumn(CountC + 10) + "18");
+                                            CSumB.Value2 = qcp.NGQty+ TNG1;
+                                        }
+
+                                    }
+                                }
+                            }
+                            else if (countA > 120 && countA <= 160)
+                            {
+                                if (PAGE4)
+                                {
+                                    //NG Qty//
+                                    //Excel.Range CSumA = worksheet3.get_Range(Getcolumn(CountC + 10) + "16");
+                                    //CSumA.Value2 = Convert.ToString(qcp.NGQty);
+                                    ////////
+                                    Excel.Range CSum = worksheet4.get_Range("B16");
+                                    CSum.Value2 = qcp.ProblemName;
+
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty + TNG1))
+                                        {
+                                            Excel.Range CSum0 = worksheet4.get_Range(Getcolumn(CountD + 10) + "16");
+                                            CSum0.Value2 = "O";
+                                            Excel.Range CSumA = worksheet4.get_Range(Getcolumn(CountD + 10) + "17");
+                                            CSumA.Value2 = 0;
+                                            Excel.Range CSumB = worksheet4.get_Range(Getcolumn(CountD + 10) + "18");
+                                            CSumB.Value2 = NGA;
+                                            RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM + TNG2))
+                                                {
+                                                    Excel.Range CSum1 = worksheet4.get_Range(Getcolumn((CountD - 1) + 10) + "16");
+                                                    CSum1.Value2 = "O";
+                                                    Excel.Range CSumD = worksheet4.get_Range(Getcolumn((CountD - 1) + 10) + "17");
+                                                    CSumD.Value2 = 0;
+                                                    Excel.Range CSumE = worksheet4.get_Range(Getcolumn((CountD - 1) + 10) + "18");
+                                                    CSumE.Value2 = NGB;
+                                                    RM = (RM + TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM + TNG3))
+                                                        {
+                                                            Excel.Range CSum2 = worksheet4.get_Range(Getcolumn((CountD - 2) + 10) + "16");
+                                                            CSum2.Value2 = "O";
+                                                            Excel.Range CSumF = worksheet4.get_Range(Getcolumn((CountD - 2) + 10) + "17");
+                                                            CSumF.Value2 = 0;
+                                                            Excel.Range CSumG = worksheet4.get_Range(Getcolumn((CountD - 2) + 10) + "18");
+                                                            CSumG.Value2 = NGC;
+                                                        }
+                                                        else
+                                                        {
+                                                            Excel.Range CSum2 = worksheet4.get_Range(Getcolumn((CountD - 2) + 10) + "16");
+                                                            CSum2.Value2 = "O";
+                                                            Excel.Range CSumF = worksheet4.get_Range(Getcolumn((CountD - 2) + 10) + "17");
+                                                            CSumF.Value2 = NGC - (RM + TNG3);
+                                                            Excel.Range CSumG = worksheet4.get_Range(Getcolumn((CountD - 2) + 10) + "18");
+                                                            CSumG.Value2 = RM + TNG3;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Excel.Range CSum1 = worksheet4.get_Range(Getcolumn((CountD - 1) + 10) + "16");
+                                                    CSum1.Value2 = "O";
+                                                    Excel.Range CSumD = worksheet4.get_Range(Getcolumn((CountD - 1) + 10) + "17");
+                                                    CSumD.Value2 = NGB - (RM + TNG2);
+                                                    Excel.Range CSumE = worksheet4.get_Range(Getcolumn((CountD - 1) + 10) + "18");
+                                                    CSumE.Value2 = RM + TNG2;
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            Excel.Range CSum0 = worksheet4.get_Range(Getcolumn(CountD + 10) + "16");
+                                            CSum0.Value2 = "O";
+                                            Excel.Range CSumA = worksheet4.get_Range(Getcolumn(CountD + 10) + "17");
+                                            CSumA.Value2 = NGA - (qcp.NGQty + TNG1);
+                                            Excel.Range CSumB = worksheet4.get_Range(Getcolumn(CountD + 10) + "18");
+                                            CSumB.Value2 = qcp.NGQty + TNG1;
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+
+                        ////// PC Check ///
                     }
 
 
@@ -2252,12 +4449,18 @@ namespace StockControl
                 excelBook.SaveAs(tempfile);
                 excelBook.Close(false);
                 excelApp.Quit();
-
                 releaseObject(worksheet);
+                releaseObject(worksheet2);
+                releaseObject(worksheet3);
                 releaseObject(excelBook);
                 releaseObject(excelApp);
-                Marshal.FinalReleaseComObject(worksheet);
+
+                Marshal.FinalReleaseComObject(worksheet);                
+                Marshal.FinalReleaseComObject(worksheet2);
+                Marshal.FinalReleaseComObject(worksheet3);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet2);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet3);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
 
@@ -2269,7 +4472,7 @@ namespace StockControl
                 System.Diagnostics.Process.Start(tempfile);
 
             }
-            catch { }
+            catch(Exception ex) { MessageBox.Show("last "+ex.Message); }
 
         }
         public static void PrintData033(string WO, string PartNo, string QCNo1)
@@ -2409,7 +4612,7 @@ namespace StockControl
                                 AD2.Value2 = Convert.ToDateTime(qh.CreateDate).ToString("yyyy")+"　　ปี     "+ Convert.ToDateTime(qh.CreateDate).ToString("MM") + "　 เดือน     "+ Convert.ToDateTime(qh.CreateDate).ToString("dd") + "　　วัน";
                                 
                                 Excel.Range Ap = worksheet.get_Range("AP4");
-                                Ap.Value2 = qh.ApproveBy;
+                                Ap.Value2 = db.QC_GetUserName(qh.ApproveBy);// qh.ApproveBy;
 
                                 Excel.Range O9 = worksheet.get_Range("O9");
                                 O9.Value2 = cCheckBy1;
@@ -2738,10 +4941,38 @@ namespace StockControl
                 RT = "AI";
             else if (Col.Equals(36))
                 RT = "AJ";
-   
+            else if (Col.Equals(37))
+                RT = "AK";
+            else if (Col.Equals(38))
+                RT = "AL";
+            else if (Col.Equals(39))
+                RT = "AM";
+            else if (Col.Equals(40))
+                RT = "AN";
+            else if (Col.Equals(41))
+                RT = "AO";
+            else if (Col.Equals(42))
+                RT = "AP";
+            else if (Col.Equals(43))
+                RT = "AQ";
+
+            else if (Col.Equals(44))
+                RT = "AR";
+            else if (Col.Equals(45))
+                RT = "AS";
+            else if (Col.Equals(46))
+                RT = "AT";
+            else if (Col.Equals(47))
+                RT = "AU";
+            else if (Col.Equals(48))
+                RT = "AV";
+            else if (Col.Equals(49))
+                RT = "AW";
+            else if (Col.Equals(50))
+                RT = "AX";
 
 
-                return RT;
+            return RT;
         }
     }
 }

@@ -56,6 +56,7 @@ namespace StockControl
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
             dtDate1.Value = firstDayOfMonth;
             dtDate2.Value = lastDayOfMonth;
+          //  radGridView1.Columns["PassValue"].value
             DataLoad();
         }
 
@@ -217,11 +218,19 @@ namespace StockControl
                                                 qh.SS = 3;
                                                 qh.SendApprove = true;
                                                 qh.Status = "Completed";
+                                                if (Convert.ToBoolean(rd.Cells["CK"].Value))
+                                                {
+                                                    qh.PassValue = "Not Pass";
+                                                }else
+                                                {
+                                                    qh.PassValue = "Pass";
+                                                }
                                             }
                                             else
                                             {
                                                 qh.SS = 1;
                                                 qh.SendApprove = false;
+                                                qh.PassValue = "";
                                                 qh.Status = "Checking";
                                             }
                                         }

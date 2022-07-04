@@ -34,7 +34,7 @@ namespace StockControl
         string TypeP = "";
         string WOs = "";
         string FormISO = "";
-        string LineName = "";
+        string LineName = "TW01-PB";
         string PTAG = "";
         string PTAG2 = "";
         string SPG33_1 = "８２００～９７２０　N";
@@ -145,7 +145,46 @@ namespace StockControl
                                 MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                             }
+                            else
+                            {
+                                //MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
                             
+                        }
+                    }
+                    else if(FormISO.Equals("FM-PD-033_1"))
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            //var tkg = db.tb_QCTAGs.Where(q => q.QCNo.Equals(txtQCNo.Text)).ToList();
+                            //if (tkg.Count <= 1)
+                            //{
+                            //  //  var rs = tkg.FirstOrDefault();
+                            //    CCK = 1;
+                            //    MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            //}
+                            //else
+                            //{
+                            //    if (lblSeq.Text == "ลำดับ 1")
+                            //    {
+                            //        CCK = 1;
+                            //        MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            //    }
+                            //}
+                            if (txtOfTAG.Text.Equals("No 1"))
+                            {
+                                MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else
+                            {
+                                if (lblSeq.Text == "ลำดับ 1")
+                                {
+                                    CCK = 1;
+                                    MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+
                         }
                     }
                     else
@@ -153,6 +192,7 @@ namespace StockControl
                         CCK = 1;
                         MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+
                 }
 
                 if (CCK == 0)
@@ -336,7 +376,7 @@ namespace StockControl
                 {
                     TypeP = "PD";
                     string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",026_1";
-                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", txtLineNo.Text, "Machine", "None");
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
                 }
                 else if (FormISO.Equals("FM-PD-033_1"))
                 {
@@ -360,9 +400,9 @@ namespace StockControl
                     string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",No " + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",033_1";
                     string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",No " + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",033_1";
 
-                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", txtLineNo.Text, "หัว", PTAG2);
-                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", txtLineNo.Text, "กลาง", PTAG2);
-                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", txtLineNo.Text, "ท้าย", PTAG2);
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", PTAG2);
 
                 }
                 else if (FormISO.Equals("FM-PD-035_1"))
@@ -377,7 +417,8 @@ namespace StockControl
                         string[] DATAG = PTAG.Split(',');
                         if (DATAG.Length == 8)
                         {
-                            dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "PD", txtLineNo.Text, "PDTAG", PTAG2);
+                            if(!DATAG[0].Equals("PQC"))
+                                dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "PD", LineName, "PDTAG", PTAG2);
                         }
                     }
                 }
@@ -390,7 +431,7 @@ namespace StockControl
                         QtyT = 1;
                     if (!txtOfTAG.Text.Equals(""))
                     {
-                        dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "QC", txtLineNo.Text, "QCTAG", PTAG2);
+                        dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "QC", LineName, "QCTAG", PTAG2);
                     }
                 }
                 else if (FormISO.Equals("FM-QA-056_02_1"))
@@ -399,8 +440,8 @@ namespace StockControl
                     string TAG1 = "First," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of2," + txtPartNo.Text.ToUpper() + ",056_1";
                     string TAG2 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of2," + txtPartNo.Text.ToUpper() + ",056_1";
 
-                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of2", "QC", txtLineNo.Text, "ตัวที่ 1", PTAG2);
-                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "2of2", "QC", txtLineNo.Text, "ตัวที่ 2", PTAG2);
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of2", "QC", LineName, "ตัวที่ 1", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "2of2", "QC", LineName, "ตัวที่ 2", PTAG2);
                    
                 }
                 else
@@ -770,11 +811,13 @@ namespace StockControl
                             qcN.OKQty = 0;
                             qcN.NGQty = 0;
                             qcN.LotNo = txtLotNo.Text;
-                            qcN.LineName = txtLineNo.Text;
+                            qcN.LineName = LineName;
                             qcN.CreateBy = dbClss.UserID;
                             qcN.CreateDate = DateTime.Now;
                             qcN.SS = 1;
                             qcN.Status = "Checking";
+                            qcN.PassValue = "";
+                            qcN.PDQty = 0;
                             qcN.SendApprove = false;
                             if (chkApprove.Checked)
                             {
@@ -1215,7 +1258,7 @@ namespace StockControl
                         txtLineNo.Text = woList.BUMO.ToString();
                         txtQty.Text = Convert.ToDecimal(woList.OrderQty).ToString("###,###.##");
                         txtLotNo.Text = woList.LotNo.ToString();
-                        var FormList = db.sp_46_QCSelectWO_02(txtProdNo.Text.ToUpper(),txtLineNo.Text,txtPartNo.Text,"PD").ToList();
+                        var FormList = db.sp_46_QCSelectWO_02(txtProdNo.Text.ToUpper(), LineName, txtPartNo.Text,"PD").ToList();
                       //  radGridView2.DataSource = FormList;
                        
                         ////Load Datagridview///

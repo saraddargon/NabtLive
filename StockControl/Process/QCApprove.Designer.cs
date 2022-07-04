@@ -481,13 +481,13 @@
             gridViewTextBoxColumn10.ReadOnly = true;
             gridViewTextBoxColumn10.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
             gridViewTextBoxColumn10.Width = 90;
-            gridViewTextBoxColumn11.FieldName = "IssueDate";
+            gridViewTextBoxColumn11.FieldName = "CreateDate";
             gridViewTextBoxColumn11.FormatString = "{0:dd/MM/yyyy}";
             gridViewTextBoxColumn11.HeaderText = "Ins. Date";
             gridViewTextBoxColumn11.Name = "IssueDate";
             gridViewTextBoxColumn11.ReadOnly = true;
             gridViewTextBoxColumn11.Width = 100;
-            gridViewTextBoxColumn12.FieldName = "IssueBy";
+            gridViewTextBoxColumn12.FieldName = "IssueBy2";
             gridViewTextBoxColumn12.HeaderText = "Ins. By";
             gridViewTextBoxColumn12.Name = "IssueBy";
             gridViewTextBoxColumn12.ReadOnly = true;

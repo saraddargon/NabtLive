@@ -629,7 +629,7 @@ namespace StockControl
                                 txtSNP.Text= Convert.ToDecimal(rd.OrderQty).ToString("########0");
                             }
                             txtWorkCenter.Text = rd.BUMO.ToString();
-                            LineName2 = txtWorkCenter.Text.ToUpper();
+                            //LineName2 = txtWorkCenter.Text.ToUpper();
                             txtWorkName.Text = rd.BUMOName.ToString();
 
                             txtLotNo.Text = rd.LotNo.ToString();

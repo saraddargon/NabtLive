@@ -102,6 +102,7 @@ namespace StockControl
             // DataLoad();
 
             DefaultLoad();
+            
         }
         private void DefaultLoad()
         {
@@ -254,8 +255,9 @@ namespace StockControl
             chkCheckPart.Checked = false;
             chkClose.Checked = false;
             chkClosed.Checked = false;
+            //chkPrintAuto.Checked = false;
             dtNdate.Value = DateTime.Now;
-
+            txtScanMachine.Enabled = false;
             radGridView1.DataSource = null;
             radGridView2.DataSource = null;
             radGridView3.DataSource = null;
@@ -578,6 +580,7 @@ namespace StockControl
                 getWO(txtOrderNo.Text);
                 radButton1_Click_2(sender, e);
                 DefaultLoad();
+                QCLoadMC();
             }
         }
 
@@ -587,6 +590,7 @@ namespace StockControl
             try
             {
                 WO = txtOrderNo.Text.ToUpper();
+                txtScanMachine.Enabled = false;
                 string Type1x = "";
                 string WorkCenterK = "";
                 if (!WO.Equals(""))
@@ -635,7 +639,7 @@ namespace StockControl
                                 txtSNP.Text = Convert.ToDecimal(rd.OrderQty).ToString("########0");
                             }
                             txtWorkCenter.Text = rd.BUMO.ToString();
-                            LineName2 = txtWorkCenter.Text.ToUpper();
+                           // LineName2 = txtWorkCenter.Text.ToUpper();
                             txtWorkName.Text = rd.BUMOName.ToString();
 
                             txtLotNo.Text = rd.LotNo.ToString();
@@ -774,8 +778,8 @@ namespace StockControl
                                 }
                             }
                             //Create Machine
-                            if(!txtPartNo.Text.Equals(""))
-                                db.sp_46_QCMachine_Copy("FM-PD-026_1", txtPartNo.Text, txtOrderNo.Text.ToUpper());
+                           // if(!txtPartNo.Text.Equals(""))
+                            //    db.sp_46_QCMachine_Copy("FM-PD-026_1", txtPartNo.Text, txtOrderNo.Text.ToUpper());
                         }
                     }
                     LoadBOMList();
@@ -830,6 +834,17 @@ namespace StockControl
         {
             if (chkCheckPart.Checked)
             {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    tb_ProductionHD pha = db.tb_ProductionHDs.Where(p => p.OrderNo == txtOrderNo.Text && p.OrderPrint.Equals(false)).FirstOrDefault();
+                    if (pha != null)
+                    {
+                        pha.OrderPrint = true;
+                        pha.PrintDate = DateTime.Now;
+                        db.SubmitChanges();
+                        chkPrinted.Checked = true;
+                    }
+                }
                 PirntTAGA("1111");
             }
             else
@@ -962,13 +977,7 @@ namespace StockControl
                             C += 1;
                         }
 
-                        tb_ProductionHD pha = db.tb_ProductionHDs.Where(p => p.OrderNo == txtOrderNo.Text).FirstOrDefault();
-                        if (pha != null)
-                        {
-                            pha.OrderPrint = true;
-                            db.SubmitChanges();
-                            chkPrinted.Checked = true;
-                        }
+                       
 
                     }
                     if (AAA.Equals("1112"))
@@ -979,6 +988,7 @@ namespace StockControl
                     }
                     else
                     {
+                       
                         Report.Reportx1.WReport = "PDTAG";
                         Report.Reportx1.Value = new string[3];
                         Report.Reportx1.Value[0] = txtOrderNo.Text;
@@ -1924,6 +1934,7 @@ namespace StockControl
 
         private void txtScanMachine_KeyPress(object sender, KeyPressEventArgs e)
         {
+
             if (e.KeyChar == 13)
             {
                 if (!txtScanMachine.Text.Equals("") && !txtOrderNo.Text.Equals(""))
@@ -1961,9 +1972,25 @@ namespace StockControl
             {
                 if (e.RowElement.RowInfo.Cells["SC"].Value.Equals("OK"))
                 {
-                    e.RowElement.DrawFill = true;
-                    e.RowElement.GradientStyle = GradientStyles.Solid;
-                    e.RowElement.BackColor = Color.GreenYellow;
+                    if (!e.RowElement.RowInfo.Cells["DayN"].Value.Equals("") && !e.RowElement.RowInfo.Cells["Night"].Value.Equals(""))
+                    {
+                        e.RowElement.DrawFill = true;
+                        e.RowElement.GradientStyle = GradientStyles.Solid;
+                        e.RowElement.BackColor = Color.LightPink;
+                    }
+                    else if (!e.RowElement.RowInfo.Cells["Night"].Value.Equals(""))
+                    {
+                        e.RowElement.DrawFill = true;
+                        e.RowElement.GradientStyle = GradientStyles.Solid;
+                        e.RowElement.BackColor = Color.NavajoWhite;
+                    }
+                    else
+                    {
+                        e.RowElement.DrawFill = true;
+                        e.RowElement.GradientStyle = GradientStyles.Solid;
+                        e.RowElement.BackColor = Color.GreenYellow;
+                    }
+                    
                 }
                 else
                 {
@@ -2025,6 +2052,28 @@ namespace StockControl
                         qan.QCFlag = false;
                         db.tb_QCUserFlags.InsertOnSubmit(qan);
                         db.SubmitChanges();
+                    }
+                }
+            }
+        }
+
+        private void txtMcCheckPart_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            {
+                
+                if (!txtMcCheckPart.Text.Equals("") && !txtOrderNo.Text.Equals(""))
+                {
+                    if (txtMcCheckPart.Text.ToUpper().Equals(txtPartNo.Text.ToUpper()))
+                    {
+                        txtScanMachine.Enabled = true;
+                        txtScanMachine.Text = "";
+                        txtScanMachine.Focus();
+                    }
+                    else
+                    {
+                        txtScanMachine.Enabled = false;
+                        MessageBox.Show("Part Not Match!!");
                     }
                 }
             }

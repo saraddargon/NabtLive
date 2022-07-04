@@ -77,6 +77,12 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     db.sp_46_QCUpdateLot(txtWoNo.Text, txtLot.Text, rdoWorkShift.Text);
+                    tb_QCCheckMachine chk = db.tb_QCCheckMachines.Where(p => p.WONo.Equals(txtWoNo.Text) && p.Seq.Equals(42)).FirstOrDefault();
+                    if(chk!=null)
+                    {
+                        chk.Value1 = txtSetconner.Text;
+                        db.SubmitChanges();
+                    }
                     MessageBox.Show("บันทึกแล้ว");
                 }
             }

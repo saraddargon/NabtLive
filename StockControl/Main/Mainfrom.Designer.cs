@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Mainfrom));
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Master List");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("T-PIC List");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Dynamics NAV");
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Receive List");
             System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Production List");
             System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Export List");
@@ -87,6 +87,7 @@
             this.radMenuItem24 = new Telerik.WinControls.UI.RadMenuItem();
             this.radMenuItem27 = new Telerik.WinControls.UI.RadMenuItem();
             this.radMenuItem28 = new Telerik.WinControls.UI.RadMenuItem();
+            this.radMenuItem30 = new Telerik.WinControls.UI.RadMenuItem();
             this.radMenuItem10 = new Telerik.WinControls.UI.RadMenuItem();
             this.radMenuItem11 = new Telerik.WinControls.UI.RadMenuItem();
             this.radMenuSeparatorItem2 = new Telerik.WinControls.UI.RadMenuSeparatorItem();
@@ -99,7 +100,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.radMenu1 = new Telerik.WinControls.UI.RadMenu();
-            this.radMenuItem30 = new Telerik.WinControls.UI.RadMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.radMenu1)).BeginInit();
@@ -479,6 +479,12 @@
             this.radMenuItem28.Text = "Invoice Export";
             this.radMenuItem28.Click += new System.EventHandler(this.radMenuItem28_Click);
             // 
+            // radMenuItem30
+            // 
+            this.radMenuItem30.Name = "radMenuItem30";
+            this.radMenuItem30.Text = "Manual QC";
+            this.radMenuItem30.Click += new System.EventHandler(this.radMenuItem30_Click);
+            // 
             // radMenuItem10
             // 
             this.radMenuItem10.Image = ((System.Drawing.Image)(resources.GetObject("radMenuItem10.Image")));
@@ -540,7 +546,7 @@
             treeNode1.Name = "MasterList";
             treeNode1.Text = "Master List";
             treeNode2.Name = "TPIC";
-            treeNode2.Text = "T-PIC List";
+            treeNode2.Text = "Dynamics NAV";
             treeNode3.Name = "Receive";
             treeNode3.Text = "Receive List";
             treeNode4.Name = "Production";
@@ -639,12 +645,6 @@
             ((Telerik.WinControls.UI.RadMenuElement)(this.radMenu1.GetChildAt(0))).BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             ((Telerik.WinControls.Primitives.FillPrimitive)(this.radMenu1.GetChildAt(0).GetChildAt(1))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(4)))), ((int)(((byte)(129)))));
             ((Telerik.WinControls.Primitives.FillPrimitive)(this.radMenu1.GetChildAt(0).GetChildAt(1))).ClipDrawing = false;
-            // 
-            // radMenuItem30
-            // 
-            this.radMenuItem30.Name = "radMenuItem30";
-            this.radMenuItem30.Text = "Manual QC";
-            this.radMenuItem30.Click += new System.EventHandler(this.radMenuItem30_Click);
             // 
             // Mainfrom
             // 

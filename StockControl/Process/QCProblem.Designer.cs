@@ -56,6 +56,31 @@
             this.radStatusStrip1 = new Telerik.WinControls.UI.RadStatusStrip();
             this.radLabelElement1 = new Telerik.WinControls.UI.RadLabelElement();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.txtNGQty = new Telerik.WinControls.UI.RadTextBox();
+            this.radLabel9 = new Telerik.WinControls.UI.RadLabel();
+            this.rdo4 = new Telerik.WinControls.UI.RadRadioButton();
+            this.rdo5 = new Telerik.WinControls.UI.RadRadioButton();
+            this.rdo3 = new Telerik.WinControls.UI.RadRadioButton();
+            this.rdo2 = new Telerik.WinControls.UI.RadRadioButton();
+            this.rdo1 = new Telerik.WinControls.UI.RadRadioButton();
+            this.txtProblemFix = new Telerik.WinControls.UI.RadTextBox();
+            this.txtProblemWhy = new Telerik.WinControls.UI.RadTextBox();
+            this.txtCheckBy = new Telerik.WinControls.UI.RadTextBox();
+            this.txtFixby = new Telerik.WinControls.UI.RadTextBox();
+            this.txtProblemTime = new Telerik.WinControls.UI.RadTextBox();
+            this.txtProblemWhere = new Telerik.WinControls.UI.RadTextBox();
+            this.radLabel6 = new Telerik.WinControls.UI.RadLabel();
+            this.txtProblemName = new Telerik.WinControls.UI.RadTextBox();
+            this.radLabel8 = new Telerik.WinControls.UI.RadLabel();
+            this.radLabel5 = new Telerik.WinControls.UI.RadLabel();
+            this.radLabel7 = new Telerik.WinControls.UI.RadLabel();
+            this.txtProblemSeeby = new Telerik.WinControls.UI.RadTextBox();
+            this.radLabel4 = new Telerik.WinControls.UI.RadLabel();
+            this.txtrdoOther = new Telerik.WinControls.UI.RadTextBox();
+            this.radLabel3 = new Telerik.WinControls.UI.RadLabel();
+            this.radLabel2 = new Telerik.WinControls.UI.RadLabel();
+            this.lblQCNo = new Telerik.WinControls.UI.RadLabel();
+            this.radLabel1 = new Telerik.WinControls.UI.RadLabel();
             this.office2010BlueTheme1 = new Telerik.WinControls.Themes.Office2010BlueTheme();
             this.radRibbonBarButtonGroup2 = new Telerik.WinControls.UI.RadRibbonBarButtonGroup();
             this.btnFilter = new Telerik.WinControls.UI.RadButtonElement();
@@ -68,55 +93,40 @@
             this.RMenu5 = new Telerik.WinControls.UI.RadMenuItem();
             this.RMenu6 = new Telerik.WinControls.UI.RadMenuItem();
             this.radContextMenuManager1 = new Telerik.WinControls.UI.RadContextMenuManager();
-            this.radLabel1 = new Telerik.WinControls.UI.RadLabel();
-            this.txtrdoOther = new Telerik.WinControls.UI.RadTextBox();
-            this.rdo1 = new Telerik.WinControls.UI.RadRadioButton();
-            this.rdo2 = new Telerik.WinControls.UI.RadRadioButton();
-            this.rdo3 = new Telerik.WinControls.UI.RadRadioButton();
-            this.rdo4 = new Telerik.WinControls.UI.RadRadioButton();
-            this.rdo5 = new Telerik.WinControls.UI.RadRadioButton();
-            this.txtProblemSeeby = new Telerik.WinControls.UI.RadTextBox();
-            this.txtProblemName = new Telerik.WinControls.UI.RadTextBox();
-            this.radLabel2 = new Telerik.WinControls.UI.RadLabel();
-            this.txtProblemWhere = new Telerik.WinControls.UI.RadTextBox();
-            this.radLabel3 = new Telerik.WinControls.UI.RadLabel();
-            this.radLabel4 = new Telerik.WinControls.UI.RadLabel();
-            this.txtProblemTime = new Telerik.WinControls.UI.RadTextBox();
-            this.radLabel5 = new Telerik.WinControls.UI.RadLabel();
-            this.txtProblemWhy = new Telerik.WinControls.UI.RadTextBox();
-            this.radLabel6 = new Telerik.WinControls.UI.RadLabel();
-            this.txtProblemFix = new Telerik.WinControls.UI.RadTextBox();
-            this.radLabel7 = new Telerik.WinControls.UI.RadLabel();
-            this.txtFixby = new Telerik.WinControls.UI.RadTextBox();
-            this.radLabel8 = new Telerik.WinControls.UI.RadLabel();
-            this.txtCheckBy = new Telerik.WinControls.UI.RadTextBox();
-            this.lblQCNo = new Telerik.WinControls.UI.RadLabel();
+            this.txtRework = new Telerik.WinControls.UI.RadTextBox();
+            this.radLabel10 = new Telerik.WinControls.UI.RadLabel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.radRibbonBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtrdoOther)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rdo1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rdo2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rdo3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtNGQty)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rdo4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rdo5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemSeeby)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemName)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhere)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemTime)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhy)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rdo3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rdo2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rdo1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtProblemFix)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtFixby)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel8)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhy)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCheckBy)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtFixby)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemTime)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhere)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemName)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel8)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemSeeby)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtrdoOther)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lblQCNo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtRework)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel10)).BeginInit();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             this.SuspendLayout();
             // 
@@ -142,7 +152,7 @@
             // 
             // 
             this.radRibbonBar1.RootElement.AutoSizeMode = Telerik.WinControls.RadAutoSizeMode.WrapAroundChildren;
-            this.radRibbonBar1.Size = new System.Drawing.Size(718, 161);
+            this.radRibbonBar1.Size = new System.Drawing.Size(1039, 160);
             this.radRibbonBar1.StartButtonImage = ((System.Drawing.Image)(resources.GetObject("radRibbonBar1.StartButtonImage")));
             this.radRibbonBar1.StartMenuItems.AddRange(new Telerik.WinControls.RadItem[] {
             this.radMenuItem1,
@@ -350,9 +360,9 @@
             // 
             this.radStatusStrip1.Items.AddRange(new Telerik.WinControls.RadItem[] {
             this.radLabelElement1});
-            this.radStatusStrip1.Location = new System.Drawing.Point(0, 620);
+            this.radStatusStrip1.Location = new System.Drawing.Point(0, 669);
             this.radStatusStrip1.Name = "radStatusStrip1";
-            this.radStatusStrip1.Size = new System.Drawing.Size(718, 26);
+            this.radStatusStrip1.Size = new System.Drawing.Size(1039, 26);
             this.radStatusStrip1.SizingGrip = false;
             this.radStatusStrip1.TabIndex = 1;
             // 
@@ -366,6 +376,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.MistyRose;
+            this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.rdo4);
             this.panel1.Controls.Add(this.rdo5);
             this.panel1.Controls.Add(this.rdo3);
@@ -390,10 +401,212 @@
             this.panel1.Controls.Add(this.lblQCNo);
             this.panel1.Controls.Add(this.radLabel1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 161);
+            this.panel1.Location = new System.Drawing.Point(0, 160);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(718, 459);
+            this.panel1.Size = new System.Drawing.Size(1039, 509);
             this.panel1.TabIndex = 0;
+            // 
+            // txtNGQty
+            // 
+            this.txtNGQty.Location = new System.Drawing.Point(106, 28);
+            this.txtNGQty.Name = "txtNGQty";
+            this.txtNGQty.Size = new System.Drawing.Size(74, 20);
+            this.txtNGQty.TabIndex = 14;
+            this.txtNGQty.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNGQty_KeyPress);
+            ((Telerik.WinControls.UI.RadTextBoxItem)(this.txtNGQty.GetChildAt(0).GetChildAt(0))).BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(246)))), ((int)(((byte)(245)))), ((int)(((byte)(207)))));
+            // 
+            // radLabel9
+            // 
+            this.radLabel9.Location = new System.Drawing.Point(42, 28);
+            this.radLabel9.Name = "radLabel9";
+            this.radLabel9.Size = new System.Drawing.Size(61, 18);
+            this.radLabel9.TabIndex = 1;
+            this.radLabel9.Text = "จำนวน NG ";
+            // 
+            // rdo4
+            // 
+            this.rdo4.Location = new System.Drawing.Point(124, 68);
+            this.rdo4.Name = "rdo4";
+            this.rdo4.Size = new System.Drawing.Size(61, 18);
+            this.rdo4.TabIndex = 3;
+            this.rdo4.Text = "Material";
+            // 
+            // rdo5
+            // 
+            this.rdo5.Location = new System.Drawing.Point(257, 68);
+            this.rdo5.Name = "rdo5";
+            this.rdo5.Size = new System.Drawing.Size(49, 18);
+            this.rdo5.TabIndex = 4;
+            this.rdo5.Text = "Other";
+            // 
+            // rdo3
+            // 
+            this.rdo3.Location = new System.Drawing.Point(397, 44);
+            this.rdo3.Name = "rdo3";
+            this.rdo3.Size = new System.Drawing.Size(60, 18);
+            this.rdo3.TabIndex = 2;
+            this.rdo3.Text = "Method";
+            // 
+            // rdo2
+            // 
+            this.rdo2.Location = new System.Drawing.Point(257, 44);
+            this.rdo2.Name = "rdo2";
+            this.rdo2.Size = new System.Drawing.Size(63, 18);
+            this.rdo2.TabIndex = 1;
+            this.rdo2.Text = "Machine";
+            // 
+            // rdo1
+            // 
+            this.rdo1.Location = new System.Drawing.Point(124, 44);
+            this.rdo1.Name = "rdo1";
+            this.rdo1.Size = new System.Drawing.Size(43, 18);
+            this.rdo1.TabIndex = 0;
+            this.rdo1.Text = "Man";
+            // 
+            // txtProblemFix
+            // 
+            this.txtProblemFix.Location = new System.Drawing.Point(113, 287);
+            this.txtProblemFix.Multiline = true;
+            this.txtProblemFix.Name = "txtProblemFix";
+            // 
+            // 
+            // 
+            this.txtProblemFix.RootElement.StretchVertically = true;
+            this.txtProblemFix.Size = new System.Drawing.Size(404, 65);
+            this.txtProblemFix.TabIndex = 11;
+            // 
+            // txtProblemWhy
+            // 
+            this.txtProblemWhy.Location = new System.Drawing.Point(113, 216);
+            this.txtProblemWhy.Multiline = true;
+            this.txtProblemWhy.Name = "txtProblemWhy";
+            // 
+            // 
+            // 
+            this.txtProblemWhy.RootElement.StretchVertically = true;
+            this.txtProblemWhy.Size = new System.Drawing.Size(404, 65);
+            this.txtProblemWhy.TabIndex = 10;
+            // 
+            // txtCheckBy
+            // 
+            this.txtCheckBy.Location = new System.Drawing.Point(113, 384);
+            this.txtCheckBy.Name = "txtCheckBy";
+            this.txtCheckBy.Size = new System.Drawing.Size(191, 20);
+            this.txtCheckBy.TabIndex = 13;
+            // 
+            // txtFixby
+            // 
+            this.txtFixby.Location = new System.Drawing.Point(115, 358);
+            this.txtFixby.Name = "txtFixby";
+            this.txtFixby.Size = new System.Drawing.Size(191, 20);
+            this.txtFixby.TabIndex = 12;
+            // 
+            // txtProblemTime
+            // 
+            this.txtProblemTime.Location = new System.Drawing.Point(115, 190);
+            this.txtProblemTime.Name = "txtProblemTime";
+            this.txtProblemTime.Size = new System.Drawing.Size(191, 20);
+            this.txtProblemTime.TabIndex = 9;
+            // 
+            // txtProblemWhere
+            // 
+            this.txtProblemWhere.Location = new System.Drawing.Point(113, 164);
+            this.txtProblemWhere.Name = "txtProblemWhere";
+            this.txtProblemWhere.Size = new System.Drawing.Size(191, 20);
+            this.txtProblemWhere.TabIndex = 8;
+            // 
+            // radLabel6
+            // 
+            this.radLabel6.Location = new System.Drawing.Point(23, 289);
+            this.radLabel6.Name = "radLabel6";
+            this.radLabel6.Size = new System.Drawing.Size(89, 18);
+            this.radLabel6.TabIndex = 0;
+            this.radLabel6.Text = "การแก้ไขเบื้องต้น";
+            // 
+            // txtProblemName
+            // 
+            this.txtProblemName.Location = new System.Drawing.Point(113, 138);
+            this.txtProblemName.Name = "txtProblemName";
+            this.txtProblemName.Size = new System.Drawing.Size(404, 20);
+            this.txtProblemName.TabIndex = 7;
+            // 
+            // radLabel8
+            // 
+            this.radLabel8.Location = new System.Drawing.Point(70, 386);
+            this.radLabel8.Name = "radLabel8";
+            this.radLabel8.Size = new System.Drawing.Size(42, 18);
+            this.radLabel8.TabIndex = 0;
+            this.radLabel8.Text = "เช็คโดย";
+            // 
+            // radLabel5
+            // 
+            this.radLabel5.Location = new System.Drawing.Point(58, 218);
+            this.radLabel5.Name = "radLabel5";
+            this.radLabel5.Size = new System.Drawing.Size(54, 18);
+            this.radLabel5.TabIndex = 0;
+            this.radLabel5.Text = "ทำอย่างไร";
+            // 
+            // radLabel7
+            // 
+            this.radLabel7.Location = new System.Drawing.Point(60, 360);
+            this.radLabel7.Name = "radLabel7";
+            this.radLabel7.Size = new System.Drawing.Size(52, 18);
+            this.radLabel7.TabIndex = 0;
+            this.radLabel7.Text = "แก้ไขโดย";
+            // 
+            // txtProblemSeeby
+            // 
+            this.txtProblemSeeby.Location = new System.Drawing.Point(113, 112);
+            this.txtProblemSeeby.Name = "txtProblemSeeby";
+            this.txtProblemSeeby.Size = new System.Drawing.Size(191, 20);
+            this.txtProblemSeeby.TabIndex = 6;
+            // 
+            // radLabel4
+            // 
+            this.radLabel4.Location = new System.Drawing.Point(49, 192);
+            this.radLabel4.Name = "radLabel4";
+            this.radLabel4.Size = new System.Drawing.Size(63, 18);
+            this.radLabel4.TabIndex = 0;
+            this.radLabel4.Text = "เวลาเท่าไหร";
+            // 
+            // txtrdoOther
+            // 
+            this.txtrdoOther.Location = new System.Drawing.Point(315, 68);
+            this.txtrdoOther.Name = "txtrdoOther";
+            this.txtrdoOther.Size = new System.Drawing.Size(202, 20);
+            this.txtrdoOther.TabIndex = 5;
+            // 
+            // radLabel3
+            // 
+            this.radLabel3.Location = new System.Drawing.Point(62, 166);
+            this.radLabel3.Name = "radLabel3";
+            this.radLabel3.Size = new System.Drawing.Size(50, 18);
+            this.radLabel3.TabIndex = 0;
+            this.radLabel3.Text = "พบที่ไหน";
+            // 
+            // radLabel2
+            // 
+            this.radLabel2.Location = new System.Drawing.Point(53, 140);
+            this.radLabel2.Name = "radLabel2";
+            this.radLabel2.Size = new System.Drawing.Size(59, 18);
+            this.radLabel2.TabIndex = 0;
+            this.radLabel2.Text = "ปัญหาอะไร";
+            // 
+            // lblQCNo
+            // 
+            this.lblQCNo.Location = new System.Drawing.Point(124, 12);
+            this.lblQCNo.Name = "lblQCNo";
+            this.lblQCNo.Size = new System.Drawing.Size(45, 18);
+            this.lblQCNo.TabIndex = 0;
+            this.lblQCNo.Text = "QCNo : ";
+            // 
+            // radLabel1
+            // 
+            this.radLabel1.Location = new System.Drawing.Point(72, 112);
+            this.radLabel1.Name = "radLabel1";
+            this.radLabel1.Size = new System.Drawing.Size(40, 18);
+            this.radLabel1.TabIndex = 0;
+            this.radLabel1.Text = "ใครพบ";
             // 
             // radRibbonBarButtonGroup2
             // 
@@ -473,196 +686,40 @@
             this.RMenu6.Name = "RMenu6";
             this.RMenu6.Text = "ลบรายการ";
             // 
-            // radLabel1
+            // txtRework
             // 
-            this.radLabel1.Location = new System.Drawing.Point(72, 112);
-            this.radLabel1.Name = "radLabel1";
-            this.radLabel1.Size = new System.Drawing.Size(40, 18);
-            this.radLabel1.TabIndex = 0;
-            this.radLabel1.Text = "ใครพบ";
+            this.txtRework.Location = new System.Drawing.Point(107, 52);
+            this.txtRework.Name = "txtRework";
+            this.txtRework.Size = new System.Drawing.Size(73, 20);
+            this.txtRework.TabIndex = 16;
+            ((Telerik.WinControls.UI.RadTextBoxItem)(this.txtRework.GetChildAt(0).GetChildAt(0))).BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(251)))), ((int)(((byte)(242)))));
             // 
-            // txtrdoOther
+            // radLabel10
             // 
-            this.txtrdoOther.Location = new System.Drawing.Point(315, 68);
-            this.txtrdoOther.Name = "txtrdoOther";
-            this.txtrdoOther.Size = new System.Drawing.Size(202, 20);
-            this.txtrdoOther.TabIndex = 5;
+            this.radLabel10.Location = new System.Drawing.Point(22, 53);
+            this.radLabel10.Name = "radLabel10";
+            this.radLabel10.Size = new System.Drawing.Size(79, 18);
+            this.radLabel10.TabIndex = 15;
+            this.radLabel10.Text = "จำนวน Rework";
             // 
-            // rdo1
+            // groupBox1
             // 
-            this.rdo1.Location = new System.Drawing.Point(124, 44);
-            this.rdo1.Name = "rdo1";
-            this.rdo1.Size = new System.Drawing.Size(43, 18);
-            this.rdo1.TabIndex = 0;
-            this.rdo1.Text = "Man";
-            // 
-            // rdo2
-            // 
-            this.rdo2.Location = new System.Drawing.Point(257, 44);
-            this.rdo2.Name = "rdo2";
-            this.rdo2.Size = new System.Drawing.Size(63, 18);
-            this.rdo2.TabIndex = 1;
-            this.rdo2.Text = "Machine";
-            // 
-            // rdo3
-            // 
-            this.rdo3.Location = new System.Drawing.Point(397, 44);
-            this.rdo3.Name = "rdo3";
-            this.rdo3.Size = new System.Drawing.Size(60, 18);
-            this.rdo3.TabIndex = 2;
-            this.rdo3.Text = "Method";
-            // 
-            // rdo4
-            // 
-            this.rdo4.Location = new System.Drawing.Point(124, 68);
-            this.rdo4.Name = "rdo4";
-            this.rdo4.Size = new System.Drawing.Size(61, 18);
-            this.rdo4.TabIndex = 3;
-            this.rdo4.Text = "Material";
-            // 
-            // rdo5
-            // 
-            this.rdo5.Location = new System.Drawing.Point(257, 68);
-            this.rdo5.Name = "rdo5";
-            this.rdo5.Size = new System.Drawing.Size(49, 18);
-            this.rdo5.TabIndex = 4;
-            this.rdo5.Text = "Other";
-            // 
-            // txtProblemSeeby
-            // 
-            this.txtProblemSeeby.Location = new System.Drawing.Point(113, 112);
-            this.txtProblemSeeby.Name = "txtProblemSeeby";
-            this.txtProblemSeeby.Size = new System.Drawing.Size(191, 20);
-            this.txtProblemSeeby.TabIndex = 6;
-            // 
-            // txtProblemName
-            // 
-            this.txtProblemName.Location = new System.Drawing.Point(113, 138);
-            this.txtProblemName.Name = "txtProblemName";
-            this.txtProblemName.Size = new System.Drawing.Size(404, 20);
-            this.txtProblemName.TabIndex = 7;
-            // 
-            // radLabel2
-            // 
-            this.radLabel2.Location = new System.Drawing.Point(53, 140);
-            this.radLabel2.Name = "radLabel2";
-            this.radLabel2.Size = new System.Drawing.Size(59, 18);
-            this.radLabel2.TabIndex = 0;
-            this.radLabel2.Text = "ปัญหาอะไร";
-            // 
-            // txtProblemWhere
-            // 
-            this.txtProblemWhere.Location = new System.Drawing.Point(113, 164);
-            this.txtProblemWhere.Name = "txtProblemWhere";
-            this.txtProblemWhere.Size = new System.Drawing.Size(191, 20);
-            this.txtProblemWhere.TabIndex = 8;
-            // 
-            // radLabel3
-            // 
-            this.radLabel3.Location = new System.Drawing.Point(62, 166);
-            this.radLabel3.Name = "radLabel3";
-            this.radLabel3.Size = new System.Drawing.Size(50, 18);
-            this.radLabel3.TabIndex = 0;
-            this.radLabel3.Text = "พบที่ไหน";
-            // 
-            // radLabel4
-            // 
-            this.radLabel4.Location = new System.Drawing.Point(49, 192);
-            this.radLabel4.Name = "radLabel4";
-            this.radLabel4.Size = new System.Drawing.Size(63, 18);
-            this.radLabel4.TabIndex = 0;
-            this.radLabel4.Text = "เวลาเท่าไหร";
-            // 
-            // txtProblemTime
-            // 
-            this.txtProblemTime.Location = new System.Drawing.Point(115, 190);
-            this.txtProblemTime.Name = "txtProblemTime";
-            this.txtProblemTime.Size = new System.Drawing.Size(191, 20);
-            this.txtProblemTime.TabIndex = 9;
-            // 
-            // radLabel5
-            // 
-            this.radLabel5.Location = new System.Drawing.Point(58, 218);
-            this.radLabel5.Name = "radLabel5";
-            this.radLabel5.Size = new System.Drawing.Size(54, 18);
-            this.radLabel5.TabIndex = 0;
-            this.radLabel5.Text = "ทำอย่างไร";
-            // 
-            // txtProblemWhy
-            // 
-            this.txtProblemWhy.Location = new System.Drawing.Point(113, 216);
-            this.txtProblemWhy.Multiline = true;
-            this.txtProblemWhy.Name = "txtProblemWhy";
-            // 
-            // 
-            // 
-            this.txtProblemWhy.RootElement.StretchVertically = true;
-            this.txtProblemWhy.Size = new System.Drawing.Size(404, 65);
-            this.txtProblemWhy.TabIndex = 10;
-            // 
-            // radLabel6
-            // 
-            this.radLabel6.Location = new System.Drawing.Point(23, 289);
-            this.radLabel6.Name = "radLabel6";
-            this.radLabel6.Size = new System.Drawing.Size(89, 18);
-            this.radLabel6.TabIndex = 0;
-            this.radLabel6.Text = "การแก้ไขเบื้องต้น";
-            // 
-            // txtProblemFix
-            // 
-            this.txtProblemFix.Location = new System.Drawing.Point(113, 287);
-            this.txtProblemFix.Multiline = true;
-            this.txtProblemFix.Name = "txtProblemFix";
-            // 
-            // 
-            // 
-            this.txtProblemFix.RootElement.StretchVertically = true;
-            this.txtProblemFix.Size = new System.Drawing.Size(404, 65);
-            this.txtProblemFix.TabIndex = 11;
-            // 
-            // radLabel7
-            // 
-            this.radLabel7.Location = new System.Drawing.Point(60, 360);
-            this.radLabel7.Name = "radLabel7";
-            this.radLabel7.Size = new System.Drawing.Size(52, 18);
-            this.radLabel7.TabIndex = 0;
-            this.radLabel7.Text = "แก้ไขโดย";
-            // 
-            // txtFixby
-            // 
-            this.txtFixby.Location = new System.Drawing.Point(115, 358);
-            this.txtFixby.Name = "txtFixby";
-            this.txtFixby.Size = new System.Drawing.Size(191, 20);
-            this.txtFixby.TabIndex = 12;
-            // 
-            // radLabel8
-            // 
-            this.radLabel8.Location = new System.Drawing.Point(70, 386);
-            this.radLabel8.Name = "radLabel8";
-            this.radLabel8.Size = new System.Drawing.Size(42, 18);
-            this.radLabel8.TabIndex = 0;
-            this.radLabel8.Text = "เช็คโดย";
-            // 
-            // txtCheckBy
-            // 
-            this.txtCheckBy.Location = new System.Drawing.Point(113, 384);
-            this.txtCheckBy.Name = "txtCheckBy";
-            this.txtCheckBy.Size = new System.Drawing.Size(191, 20);
-            this.txtCheckBy.TabIndex = 13;
-            // 
-            // lblQCNo
-            // 
-            this.lblQCNo.Location = new System.Drawing.Point(124, 12);
-            this.lblQCNo.Name = "lblQCNo";
-            this.lblQCNo.Size = new System.Drawing.Size(45, 18);
-            this.lblQCNo.TabIndex = 0;
-            this.lblQCNo.Text = "QCNo : ";
+            this.groupBox1.Controls.Add(this.txtRework);
+            this.groupBox1.Controls.Add(this.radLabel9);
+            this.groupBox1.Controls.Add(this.radLabel10);
+            this.groupBox1.Controls.Add(this.txtNGQty);
+            this.groupBox1.Location = new System.Drawing.Point(553, 58);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(277, 166);
+            this.groupBox1.TabIndex = 17;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Set Value";
             // 
             // QCProblem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(718, 646);
+            this.ClientSize = new System.Drawing.Size(1039, 695);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.radStatusStrip1);
             this.Controls.Add(this.radRibbonBar1);
@@ -681,29 +738,35 @@
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtrdoOther)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rdo1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rdo2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rdo3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtNGQty)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel9)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rdo4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rdo5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemSeeby)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemName)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhere)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemTime)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhy)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rdo3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rdo2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rdo1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtProblemFix)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtFixby)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel8)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhy)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCheckBy)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtFixby)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemTime)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemWhere)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemName)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel8)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtProblemSeeby)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtrdoOther)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lblQCNo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtRework)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel10)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -773,5 +836,10 @@
         private Telerik.WinControls.UI.RadLabel radLabel8;
         private Telerik.WinControls.UI.RadLabel radLabel7;
         private Telerik.WinControls.UI.RadLabel lblQCNo;
+        private Telerik.WinControls.UI.RadTextBox txtNGQty;
+        private Telerik.WinControls.UI.RadLabel radLabel9;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private Telerik.WinControls.UI.RadTextBox txtRework;
+        private Telerik.WinControls.UI.RadLabel radLabel10;
     }
 }

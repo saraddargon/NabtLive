@@ -298,6 +298,12 @@
     <Compile Include="Process\PrintPDTAGLocal.Designer.cs">
       <DependentUpon>PrintPDTAGLocal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Process\PrintQC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\PrintQC.Designer.cs">
+      <DependentUpon>PrintQC.cs</DependentUpon>
+    </Compile>
     <Compile Include="Process\QCUpdateCount.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -907,6 +913,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Process\PrintPDTAGLocal.resx">
       <DependentUpon>PrintPDTAGLocal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\PrintQC.resx">
+      <DependentUpon>PrintQC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Process\QCUpdateCount.resx">
       <DependentUpon>QCUpdateCount.cs</DependentUpon>

@@ -553,7 +553,8 @@ namespace StockControl
                                 u.CheckNo = txtCheckNo.Text.Trim();
                                 u.Status = "Waiting";
                                 u.Code = dr.Item_No_;
-                                u.PartName = dr.Description;
+                               // if (dr.Description.Length<50)
+                                u.PartName =dr.Description;
                                 u.Type = dr.Type1;
                                 u.Location = dr.Location_Code;
                                 u.Revision = 0;// dbClss.TInt(dr["Revision"]);

@@ -110,6 +110,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel9 = new System.Windows.Forms.Panel();
+            this.radLabel11 = new Telerik.WinControls.UI.RadLabel();
             this.radButton7 = new Telerik.WinControls.UI.RadButton();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.txtRemark = new Telerik.WinControls.UI.RadTextBox();
@@ -213,6 +214,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.radGridView2.MasterTemplate)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.panel9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel11)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radButton7)).BeginInit();
             this.groupBox9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtRemark)).BeginInit();
@@ -601,7 +603,7 @@
             this.radPageView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.radPageView1.Location = new System.Drawing.Point(0, 0);
             this.radPageView1.Name = "radPageView1";
-            this.radPageView1.SelectedPage = this.radPageViewPage7;
+            this.radPageView1.SelectedPage = this.radPageViewPage1;
             this.radPageView1.Size = new System.Drawing.Size(878, 501);
             this.radPageView1.TabIndex = 0;
             this.radPageView1.ThemeName = "ControlDefault";
@@ -1020,6 +1022,7 @@
             // 
             // panel9
             // 
+            this.panel9.Controls.Add(this.radLabel11);
             this.panel9.Controls.Add(this.radButton7);
             this.panel9.Controls.Add(this.groupBox9);
             this.panel9.Controls.Add(this.btnBackNo7);
@@ -1037,6 +1040,15 @@
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(857, 410);
             this.panel9.TabIndex = 15;
+            // 
+            // radLabel11
+            // 
+            this.radLabel11.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radLabel11.Location = new System.Drawing.Point(22, 374);
+            this.radLabel11.Name = "radLabel11";
+            this.radLabel11.Size = new System.Drawing.Size(116, 33);
+            this.radLabel11.TabIndex = 6;
+            this.radLabel11.Text = "แต่ละ หัวข้อ";
             // 
             // radButton7
             // 
@@ -1885,6 +1897,7 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel11)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.radButton7)).EndInit();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
@@ -2082,5 +2095,6 @@
         private Telerik.WinControls.UI.RadTextBox txtRemark;
         private Telerik.WinControls.UI.RadLabel radLabel9;
         private Telerik.WinControls.UI.RadLabel radLabel10;
+        private Telerik.WinControls.UI.RadLabel radLabel11;
     }
 }

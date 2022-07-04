@@ -720,5 +720,11 @@ namespace StockControl
                 op.Show();
             }
         }
+
+        private void radButtonElement3_Click(object sender, EventArgs e)
+        {
+            PrintQC pq = new PrintQC(radGridView1.CurrentRow.Cells["PORDER"].Value.ToString());
+            pq.ShowDialog();
+        }
     }
 }

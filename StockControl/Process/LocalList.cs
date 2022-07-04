@@ -85,9 +85,11 @@ namespace StockControl
             {
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
-                    db.sp_019_LocaDeliveryList_DynamicsUPDate();
+                  //  db.sp_019_LocaDeliveryList_DynamicsUPDate();
+                    db.sp_019_LocaDeliveryList_DynamicsInsert(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text, txtCust.Text);
                     radGridView1.DataSource = null;
-                    radGridView1.DataSource = db.sp_019_LocaDeliveryList_Dynamics(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text,txtCust.Text).ToList();
+                    //radGridView1.DataSource = db.sp_019_LocaDeliveryList_Dynamics(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text,txtCust.Text).ToList();
+                    radGridView1.DataSource = db.sp_019_LocaDeliveryList_DynamicsSelect().ToList();
                     int CRow = 0;
                     foreach (GridViewRowInfo rd in radGridView1.Rows)
                     {
@@ -709,7 +711,9 @@ namespace StockControl
                         {
                             if (Convert.ToBoolean(rd.Cells["S"].Value))
                             {
-                                SNP = Convert.ToInt32(rd.Cells["SNP"].Value);
+                                SNP = Convert.ToInt32(db.getLOtSizeTPICS_DynamicsCross(Convert.ToString(rd.Cells["PartNo"].Value), Convert.ToString(rd.Cells["CustomerNo"].Value)));
+                                if (SNP==0)
+                                     SNP = Convert.ToInt32(rd.Cells["SNP"].Value);
                                 Qty = Convert.ToInt32(rd.Cells["OrderQty"].Value);
                                 if (SNP==0)
                                 {
@@ -749,6 +753,9 @@ namespace StockControl
                                     ms.ConfirmDate = Convert.ToDateTime(rd.Cells["ShippingDate"].Value);
                                     ms.CustomerItemName = Convert.ToString(rd.Cells["CustomerItemNo"].Value);
                                     ms.Remark2 = Barcode;
+                                    byte[] barcode = dbClss.SaveQRCode2D(Convert.ToString(rd.Cells["CustomerItemNo"].Value));
+                                    ms.QRCode = barcode;
+
                                     db.tb_LocalMITSUBISHIs.InsertOnSubmit(ms);
                                     TAGA = TAGA - SNP;
                                     //tb_LocalPrintN ls = new tb_LocalPrintN();
@@ -860,7 +867,7 @@ namespace StockControl
                         int CC = 0;
                         
                         db.sp_031_DeleteLocalDeliveryListQC();
-                        db.sp_031_SelectLocalDeliveryUpdate_Dynamics(dtDate1.Value, dtDate2.Value);
+                      //  db.sp_031_SelectLocalDeliveryUpdate_Dynamics(dtDate1.Value, dtDate2.Value);
                         var rlist = db.sp_031_SelectLocalDeliveryListQC_Dynamics(dtDate1.Value, dtDate2.Value,cboCustomer.Text.Trim()).ToList();
                         foreach (var rd in rlist)
                         {
@@ -1653,6 +1660,64 @@ namespace StockControl
                 }
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void radButtonElement15_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    string Prefix = "";
+                    int SNP = 0;
+                    int OrderQty = 0;
+                    int TotalBox = 0;
+                    db.sp_045_DeleteTempCustList();
+                    foreach(var rd in radGridView1.Rows)
+                    {
+                        if(Convert.ToBoolean(rd.Cells["S"].Value))
+                        {
+                            TotalBox = 0;
+                            Prefix= Convert.ToString(rd.Cells["Plant"].Value);
+                            OrderQty = Convert.ToInt32(rd.Cells["OrderQty"].Value);
+                            SNP = Convert.ToInt32(rd.Cells["SNP"].Value);
+                            if(SNP>0)
+                            {
+                                TotalBox = Convert.ToInt32((OrderQty / SNP));
+                            }
+                            if(Prefix!="")
+                            {
+                                if (Prefix.IndexOf('_') > 0)
+                                {
+                                    Prefix = Prefix.Substring(Prefix.IndexOf('_') + 1);
+                                }     
+                                //MessageBox.Show(Prefix.IndexOf('_').ToString());                     
+                            }
+                            TempCustList tm = new TempCustList();
+                            tm.ModelNo = Prefix;
+                            tm.PackingDate = Convert.ToDateTime(rd.Cells["CDate"].Value);
+                            tm.PartNo = Convert.ToString(rd.Cells["PartNo"].Value);
+                            tm.Supplier = Convert.ToString(rd.Cells["CustomerName"].Value);
+                            tm.TotalBox = TotalBox;
+                            tm.TotlPerModel = OrderQty;
+                            tm.OrderNo = Convert.ToString(rd.Cells["SaleOrderNo"].Value);
+                            db.TempCustLists.InsertOnSubmit(tm);
+                            db.SubmitChanges();
+                            
+                        }
+                    }
+                    //Report//
+                    Report.Reportx1.WReport = "UserS";
+                    Report.Reportx1.Value = new string[1];
+                    Report.Reportx1.Value[0] = "";
+
+                    Report.Reportx1 op = new Report.Reportx1("DATT_TAG.rpt");
+                    op.Show();
+                }
+            }
+            catch { }
+            this.Cursor = Cursors.Default;
         }
     }
 }

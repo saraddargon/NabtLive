@@ -71,6 +71,8 @@
             this.radLabelElement1 = new Telerik.WinControls.UI.RadLabelElement();
             this.panel1 = new System.Windows.Forms.Panel();
             this.radGridView1 = new Telerik.WinControls.UI.RadGridView();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.office2010BlueTheme1 = new Telerik.WinControls.Themes.Office2010BlueTheme();
             this.radRibbonBarButtonGroup2 = new Telerik.WinControls.UI.RadRibbonBarButtonGroup();
             this.btnFilter = new Telerik.WinControls.UI.RadButtonElement();
@@ -83,8 +85,6 @@
             this.RMenu5 = new Telerik.WinControls.UI.RadMenuItem();
             this.RMenu6 = new Telerik.WinControls.UI.RadMenuItem();
             this.radContextMenuManager1 = new Telerik.WinControls.UI.RadContextMenuManager();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.deleteTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.radRibbonBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -476,6 +476,21 @@
             this.radGridView1.CellDoubleClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.radGridView1_CellDoubleClick);
             this.radGridView1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.radGridView1_PreviewKeyDown);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteTagToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(129, 26);
+            // 
+            // deleteTagToolStripMenuItem
+            // 
+            this.deleteTagToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
+            this.deleteTagToolStripMenuItem.Name = "deleteTagToolStripMenuItem";
+            this.deleteTagToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.deleteTagToolStripMenuItem.Text = "Delete Tag";
+            this.deleteTagToolStripMenuItem.Click += new System.EventHandler(this.deleteTagToolStripMenuItem_Click);
+            // 
             // radRibbonBarButtonGroup2
             // 
             this.radRibbonBarButtonGroup2.Items.AddRange(new Telerik.WinControls.RadItem[] {
@@ -553,21 +568,6 @@
             this.RMenu6.Image = ((System.Drawing.Image)(resources.GetObject("RMenu6.Image")));
             this.RMenu6.Name = "RMenu6";
             this.RMenu6.Text = "ลบรายการ";
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteTagToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(129, 26);
-            // 
-            // deleteTagToolStripMenuItem
-            // 
-            this.deleteTagToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
-            this.deleteTagToolStripMenuItem.Name = "deleteTagToolStripMenuItem";
-            this.deleteTagToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
-            this.deleteTagToolStripMenuItem.Text = "Delete Tag";
-            this.deleteTagToolStripMenuItem.Click += new System.EventHandler(this.deleteTagToolStripMenuItem_Click);
             // 
             // QCListTAG
             // 

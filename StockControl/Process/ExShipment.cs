@@ -775,7 +775,18 @@ namespace StockControl
                                     ep.CustomerAddress = "Plot no-191 sector-8 IMT  Manesar ,distt- Gurgaon- 122050 State Haryana.";
                                 }
                                 ep.InvoiceNo = txtExportNo.Text;
-                                ep.LOTNo = ed.LotNo;
+                                string getNewLot = ed.LotNo;
+                                if (getNewLot.Equals(""))
+                                {
+                                    //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo)).Split(',');
+                                    if(GT.Length>4)
+                                    {
+                                        getNewLot = GT[4];
+                                    }
+                                }
+
+                                ep.LOTNo = getNewLot;
                                 ep.QRCode = barcode;
                                 
                                 ep.Qty = ed.Qty;
@@ -853,7 +864,18 @@ namespace StockControl
                                // ep.CustomerName = ed.CustomerName;// Convert.ToString(db.getItemCSTMName(ed.Customer));
                                 ep.CustomerName = "Nabtesco Autmotive Corporation";// Convert.ToString(db.getItemCSTMName(ed.Customer));
                                 ep.InvoiceNo = txtExportNo.Text;
-                                ep.LOTNo = ed.LotNo;
+                                string getNewLot = ed.LotNo;
+                                if (getNewLot.Equals(""))
+                                {
+                                    //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo)).Split(',');
+                                    if (GT.Length > 4)
+                                    {
+                                        getNewLot = GT[4];
+                                    }
+                                }
+
+                                ep.LOTNo = getNewLot;                                
                                 ep.QRCode = barcode;
                                 ep.Qty = ed.Qty;
                                 ep.GroupP = ed.GroupP;

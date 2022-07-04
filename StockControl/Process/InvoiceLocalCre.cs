@@ -223,14 +223,31 @@ namespace StockControl
                                 AC = 4;
 
                             int CountAAA = 0;
+                            string Plant = "";
                             var ListInsert = db.sp_043_Inv_LocalLine_Insert(txtInvNo.Text, AC).ToList();
                             foreach (var rd in ListInsert)
                             {
+                                Plant = rd.Plant;
+                                //if(rd.CodeCustomer.Equals("3030"))
+                                //{
+                                //    if(Plant.Contains("_"))
+                                //    {
+                                //        try
+                                //        {
+                                //            string[] DATA = Plant.Split('_');
+                                //            if(DATA.Length>1)
+                                //            {
+                                //                Plant = DATA[0];
+                                //            }
+                                //        }
+                                //        catch { }
+                                //    }
+                                //}
                                 CountAAA += 1;
                                 tb_InvoiceLocalDT dt = new tb_InvoiceLocalDT();
                                 dt.InvoiceNo = txtInvNo.Text;
                                 dt.OrderNo = rd.OrderNo;
-                                dt.Plant = rd.Plant;
+                                dt.Plant = Plant;
                                 dt.PartNo = rd.CodeNo;
                                 dt.PartName = rd.CodeName;
                                 dt.PastCustomer = rd.CodeCustomer;

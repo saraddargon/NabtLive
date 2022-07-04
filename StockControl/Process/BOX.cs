@@ -612,7 +612,8 @@ namespace StockControl
                         foreach(var rd in bl)
                         {
                             //MessageBox.Show(rd.ItemNo);
-                            db.sp_44_BOXJObQ_StartBoxRunFirst_Dynamics(rd.ItemNo);
+                            //db.sp_44_BOXJObQ_StartBoxRunFirst_Dynamics(rd.ItemNo);
+                            db.sp_44_BOXJObQ_StartBoxRunFirst_Dynamics2(dtStartDate.Value,rd.ItemNo);
                             db.sp_44_BOXJObQ_StartBoxRun(dtStartDate.Value,rd.ItemNo);
                          
                             progressBar1.Value = ValueA;
@@ -1146,13 +1147,16 @@ namespace StockControl
                 e.RowElement.DrawFill = true;
                 e.RowElement.GradientStyle = GradientStyles.Solid;
                 e.RowElement.BackColor = Color.LightGray;
+
             }
             else
             {
                 e.RowElement.ResetValue(LightVisualElement.BackColorProperty, ValueResetFlags.Local);
                 e.RowElement.ResetValue(LightVisualElement.GradientStyleProperty, ValueResetFlags.Local);
                 e.RowElement.ResetValue(LightVisualElement.DrawFillProperty, ValueResetFlags.Local);
+
             }
+
         }
 
         private void radButtonElement7_Click(object sender, EventArgs e)
