@@ -602,50 +602,6 @@
       <Column Name="Attn" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
     </Type>
   </Table>
-  <Table Name="dbo.tb_ExportList" Member="tb_ExportLists">
-    <Type Name="tb_ExportList">
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="LoadDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Revision" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
-      <Column Name="Status" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
-      <Column Name="Remark" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ETDDate" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ETADate" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ShippingBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="IssueDate" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="IssueBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Country" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="CountrySize" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Code" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Attn" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="AirType" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Frieght" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ShipVia" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ETDDatex" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ETADatex" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="CountryOriginal" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ShippingMark" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="CustomerSale" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="AddressSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="AddressSale2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="TelSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="FaxSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="AttnSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="CustomerShip" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="AddressShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="AddressShip2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="TelShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="FaxShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="AttnShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="paymentTerm" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="InvoiceOrder" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="InvoiceFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="InvoiceDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="OrderNoH" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="CRR" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.tb_ExportDetail" Member="tb_ExportDetails">
     <Type Name="tb_ExportDetail">
       <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -1252,27 +1208,6 @@
       <Column Name="QCNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
     </Type>
   </Table>
-  <Table Name="dbo.tb_QCTAG" Member="tb_QCTAGs">
-    <Type Name="tb_QCTAG">
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="QCNo" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
-      <Column Name="BarcodeTag" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
-      <Column Name="ofTAG" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
-      <Column Name="QtyofTag" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="OKQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="NGQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="Dept" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
-      <Column Name="DType" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
-      <Column Name="CheckBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="CheckDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="SS" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="NGofTAG" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="CheckTAG" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="GType" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
-      <Column Name="GTAG" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.tb_User" Member="tb_Users">
     <Type Name="tb_User">
       <Column Name="UserID" Type="System.String" DbType="NVarChar(50) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
@@ -1285,18 +1220,6 @@
       <Column Name="NameApp" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="Email" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="BarCode" Type="System.Data.Linq.Binary" DbType="Image" CanBeNull="true" UpdateCheck="Never" />
-    </Type>
-  </Table>
-  <Table Name="dbo.tb_QCCheckUser" Member="tb_QCCheckUsers">
-    <Type Name="tb_QCCheckUser">
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="QCNo" Type="System.String" DbType="NVarChar(30)" CanBeNull="true" />
-      <Column Name="UType" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
-      <Column Name="UserName" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="UserID" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="DayN" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
-      <Column Name="UDesc" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
     </Type>
   </Table>
   <Table Name="dbo.tb_RequisitionDTTemp" Member="tb_RequisitionDTTemps">
@@ -1575,28 +1498,6 @@
       <Column Name="UMC" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
     </Type>
   </Table>
-  <Table Name="dbo.tb_ProductionHD" Member="tb_ProductionHDs">
-    <Type Name="tb_ProductionHD">
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="OrderNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PartFG" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Qty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="OrderPrint" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="CheckOK" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="Status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Createdate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="CreateBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Closed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="TpicsQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="LineName2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Delays" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="DayNight" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
-      <Column Name="HDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="MaxDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ForDynamics" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PrintDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.tb_QCHD" Member="tb_QCHDs">
     <Type Name="tb_QCHD">
       <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsDbGenerated="true" CanBeNull="false" />
@@ -1719,6 +1620,122 @@
       <Column Name="PhysicalInventoryValue" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
       <Column Name="UnitOfMeasure" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="Plant" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_QCCheckUser" Member="tb_QCCheckUsers">
+    <Type Name="tb_QCCheckUser">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="QCNo" Type="System.String" DbType="NVarChar(30)" CanBeNull="true" />
+      <Column Name="UType" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="UserName" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="UserID" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="DayN" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="UDesc" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="BoxNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_QCCheckUserTime" Member="tb_QCCheckUserTimes">
+    <Type Name="tb_QCCheckUserTime">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="QCNo" Type="System.String" DbType="NVarChar(30)" CanBeNull="true" />
+      <Column Name="UType" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="UserName" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="UserID" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="DayN" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="UDesc" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="BoxNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_QCTAG" Member="tb_QCTAGs">
+    <Type Name="tb_QCTAG">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="QCNo" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="BarcodeTag" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="ofTAG" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="QtyofTag" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="OKQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="NGQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Dept" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="DType" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="CheckBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CheckDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="SS" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="NGofTAG" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="CheckTAG" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="GType" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="GTAG" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_ProductionHD" Member="tb_ProductionHDs">
+    <Type Name="tb_ProductionHD">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="OrderNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PartFG" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Qty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="OrderPrint" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="CheckOK" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Createdate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="CreateBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Closed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="TpicsQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="LineName2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Delays" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DayNight" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="HDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="MaxDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ForDynamics" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PrintDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ScanBOM2" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tb_ExportList" Member="tb_ExportLists">
+    <Type Name="tb_ExportList">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="LoadDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Revision" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="Remark" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ETDDate" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ETADate" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ShippingBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="IssueDate" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="IssueBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Country" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="CountrySize" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Code" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Attn" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="AirType" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Frieght" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ShipVia" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ETDDatex" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ETADatex" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="CountryOriginal" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ShippingMark" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CustomerSale" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="AddressSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="AddressSale2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="TelSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="FaxSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="AttnSale" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CustomerShip" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="AddressShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="AddressShip2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="TelShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="FaxShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="AttnShip" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="paymentTerm" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="InvoiceFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="InvoiceDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="OrderNoH" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CRR" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="InvoiceOrder" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ForDynamics" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ShipTo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
     </Type>
   </Table>
   <Function Name="dbo.Sp_ADM03_OpenFormSelect" Method="Sp_ADM03_OpenFormSelect">
@@ -2502,60 +2519,6 @@
     <Parameter Name="ForNet" Parameter="forNet" Type="System.Decimal" DbType="Decimal(18,2)" />
     <Parameter Name="AC" Parameter="aC" Type="System.Int32" DbType="Int" />
     <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.sp_013_selectExportList_Detail" Method="sp_013_selectExportList_Detail">
-    <Parameter Name="Invoice" Parameter="invoice" Type="System.String" DbType="VarChar(30)" />
-    <Parameter Name="Status" Parameter="status" Type="System.String" DbType="VarChar(30)" />
-    <ElementType Name="sp_013_selectExportList_DetailResult">
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PalletNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ListNo" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="PartNo" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="PartName" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="Qty" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="QtyOfPL" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="LotNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Status" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="QtyOfTAG" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="Customer" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="STDPacking" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Status2" Type="System.String" DbType="NChar(10)" CanBeNull="true" />
-      <Column Name="OrderNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ConfirmFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="ConfirmDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ConfirmBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ShipFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="ShipDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ShipBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="SS" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="SNP" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="GroupP" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ShippingDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="PrintType" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
-      <Column Name="TotalPL" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ofPL" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="CustomerName" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="CustomerAddress" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="CustNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Period" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
-      <Column Name="CustItem" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="GroupPDA1" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="GroupPDA2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="StartQty" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
-      <Column Name="Grille" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="OldQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="K" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="L" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="M" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ForNetWet" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="UnitCost" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
-      <Column Name="UnitA" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="SysStatus" Type="System.String" DbType="VarChar(9) NOT NULL" CanBeNull="false" />
-      <Column Name="TotalPallet" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ListNo2" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="PL1" Type="System.Int32" DbType="Int" CanBeNull="true" />
-    </ElementType>
   </Function>
   <Function Name="dbo.sp_044_Inv_Export_ListDetail" Method="sp_044_Inv_Export_ListDetail">
     <Parameter Name="InvNo" Parameter="invNo" Type="System.String" DbType="VarChar(30)" />
@@ -4023,24 +3986,6 @@
       <Column Name="SR" Type="System.Int32" DbType="Int" CanBeNull="true" />
     </ElementType>
   </Function>
-  <Function Name="dbo.sp_43_ListHistoryLogPDA1" Method="sp_43_ListHistoryLogPDA1">
-    <Parameter Name="SaleOrder" Parameter="saleOrder" Type="System.String" DbType="VarChar(30)" />
-    <Parameter Name="Ck" Parameter="ck" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="Date1" Parameter="date1" Type="System.DateTime" DbType="DateTime" />
-    <Parameter Name="Date2" Parameter="date2" Type="System.DateTime" DbType="DateTime" />
-    <ElementType Name="sp_43_ListHistoryLogPDA1Result">
-      <Column Name="SalesOrder" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="LotNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ScanBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PKTAG" Type="System.String" DbType="NVarChar(300)" CanBeNull="true" />
-      <Column Name="ListTAG" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-    </ElementType>
-  </Function>
   <Function Name="dbo.sp_43_ListHistoryLogPDA3_Delete" Method="sp_43_ListHistoryLogPDA3_Delete">
     <Parameter Name="id" Type="System.Int32" DbType="Int" />
     <Parameter Name="Type" Parameter="type" Type="System.String" DbType="VarChar(20)" />
@@ -4061,24 +4006,6 @@
       <Column Name="Invoice" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="InvDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
       <Column Name="ShipDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.sp_43_ListHistoryLogPDA2" Method="sp_43_ListHistoryLogPDA2">
-    <Parameter Name="SaleOrder" Parameter="saleOrder" Type="System.String" DbType="VarChar(30)" />
-    <Parameter Name="Ck" Parameter="ck" Type="System.Boolean" DbType="Bit" />
-    <Parameter Name="Date1" Parameter="date1" Type="System.DateTime" DbType="DateTime" />
-    <Parameter Name="Date2" Parameter="date2" Type="System.DateTime" DbType="DateTime" />
-    <ElementType Name="sp_43_ListHistoryLogPDA2Result">
-      <Column Name="SalesOrder" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="LotNo" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
-      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="ScanBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PKTAG" Type="System.String" DbType="NVarChar(300)" CanBeNull="true" />
-      <Column Name="ListTAG" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
       <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
     </ElementType>
   </Function>
@@ -4506,24 +4433,6 @@
     <Parameter Name="Seq" Parameter="seq" Type="System.Int32" DbType="Int" />
     <Return Type="System.String" />
   </Function>
-  <Function Name="dbo.sp_46_QCMaster" Method="sp_46_QCMaster">
-    <Parameter Name="ISO" Parameter="iSO" Type="System.String" DbType="VarChar(30)" />
-    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(30)" />
-    <ElementType Name="sp_46_QCMasterResult">
-      <Column Name="No" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
-      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="FormISO" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="StepPart" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="TopPic" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="SetData" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Image1" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="Value1" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
-      <Column Name="Value2" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
-      <Column Name="UseMachine" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-    </ElementType>
-  </Function>
   <Function Name="dbo.sp_46_QCMaster_Edit3" Method="sp_46_QCMaster_Edit3">
     <Parameter Name="id" Type="System.Int32" DbType="Int" />
     <Parameter Name="UseMachine" Parameter="useMachine" Type="System.String" DbType="NVarChar(50)" />
@@ -4546,58 +4455,6 @@
     <Parameter Name="WO" Parameter="wO" Type="System.String" DbType="NVarChar(30)" />
     <Return Type="System.Int32" />
   </Function>
-  <Function Name="dbo.sp_019_LocaDeliveryList_DynamicsInsert" Method="sp_019_LocaDeliveryList_DynamicsInsert">
-    <Parameter Name="Date1" Parameter="date1" Type="System.DateTime" DbType="Date" />
-    <Parameter Name="Date2" Parameter="date2" Type="System.DateTime" DbType="Date" />
-    <Parameter Name="SaleOrder" Parameter="saleOrder" Type="System.String" DbType="VarChar(50)" />
-    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(50)" />
-    <Parameter Name="Plant" Parameter="plant" Type="System.String" DbType="VarChar(50)" />
-    <Parameter Name="Cust" Parameter="cust" Type="System.String" DbType="VarChar(50)" />
-    <Return Type="System.Int32" />
-  </Function>
-  <Function Name="dbo.sp_019_LocaDeliveryList_DynamicsSelect" Method="sp_019_LocaDeliveryList_DynamicsSelect">
-    <ElementType Name="sp_019_LocaDeliveryList_DynamicsSelectResult">
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="DocuNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="SORDER" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="NAME" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="CUSTNAME" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="CODE" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="CCODE" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="SEDA" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="KVOL" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="EIGYOU" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="NOTE" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PLANTID" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="SNP" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Period" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="ShippingDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="CDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="CustomerNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="LotSize" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="PrintFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="PrintBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PrintDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="DocumentFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="DocumentBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="DocumentDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="PackingFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="PackingBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PackingDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="ShipFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="ShipBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ShipDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="Status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="PL" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="ForDynamics" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="CheckFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="CheckBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="CheckDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="PDACheckFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="PDAReturn" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-    </ElementType>
-  </Function>
   <Function Name="dbo.sp_46_QCSelectWO_09_QCTAGSelect" Method="sp_46_QCSelectWO_09_QCTAGSelect">
     <Parameter Name="QCNo" Parameter="qCNo" Type="System.String" DbType="VarChar(30)" />
     <ElementType Name="sp_46_QCSelectWO_09_QCTAGSelectResult">
@@ -4619,28 +4476,6 @@
       <Column Name="GType" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
       <Column Name="GTAG" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
       <Column Name="TAGQ" Type="System.Int32" DbType="Int" CanBeNull="true" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.sp_46_QCGetValue2601_Time" Method="sp_46_QCGetValue2601_Time">
-    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(30)" />
-    <ElementType Name="sp_46_QCGetValue2601_TimeResult">
-      <Column Name="StartTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-      <Column Name="EndTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-      <Column Name="BomTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-      <Column Name="PrintTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
-    </ElementType>
-  </Function>
-  <Function Name="dbo.sp_49_QC_CheckLoadMC" Method="sp_49_QC_CheckLoadMC">
-    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(30)" />
-    <ElementType Name="sp_49_QC_CheckLoadMCResult">
-      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="StepPart" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="TopPic" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
-      <Column Name="SetData" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
-      <Column Name="DayN" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="Night" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="SC" Type="System.String" DbType="VarChar(2) NOT NULL" CanBeNull="false" />
-      <Column Name="MCA" Type="System.String" DbType="VarChar(1) NOT NULL" CanBeNull="false" />
     </ElementType>
   </Function>
   <Function Name="dbo.getLOtSizeTPICS_DynamicsCross" Method="getLOtSizeTPICS_DynamicsCross" IsComposable="true">
@@ -4906,10 +4741,405 @@
       <Column Name="TAGQ" Type="System.Int32" DbType="Int" CanBeNull="true" />
     </ElementType>
   </Function>
+  <Function Name="dbo.sp_019_LocaDeliveryList_DynamicsInsert" Method="sp_019_LocaDeliveryList_DynamicsInsert">
+    <Parameter Name="Date1" Parameter="date1" Type="System.DateTime" DbType="Date" />
+    <Parameter Name="Date2" Parameter="date2" Type="System.DateTime" DbType="Date" />
+    <Parameter Name="SaleOrder" Parameter="saleOrder" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="Plant" Parameter="plant" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="Cust" Parameter="cust" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="User" Parameter="user" Type="System.String" DbType="VarChar(50)" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_019_LocaDeliveryList_DynamicsSelect" Method="sp_019_LocaDeliveryList_DynamicsSelect">
+    <Parameter Name="User" Parameter="user" Type="System.String" DbType="VarChar(50)" />
+    <ElementType Name="sp_019_LocaDeliveryList_DynamicsSelectResult">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="DocuNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="SORDER" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="NAME" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="CUSTNAME" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="CODE" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CCODE" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="SEDA" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="KVOL" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="EIGYOU" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="NOTE" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PLANTID" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="SNP" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Period" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ShippingDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="CDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="CustomerNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="LotSize" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PrintFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="PrintBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PrintDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="DocumentFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="DocumentBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="DocumentDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="PackingFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="PackingBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PackingDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="ShipFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="ShipBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ShipDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PL" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ForDynamics" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CheckFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="CheckBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CheckDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="PDACheckFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="PDAReturn" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="UserS" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
   <Function Name="dbo.getLOtExport" Method="getLOtExport" IsComposable="true">
     <Parameter Name="CodeNo" Parameter="codeNo" Type="System.String" DbType="NVarChar(30)" />
     <Parameter Name="Order" Parameter="order" Type="System.String" DbType="NVarChar(30)" />
     <Parameter Name="Invoice" Parameter="invoice" Type="System.String" DbType="NVarChar(30)" />
+    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
     <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.sp_019_LocaDeliveryList_DynamicsUpdateLot" Method="sp_019_LocaDeliveryList_DynamicsUpdateLot">
+    <Parameter Name="ID" Parameter="iD" Type="System.Int32" DbType="Int" />
+    <Parameter Name="LotNo" Parameter="lotNo" Type="System.String" DbType="VarChar(30)" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.getLOtSizeTPICS_Dynamics" Method="getLOtSizeTPICS_Dynamics" IsComposable="true">
+    <Parameter Name="CodeNo" Parameter="codeNo" Type="System.String" DbType="NVarChar(30)" />
+    <Return Type="System.Decimal" />
+  </Function>
+  <Function Name="dbo.sp_49_QC_CheckLoadMC" Method="sp_49_QC_CheckLoadMC">
+    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_49_QC_CheckLoadMCResult">
+      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="StepPart" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="TopPic" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="SetData" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="DayN" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Night" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="SC" Type="System.String" DbType="VarChar(2) NOT NULL" CanBeNull="false" />
+      <Column Name="MCA" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_49_QC_CheckLoadMC2" Method="sp_49_QC_CheckLoadMC2">
+    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="FormISO" Parameter="formISO" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_49_QC_CheckLoadMC2Result">
+      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="StepPart" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="TopPic" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="SetData" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="DayN" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Night" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="SC" Type="System.String" DbType="VarChar(2) NOT NULL" CanBeNull="false" />
+      <Column Name="MCA" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_60_Delete_NewsForcast" Method="sp_60_Delete_NewsForcast">
+    <Parameter Name="id" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.web_getPath" Method="web_getPath" IsComposable="true">
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.get_QC_CheckUserBoxNo" Method="get_QC_CheckUserBoxNo" IsComposable="true">
+    <Parameter Name="QCNo" Parameter="qCNo" Type="System.String" DbType="VarChar(20)" />
+    <Parameter Name="UserBox" Parameter="userBox" Type="System.String" DbType="VarChar(250)" />
+    <Parameter Name="Seq" Parameter="seq" Type="System.Int32" DbType="Int" />
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.get_QC_ItemCustomerNo" Method="get_QC_ItemCustomerNo" IsComposable="true">
+    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="CSTMNo" Parameter="cSTMNo" Type="System.String" DbType="VarChar(30)" />
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.get_QC_UserNameScan" Method="get_QC_UserNameScan" IsComposable="true">
+    <Parameter Name="QCNo" Parameter="qCNo" Type="System.String" DbType="VarChar(20)" />
+    <Parameter Name="UserBox" Parameter="userBox" Type="System.String" DbType="VarChar(250)" />
+    <Parameter Name="DayN" Parameter="dayN" Type="System.String" DbType="VarChar(20)" />
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.get_QC_UserNameScanTime" Method="get_QC_UserNameScanTime" IsComposable="true">
+    <Parameter Name="QCNo" Parameter="qCNo" Type="System.String" DbType="VarChar(20)" />
+    <Parameter Name="UserBox" Parameter="userBox" Type="System.String" DbType="VarChar(250)" />
+    <Parameter Name="DayN" Parameter="dayN" Type="System.String" DbType="VarChar(20)" />
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.get_QC_DATAPoint_AG_2D" Method="get_QC_DATAPoint_AG_2D" IsComposable="true">
+    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(20)" />
+    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="ISNo" Parameter="iSNo" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Seq" Parameter="seq" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_43_ListHistoryLogPDA1" Method="sp_43_ListHistoryLogPDA1">
+    <Parameter Name="SaleOrder" Parameter="saleOrder" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="ItemNo" Parameter="itemNo" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="Ck" Parameter="ck" Type="System.Boolean" DbType="Bit" />
+    <Parameter Name="Date1" Parameter="date1" Type="System.DateTime" DbType="DateTime" />
+    <Parameter Name="Date2" Parameter="date2" Type="System.DateTime" DbType="DateTime" />
+    <Parameter Name="Inv" Parameter="inv" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Lot" Parameter="lot" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_43_ListHistoryLogPDA1Result">
+      <Column Name="SalesOrder" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LotNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ScanBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PKTAG" Type="System.String" DbType="NVarChar(300)" CanBeNull="true" />
+      <Column Name="ListTAG" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_43_ListHistoryLogPDA2" Method="sp_43_ListHistoryLogPDA2">
+    <Parameter Name="SaleOrder" Parameter="saleOrder" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="ItemNo" Parameter="itemNo" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="Ck" Parameter="ck" Type="System.Boolean" DbType="Bit" />
+    <Parameter Name="Date1" Parameter="date1" Type="System.DateTime" DbType="DateTime" />
+    <Parameter Name="Date2" Parameter="date2" Type="System.DateTime" DbType="DateTime" />
+    <Parameter Name="Inv" Parameter="inv" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Lot" Parameter="lot" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_43_ListHistoryLogPDA2Result">
+      <Column Name="SalesOrder" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LotNo" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ScanBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PKTAG" Type="System.String" DbType="NVarChar(300)" CanBeNull="true" />
+      <Column Name="ListTAG" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_46_QCSelectWO_12_UpdateOKQty" Method="sp_46_QCSelectWO_12_UpdateOKQty">
+    <Parameter Name="QCNo" Parameter="qCNo" Type="System.String" DbType="VarChar(50)" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_46_QCSelectWO_09_QCTAGSelectPD" Method="sp_46_QCSelectWO_09_QCTAGSelectPD">
+    <Parameter Name="QCNo" Parameter="qCNo" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_46_QCSelectWO_09_QCTAGSelectPDResult">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="QCNo" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="BarcodeTag" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="ofTAG" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="QtyofTag" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="OKQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="NGQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Dept" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="DType" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="CheckBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CheckDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="SS" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="NGofTAG" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="CheckTAG" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="GType" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="GTAG" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="TAGQ" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_60_AddNewForcast" Method="sp_60_AddNewForcast">
+    <Parameter Name="Type" Parameter="type" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Topic" Parameter="topic" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="Detail" Parameter="detail" Type="System.String" DbType="VarChar(550)" />
+    <Parameter Name="Remark" Parameter="remark" Type="System.String" DbType="VarChar(250)" />
+    <Parameter Name="PathFile" Parameter="pathFile" Type="System.String" DbType="VarChar(150)" />
+    <Parameter Name="CreateBy" Parameter="createBy" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="Vendor" Parameter="vendor" Type="System.String" DbType="VarChar(50)" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_60_Select_NewsForcast" Method="sp_60_Select_NewsForcast">
+    <Parameter Name="Type" Parameter="type" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_60_Select_NewsForcastResult">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Topic" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="Detail" Type="System.String" DbType="NVarChar(550)" CanBeNull="true" />
+      <Column Name="PathFile" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="CreateBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="TypeD" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="Remark" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="VendorNo" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_61_UpdatePDScanBOM2" Method="sp_61_UpdatePDScanBOM2">
+    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Datetime" Parameter="datetime" Type="System.DateTime" DbType="DateTime" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_46_QCGetValue2601_Time" Method="sp_46_QCGetValue2601_Time">
+    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_46_QCGetValue2601_TimeResult">
+      <Column Name="StartTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="EndTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="BomTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="PrintTime" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+      <Column Name="BomTime2" Type="System.String" DbType="VarChar(30) NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.get_QC_SetDataMasterP01" Method="get_QC_SetDataMasterP01" IsComposable="true">
+    <Parameter Name="ISO" Parameter="iSO" Type="System.String" DbType="VarChar(20)" />
+    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(20)" />
+    <Parameter Name="Seq" Parameter="seq" Type="System.Int32" DbType="Int" />
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.sp_46_QCMaster" Method="sp_46_QCMaster">
+    <Parameter Name="ISO" Parameter="iSO" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_46_QCMasterResult">
+      <Column Name="No" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
+      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="FormISO" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="StepPart" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="TopPic" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="SetData" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Image1" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Value1" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+      <Column Name="Value2" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+      <Column Name="UseMachine" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="SetDate2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_43_ListHistoryLogPDA3" Method="sp_43_ListHistoryLogPDA3">
+    <Parameter Name="SaleOrder" Parameter="saleOrder" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="ItemNo" Parameter="itemNo" Type="System.String" DbType="VarChar(50)" />
+    <Parameter Name="Ck" Parameter="ck" Type="System.Boolean" DbType="Bit" />
+    <Parameter Name="Date1" Parameter="date1" Type="System.DateTime" DbType="DateTime" />
+    <Parameter Name="Date2" Parameter="date2" Type="System.DateTime" DbType="DateTime" />
+    <Parameter Name="Inv" Parameter="inv" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Lot" Parameter="lot" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_43_ListHistoryLogPDA3Result">
+      <Column Name="SalesOrder" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Quantity" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="LotNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ScanDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ScanBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PKTAG" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="ListTAG" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_043_Inv_LocalLine_Check" Method="sp_043_Inv_LocalLine_Check">
+    <Parameter Name="PartNo" Parameter="partNo" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Order" Parameter="order" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Plant" Parameter="plant" Type="System.String" DbType="VarChar(50)" />
+    <ElementType Name="sp_043_Inv_LocalLine_CheckResult">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PartName" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PastCustomer" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Plant" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="OrderNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Unit" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Qty" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+      <Column Name="UnitPrice" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+      <Column Name="Amount" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+      <Column Name="SS" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="SortQ" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Vat" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+      <Column Name="Discount" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_46_QCSelectWO_13_GroupPart" Method="sp_46_QCSelectWO_13_GroupPart">
+    <Parameter Name="WO" Parameter="wO" Type="System.String" DbType="VarChar(50)" />
+    <ElementType Name="sp_46_QCSelectWO_13_GroupPartResult">
+      <Column Name="PartNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.getItemNo" Method="getItemNo" IsComposable="true">
+    <Parameter Name="CodeNo" Parameter="codeNo" Type="System.String" DbType="VarChar(30)" />
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.sp_46_QCUpdateNGQty2xx" Method="sp_46_QCUpdateNGQty2xx">
+    <Parameter Name="WONox" Parameter="wONox" Type="System.String" DbType="VarChar(30)" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_013_selectExportList_Detail" Method="sp_013_selectExportList_Detail">
+    <Parameter Name="Invoice" Parameter="invoice" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="Status" Parameter="status" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="PL" Parameter="pL" Type="System.String" DbType="VarChar(3)" />
+    <ElementType Name="sp_013_selectExportList_DetailResult">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="InvoiceNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PalletNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ListNo" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="PartNo" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="PartName" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="Qty" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="QtyOfPL" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LotNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="QtyOfTAG" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Customer" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="STDPacking" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Status2" Type="System.String" DbType="NChar(10)" CanBeNull="true" />
+      <Column Name="OrderNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ConfirmFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="ConfirmDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ConfirmBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ShipFlag" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="ShipDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ShipBy" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="SS" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="SNP" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="GroupP" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ShippingDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="PrintType" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="TotalPL" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ofPL" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CustomerName" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="CustomerAddress" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="CustNo" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Period" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="CustItem" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="GroupPDA1" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="GroupPDA2" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="StartQty" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="Grille" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="OldQty" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="K" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="L" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="M" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ForNetWet" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="UnitCost" Type="System.Decimal" DbType="Decimal(18,6)" CanBeNull="true" />
+      <Column Name="UnitA" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="ForDynamics" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="SysStatus" Type="System.String" DbType="VarChar(9) NOT NULL" CanBeNull="false" />
+      <Column Name="TotalPallet" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ListNo2" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PL1" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.getItemNo_DWG" Method="getItemNo_DWG" IsComposable="true">
+    <Parameter Name="CodeNo" Parameter="codeNo" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="AC" Parameter="aC" Type="System.Int32" DbType="Int" />
+    <Return Type="System.String" />
+  </Function>
+  <Function Name="dbo.sp_49_QC_CheckLoadMC3" Method="sp_49_QC_CheckLoadMC3">
+    <Parameter Name="WONo" Parameter="wONo" Type="System.String" DbType="VarChar(30)" />
+    <Parameter Name="FormISO" Parameter="formISO" Type="System.String" DbType="VarChar(30)" />
+    <ElementType Name="sp_49_QC_CheckLoadMC3Result">
+      <Column Name="Seq" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="StepPart" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="TopPic" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
+      <Column Name="SetData" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="DayN" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Night" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="SC" Type="System.String" DbType="VarChar(2) NOT NULL" CanBeNull="false" />
+      <Column Name="MCA" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
   </Function>
 </Database>

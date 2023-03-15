@@ -81,7 +81,7 @@ namespace StockControl
                         db.sp_013_selectExportList_DetailUpdatecustItem(Inv);
                         radGridView1.DataSource = null;
                        
-                        var pl = (from ix in db.sp_013_selectExportList_Detail(Inv, cboStatus.Text) select ix).ToList();
+                        var pl = (from ix in db.sp_013_selectExportList_Detail(Inv, cboStatus.Text,txtPallet.Text) select ix).ToList();
                         if(pl.Count>0)
                         {
                             txtTotalPallet.Text = pl.FirstOrDefault().TotalPallet.ToString();
@@ -93,6 +93,7 @@ namespace StockControl
 
                         foreach(GridViewRowInfo rs in radGridView1.Rows)
                         {
+                           // rs.Cells["id"].Value;
                             if(!Convert.ToBoolean(rs.Cells["LConfirm"].Value))
                             {
                                 rs.Cells["S"].ReadOnly = true;
@@ -106,6 +107,21 @@ namespace StockControl
                             if(dbClss.UserID.Equals("0203")|| dbClss.UserID.Equals("0240"))
                             {
                                 rs.Cells["S"].ReadOnly = false;
+                            }
+
+                            string getNewLot =  Convert.ToString(rs.Cells["LotNo"].Value);// ed.LotNo;
+                            if (getNewLot.Equals(""))
+                            {
+                                //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
+                                string[] GT = Convert.ToString(db.getLOtExport(Convert.ToString(rs.Cells["PartNo"].Value), Convert.ToString(rs.Cells["OrderNo"].Value), txtExportNo.Text, Convert.ToInt32(rs.Cells["id"].Value))).Split(',');
+                                if (GT.Length > 4)
+                                {
+                                    getNewLot = GT[4];
+                                }
+                                if (!getNewLot.Equals(""))
+                                {
+                                    db.sp_019_LocaDeliveryList_DynamicsUpdateLot(Convert.ToInt32(rs.Cells["id"].Value), getNewLot);
+                                }
                             }
 
                         }
@@ -779,10 +795,14 @@ namespace StockControl
                                 if (getNewLot.Equals(""))
                                 {
                                     //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
-                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo)).Split(',');
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo,ed.id)).Split(',');
                                     if(GT.Length>4)
                                     {
                                         getNewLot = GT[4];
+                                    }
+                                    if (!getNewLot.Equals(""))
+                                    {
+                                        db.sp_019_LocaDeliveryList_DynamicsUpdateLot(ed.id, getNewLot);
                                     }
                                 }
 
@@ -868,10 +888,14 @@ namespace StockControl
                                 if (getNewLot.Equals(""))
                                 {
                                     //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
-                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo)).Split(',');
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo,ed.id)).Split(',');
                                     if (GT.Length > 4)
                                     {
                                         getNewLot = GT[4];
+                                    }
+                                    if (!getNewLot.Equals(""))
+                                    {
+                                        db.sp_019_LocaDeliveryList_DynamicsUpdateLot(ed.id, getNewLot);
                                     }
                                 }
 
@@ -1004,7 +1028,8 @@ namespace StockControl
 
         private void radButtonElement8_Click(object sender, EventArgs e)
         {
-            ScanPDAList spl = new ScanPDAList("Export");
+
+            ScanPDAList spl = new ScanPDAList("Export",Convert.ToString(radGridView1.CurrentRow.Cells["OrderNo"].Value), Convert.ToString(radGridView1.CurrentRow.Cells["PartNo"].Value),txtExportNo.Text);
             spl.Show();
         }
 
@@ -1030,6 +1055,11 @@ namespace StockControl
         {
             ExDN_localdelivery dn = new ExDN_localdelivery();
             dn.Show();
+        }
+
+        private void txtPallet_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            dbClss.checkDigit(e);
         }
     }
 }

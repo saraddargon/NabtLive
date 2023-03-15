@@ -1021,18 +1021,18 @@
             this.cboLotNo2.EditorControl.ShowGroupPanel = false;
             this.cboLotNo2.EditorControl.Size = new System.Drawing.Size(240, 150);
             this.cboLotNo2.EditorControl.TabIndex = 0;
-            this.cboLotNo2.Location = new System.Drawing.Point(89, 77);
+            this.cboLotNo2.Location = new System.Drawing.Point(88, 54);
             this.cboLotNo2.Name = "cboLotNo2";
             this.cboLotNo2.Size = new System.Drawing.Size(203, 20);
             this.cboLotNo2.TabIndex = 4;
-            this.cboLotNo2.TabStop = false;
             // 
             // radButton2
             // 
-            this.radButton2.Location = new System.Drawing.Point(298, 77);
+            this.radButton2.Location = new System.Drawing.Point(297, 54);
             this.radButton2.Name = "radButton2";
             this.radButton2.Size = new System.Drawing.Size(31, 19);
             this.radButton2.TabIndex = 5;
+            this.radButton2.TabStop = false;
             this.radButton2.Text = "...";
             this.radButton2.Click += new System.EventHandler(this.radButton2_Click);
             // 
@@ -1042,11 +1042,12 @@
             this.txtItemName.Name = "txtItemName";
             this.txtItemName.Size = new System.Drawing.Size(32, 20);
             this.txtItemName.TabIndex = 8;
+            this.txtItemName.TabStop = false;
             this.txtItemName.Visible = false;
             // 
             // txtRemark
             // 
-            this.txtRemark.Location = new System.Drawing.Point(402, 54);
+            this.txtRemark.Location = new System.Drawing.Point(426, 54);
             this.txtRemark.Multiline = true;
             this.txtRemark.Name = "txtRemark";
             // 
@@ -1054,12 +1055,12 @@
             // 
             this.txtRemark.RootElement.StretchVertically = true;
             this.txtRemark.Size = new System.Drawing.Size(248, 46);
-            this.txtRemark.TabIndex = 11;
+            this.txtRemark.TabIndex = 12;
             // 
             // radLabel10
             // 
             this.radLabel10.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radLabel10.Location = new System.Drawing.Point(333, 52);
+            this.radLabel10.Location = new System.Drawing.Point(357, 52);
             this.radLabel10.Name = "radLabel10";
             this.radLabel10.Size = new System.Drawing.Size(63, 18);
             this.radLabel10.TabIndex = 10;
@@ -1068,15 +1069,15 @@
             // radLabel9
             // 
             this.radLabel9.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radLabel9.Location = new System.Drawing.Point(10, 76);
+            this.radLabel9.Location = new System.Drawing.Point(9, 53);
             this.radLabel9.Name = "radLabel9";
             this.radLabel9.Size = new System.Drawing.Size(60, 18);
             this.radLabel9.TabIndex = 3;
-            this.radLabel9.Text = "3. Lot No.";
+            this.radLabel9.Text = "2. Lot No.";
             // 
             // txtQuantity
             // 
-            this.txtQuantity.Location = new System.Drawing.Point(88, 52);
+            this.txtQuantity.Location = new System.Drawing.Point(88, 79);
             this.txtQuantity.Name = "txtQuantity";
             this.txtQuantity.Size = new System.Drawing.Size(85, 20);
             this.txtQuantity.TabIndex = 7;
@@ -1085,11 +1086,11 @@
             // radLabel8
             // 
             this.radLabel8.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radLabel8.Location = new System.Drawing.Point(9, 53);
+            this.radLabel8.Location = new System.Drawing.Point(9, 80);
             this.radLabel8.Name = "radLabel8";
             this.radLabel8.Size = new System.Drawing.Size(67, 18);
             this.radLabel8.TabIndex = 6;
-            this.radLabel8.Text = "2. Quantity";
+            this.radLabel8.Text = "3. Quantity";
             // 
             // txtItemCode
             // 
@@ -1110,10 +1111,10 @@
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(402, 106);
+            this.btnAdd.Location = new System.Drawing.Point(426, 106);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(72, 23);
-            this.btnAdd.TabIndex = 12;
+            this.btnAdd.TabIndex = 13;
             this.btnAdd.Text = "กด [เพิ่ม]";
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 

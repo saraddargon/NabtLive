@@ -7,17 +7,27 @@ using System.Text;
 using System.Windows.Forms;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
+using Telerik.WinControls.UI;
 namespace StockControl
 {
-    public partial class ReceiveList : Telerik.WinControls.UI.RadRibbonForm
+    public partial class ListNews : Telerik.WinControls.UI.RadRibbonForm
     {
-        public ReceiveList()
+        public ListNews(string ACC)
         {
+            this.Name = "ListNews";
+            //if (!dbClss.PermissionScreen(this.Name))
+            //{
+            //    MessageBox.Show("Access denied", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    this.Close();
+            //}
+           
+            AC = ACC;
+           
             InitializeComponent();
+            this.Text = "News & Forcast";
+            lblType.Text = AC;
         }
-
-        //private int RowView = 50;
-        //private int ColView = 10;
+        string AC = "";
         DataTable dt = new DataTable();
         private void radMenuItem2_Click(object sender, EventArgs e)
         {
@@ -42,27 +52,16 @@ namespace StockControl
         }
         private void Unit_Load(object sender, EventArgs e)
         {
-           // RMenu3.Click += RMenu3_Click;
-           // RMenu4.Click += RMenu4_Click;
-           // RMenu5.Click += RMenu5_Click;
-           // RMenu6.Click += RMenu6_Click;
-           //// radGridView1.ReadOnly = true;
-           // radGridView1.AutoGenerateColumns = false;
-           // GETDTRow();
-
-            DateTime date = DateTime.Now;
-            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
-            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-            dtDate1.Value = firstDayOfMonth;
-            dtDate2.Value = lastDayOfMonth;
+            radGridView1.ReadOnly = true;
+            radGridView1.AutoGenerateColumns = false; 
             DataLoad();
         }
 
         private void RMenu6_Click(object sender, EventArgs e)
         {
            
-            DeleteUnit();
-            DataLoad();
+            //DeleteUnit();
+            //DataLoad();
         }
 
         private void RMenu5_Click(object sender, EventArgs e)
@@ -83,47 +82,47 @@ namespace StockControl
 
         private void DataLoad()
         {
-            
-            int ck = 0;
-            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            try
             {
-                radGridView1.AutoGenerateColumns = false;
+                this.Cursor = Cursors.WaitCursor;
+                int ck = 0;
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
 
-                //radGridView1.DataSource = db.tb_ReceiveHDs.Where(r => (txtRCNo.Text == string.Empty || r.RCNo.Contains(txtRCNo.Text))
-                //&& (Convert.ToDecimal(Convert.ToDateTime(r.CreateDate).ToString("YYYYMMdd"))>=Convert.ToDecimal(dtDate1.Value.ToString("YYYYMMdd"))
-                //   && Convert.ToDecimal(Convert.ToDateTime(r.CreateDate).ToString("YYYYMMdd")) <= Convert.ToDecimal(dtDate2.Value.ToString("YYYYMMdd")))
-                //).ToList();
-                radGridView1.DataSource = db.sp_006_SelectListReceive(txtRCNo.Text,txtPO.Text, dtDate1.Value, dtDate2.Value).ToList();
-                foreach (var x in radGridView1.Rows)
-                {                 
-                    ck += 1;
-                    x.Cells["No"].Value = ck;
+
+                    radGridView1.DataSource = db.sp_60_Select_NewsForcast(AC).ToList();
+                    foreach (var x in radGridView1.Rows)
+                    {                        
+                        ck += 1;
+                        x.Cells["No"].Value = ck;
+                    }
+
                 }
-
             }
+            catch { }
+            this.Cursor = Cursors.Default;
 
 
-            
+
         }
         private bool CheckDuplicate(string code)
         {
-            bool ck = false;
-
-
+            bool ck = false;   
             return ck;
         }
 
         private bool AddUnit()
         {
             bool ck = false;
-           
+    
+
             return ck;
         }
         private bool DeleteUnit()
         {
             bool ck = false;
          
-           
+       
 
            
 
@@ -131,30 +130,19 @@ namespace StockControl
         }
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            // DataLoad();
             DataLoad();
         }
         private void NewClick()
         {
-            //radGridView1.ReadOnly = false;
-            //radGridView1.AllowAddNewRow = false;
-            ////btnEdit.Enabled = false;
-            //btnView.Enabled = true;
-            //radGridView1.Rows.AddNew();
+          
         }
         private void EditClick()
         {
-            //radGridView1.ReadOnly = false;
-            ////btnEdit.Enabled = false;
-            //btnView.Enabled = true;
-            //radGridView1.AllowAddNewRow = false;
+          
         }
         private void ViewClick()
         {
-           //// radGridView1.ReadOnly = true;
-           // btnView.Enabled = false;
-           // //btnEdit.Enabled = true;
-            radGridView1.AllowAddNewRow = false;
+        
             DataLoad();
         }
 
@@ -175,11 +163,7 @@ namespace StockControl
         }
         private void Saveclick()
         {
-            if (MessageBox.Show("ต้องการบันทึก ?", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                AddUnit();
-                DataLoad();
-            }
+           
         }
         private void DeleteClick()
         {
@@ -194,7 +178,7 @@ namespace StockControl
 
         private void radGridView1_CellEndEdit(object sender, Telerik.WinControls.UI.GridViewCellEventArgs e)
         {
-
+           
         }
 
         private void Unit_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -206,29 +190,13 @@ namespace StockControl
         private void radGridView1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
 
-            //if (e.KeyData == (Keys.Control | Keys.S))
-            //{
-            //    if (MessageBox.Show("ต้องการบันทึก ?", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            //    {
-            //        AddUnit();
-            //        DataLoad();
-            //    }
-            //}
-            //else if (e.KeyData == (Keys.Control | Keys.N))
-            //{
-            //    if (MessageBox.Show("ต้องการสร้างใหม่ ?", "สร้างใหม่", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            //    {
-            //        NewClick();
-            //    }
-            //}
+          
 
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            
-                //DeleteUnit();
-                //DataLoad();
+  
             
         }
 
@@ -246,12 +214,12 @@ namespace StockControl
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-          
+     
         }
 
         private void ImportData()
         {
-          
+ 
         }
 
         private void btnFilter1_Click(object sender, EventArgs e)
@@ -269,49 +237,105 @@ namespace StockControl
             this.Close();
         }
 
-        private void btnSearch_Click(object sender, EventArgs e)
+        private void btnSave_Click_1(object sender, EventArgs e)
+        {
+            //Example01.pdf
+         //   System.Diagnostics.Process.Start(Environment.CurrentDirectory+@"\Example\Example01.pdf");
+
+        }
+
+        private void radButton1_Click(object sender, EventArgs e)
         {
             DataLoad();
         }
 
-        private void radGridView1_CellDoubleClick(object sender, Telerik.WinControls.UI.GridViewCellEventArgs e)
+        private void chkSelect_ToggleStateChanged(object sender, Telerik.WinControls.UI.StateChangedEventArgs args)
+        {
+           
+        }
+
+        private void btnSave_Click_2(object sender, EventArgs e)
         {
             try
             {
-                string RC = radGridView1.Rows[e.RowIndex].Cells["RCNo"].Value.ToString();
-                Receive rc = new Receive(RC);
-                rc.ShowDialog();
-                DataLoad();
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    if (MessageBox.Show("ต้องการ ลบ", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        int id = 0;
+                        id = Convert.ToInt32(radGridView1.CurrentRow.Cells["id"].Value.ToString());
+                        if(id>0)
+                        {
+                            db.sp_60_Delete_NewsForcast(id);
+                            DataLoad();
+                        }
+                    }
+                }
             }
             catch { }
+
+        }
+       
+
+        private void txtItemNo_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar==13)
+            {
+                DataLoad();
+            }
         }
 
         private void radButtonElement1_Click(object sender, EventArgs e)
         {
-            try
-            {
-                this.Cursor = Cursors.WaitCursor;
-                using (DataClasses1DataContext db = new DataClasses1DataContext())
-                {
-                    db.sp_TPICS_CreateReceive2();
-                    MessageBox.Show("Calculate Completed.");
-                    DataLoad();
-                }
-                this.Cursor = Cursors.Default ;
-
-            }
-            catch { }
+          
         }
 
-        private void radButtonElement2_Click(object sender, EventArgs e)
+        private void radButton2_Click(object sender, EventArgs e)
         {
-            try
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
             {
-                ScanPDAListRC spl = new ScanPDAListRC("REC", Convert.ToString(radGridView1.CurrentRow.Cells["RCNo"].Value)
-                , Convert.ToString(radGridView1.CurrentRow.Cells["Code"].Value), "");
-                spl.Show();
+                if (!txtFile.Text.Equals(""))
+                {
+                    if (MessageBox.Show("ต้องการบันทึก", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        string path = db.web_getPath();
+                        string Ext = System.IO.Path.GetExtension(txtFile.Text);
+                        string FileName = AC + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ""+ Ext;
+                        if (!path.Equals(""))
+                        {
+                            System.IO.File.Copy(txtFile.Text,path + FileName, true);
+                            db.sp_60_AddNewForcast(AC, txtTopic.Text, txtDetail.Text, txtRemark.Text, FileName, dbClss.UserID,txtVendorNo.Text);
+                            MessageBox.Show("Completed.");
+                            DataLoad();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Path Invalid!");
+                        }
+                    }
+                }
             }
-            catch { }
+        }
+
+        private void radButton1_Click_1(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "files (*.pdf;*.xlsx)|*.pdf;*.xlsx";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.FileName = "";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+
+                txtFile.Text = openFileDialog1.FileName;
+            }
+        }
+
+        private void radButton3_Click(object sender, EventArgs e)
+        {
+            txtDetail.Text = "";
+            txtFile.Text = "";
+            txtRemark.Text = "";
+            txtTopic.Text = "";
         }
     }
 }

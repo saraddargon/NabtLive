@@ -60,7 +60,7 @@ namespace StockControl
             DateTime date = DateTime.Now;
             var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-            dtDate1.Value = firstDayOfMonth;
+            dtDate1.Value = DateTime.Now.AddDays(-1);
             dtDate2.Value = lastDayOfMonth;
             DataLoad();
         }
@@ -398,15 +398,21 @@ namespace StockControl
                     string LineName = radGridView1.Rows[rowx].Cells["LineName"].Value.ToString();
 
                     if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-026_1"))
-                    {
-
-
+                    {                        
                         
                         TOPTAG = "PQC," + radGridView1.Rows[rowx].Cells["WONo"].Value.ToString() + ",1,1," + radGridView1.Rows[rowx].Cells["LotNo"].Value.ToString() + ",No 1," +
                             radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString() + ",026_1";
                         TOPTAG2 = "None";
 
                     }
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-001"))
+                    //{
+
+                    //    TOPTAG = "PQC," + radGridView1.Rows[rowx].Cells["WONo"].Value.ToString() + ",1,1," + radGridView1.Rows[rowx].Cells["LotNo"].Value.ToString() + ",No 1," +
+                    //        radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString() + ",026_1";
+                    //    TOPTAG2 = "None";
+
+                    //}
                     else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-QA-056_02_1"))
                     {
 
@@ -471,12 +477,44 @@ namespace StockControl
                         //QCFormPD033 pd026 = new QCFormPD033(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString(), "FM-PD-033_1", TOPTAG, "");
                         //pd026.ShowDialog();
                     }
+                    else
+                    {
+                       
+
+                            using (DataClasses1DataContext db = new DataClasses1DataContext())
+                            {
+                                var g = db.sp_46_QCSelectWO_09_QCTAGTopTAG(radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()).FirstOrDefault();
+                                if (g != null)
+                                {
+                                    TOPTAG = g.BarcodeTag;
+                                    TOPTAG2 = g.GTAG;
+                                }
+                            }
+
+                            //QCFormQC5501 pd026 = new QCFormQC5501(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString(), "FM-QA-055_02_1", TOPTAG, "");
+                            //pd026.ShowDialog();
+                        
+                    }
                     QCFormPD026 pd026 = new QCFormPD026(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString(), FormISO, TOPTAG, LineName, Types, TOPTAG2);
                     pd026.ShowDialog();
                 }
 
             }
             catch { }
+        }
+
+        private void radButtonElement6_Click(object sender, EventArgs e)
+        {
+            if(MessageBox.Show("ต้องการอัพเดต Quantity หรือไม่ ?")==DialogResult.Yes)
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    
+                    db.sp_46_QCUpdateNGQty2xx(radGridView1.CurrentRow.Cells["WONo"].Value.ToString());
+                    db.sp_46_QCUpdateNGQty(radGridView1.CurrentRow.Cells["QCNo"].Value.ToString());
+                    MessageBox.Show("Completed.");
+                }
+            }
         }
     }
 }

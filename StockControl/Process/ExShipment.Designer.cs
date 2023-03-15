@@ -110,6 +110,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.radGridView1 = new Telerik.WinControls.UI.RadGridView();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.radLabel4 = new Telerik.WinControls.UI.RadLabel();
+            this.txtPallet = new Telerik.WinControls.UI.RadTextBox();
             this.cboStatus = new Telerik.WinControls.UI.RadDropDownList();
             this.chkALL = new Telerik.WinControls.UI.RadCheckBox();
             this.txtTotalPallet = new Telerik.WinControls.UI.RadTextBox();
@@ -136,6 +138,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).BeginInit();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtPallet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cboStatus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkALL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtTotalPallet)).BeginInit();
@@ -816,6 +820,8 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(255)))), ((int)(((byte)(242)))));
+            this.panel2.Controls.Add(this.radLabel4);
+            this.panel2.Controls.Add(this.txtPallet);
             this.panel2.Controls.Add(this.cboStatus);
             this.panel2.Controls.Add(this.chkALL);
             this.panel2.Controls.Add(this.txtTotalPallet);
@@ -830,6 +836,22 @@
             this.panel2.Size = new System.Drawing.Size(1348, 59);
             this.panel2.TabIndex = 1;
             // 
+            // radLabel4
+            // 
+            this.radLabel4.Location = new System.Drawing.Point(677, 11);
+            this.radLabel4.Name = "radLabel4";
+            this.radLabel4.Size = new System.Drawing.Size(34, 18);
+            this.radLabel4.TabIndex = 1;
+            this.radLabel4.Text = "Pallet";
+            // 
+            // txtPallet
+            // 
+            this.txtPallet.Location = new System.Drawing.Point(721, 11);
+            this.txtPallet.Name = "txtPallet";
+            this.txtPallet.Size = new System.Drawing.Size(85, 20);
+            this.txtPallet.TabIndex = 4;
+            this.txtPallet.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtPallet_KeyPress);
+            // 
             // cboStatus
             // 
             radListDataItem1.Text = "ALL";
@@ -838,7 +860,7 @@
             this.cboStatus.Items.Add(radListDataItem1);
             this.cboStatus.Items.Add(radListDataItem2);
             this.cboStatus.Items.Add(radListDataItem3);
-            this.cboStatus.Location = new System.Drawing.Point(676, 9);
+            this.cboStatus.Location = new System.Drawing.Point(883, 9);
             this.cboStatus.Name = "cboStatus";
             this.cboStatus.Size = new System.Drawing.Size(125, 20);
             this.cboStatus.TabIndex = 3;
@@ -1006,6 +1028,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtPallet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cboStatus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkALL)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtTotalPallet)).EndInit();
@@ -1082,5 +1106,7 @@
         private Telerik.WinControls.UI.RadButtonElement radButtonElement9;
         private Telerik.WinControls.UI.RadButtonElement radButtonElement10;
         private Telerik.WinControls.UI.RadButtonElement radButtonElement11;
+        private Telerik.WinControls.UI.RadLabel radLabel4;
+        private Telerik.WinControls.UI.RadTextBox txtPallet;
     }
 }

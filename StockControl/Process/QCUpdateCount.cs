@@ -15,11 +15,12 @@ namespace StockControl
    
         Telerik.WinControls.UI.RadTextBox CodeNo_tt = new Telerik.WinControls.UI.RadTextBox();
         int screen = 0;
-        public QCUpdateCount(string  CodeNox)
+        public QCUpdateCount(string  CodeNox,string LineName)
         {
             InitializeComponent();            
             screen = 1;
             txtWoNo.Text = CodeNox;
+            txtLineName.Text = LineName;
         }
         public QCUpdateCount()
         {
@@ -36,7 +37,6 @@ namespace StockControl
             {
                 UpDownData(1);
             }
-
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
@@ -60,73 +60,22 @@ namespace StockControl
                     {
                         QQ = Convert.ToInt32(qp.A1);
                     }
+                }//TW10-CB
+                if (txtLineName.Text.Equals("TW10-CB"))
+                {
+                    txtScan.Text = ValueText2(Gobal);
                 }
-                txtScan.Text = ValueText(Gobal);
+                else if(txtLineName.Text.Equals("TW02-SC_PB"))
+                {
+                    txtScan.Text = ValueText3(Gobal);
+                }
+                else
+                {
+                    txtScan.Text = ValueText(Gobal);
+                }
                 txtQty.Text = QQ.ToString();
                 txtQty.Focus();
-                //if (Gobal.Equals(1))
-                //{
-                //    txtScan.Text = ValueText(1);
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-
-                //}
-                //else if (Gobal.Equals(2))
-                //{
-                //    txtScan.Text = ValueText(2);
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-                //else if (Gobal.Equals(3))
-                //{
-                //    txtScan.Text = ValueText(3);
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-                //else if (Gobal.Equals(4))
-                //{
-                //    txtScan.Text = ValueText(3);
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-                //else if (Gobal.Equals(5))
-                //{
-                //    txtScan.Text = "เครื่องอัดสปริง";
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-                //else if (Gobal.Equals(6))
-                //{
-                //    txtScan.Text = "เครื่องรัดขอบ";
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-                //else if (Gobal.Equals(7))
-                //{
-                //    txtScan.Text = "เครื่องพ่นสี";
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-                //else if (Gobal.Equals(8))
-                //{
-                //    txtScan.Text = "เครื่อง Test";
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-
-                //}
-                //else if (Gobal.Equals(9))
-                //{
-                //    txtScan.Text = "เครื่อง Stamp Lot";
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-                //else if (Gobal.Equals(10))
-                //{
-                //    txtScan.Text = "ท้ายไลน์";
-                //    txtQty.Text = QQ.ToString();
-                //    txtQty.Focus();
-                //}
-
+               
 
 
             }
@@ -189,6 +138,71 @@ namespace StockControl
             }
             return TX;
         }
+        private string ValueText2(int aa)
+        {
+            string TX = "";
+            if (aa.Equals(1))
+            {
+                TX = "เครื่อง Sub Line";
+
+
+            }
+            else if (aa.Equals(2))
+            {
+                TX = "เครื่องตอก Lot No";
+
+            }
+            else if (aa.Equals(3))
+            {
+                TX = "เครื่องประกอบ";
+
+            }
+            else if (aa.Equals(4))
+            {
+                TX = "เครื่อง Tesk Leak (1)";
+
+            }
+            else if (aa.Equals(5))
+            {
+                TX = "เครื่อง Tesk Leak (2)";
+
+            }
+            else if (aa.Equals(6))
+            {
+                TX = "Check 100% Inspection";
+
+            }          
+            return TX;
+        }
+        private string ValueText3(int aa)
+        {
+            string TX = "";
+            if (aa.Equals(1))
+            {
+                TX = "เครื่องลอกสี";
+            }
+            else if (aa.Equals(2))
+            {
+                TX = "Piston Rod";
+
+            }
+            else if (aa.Equals(3))
+            {
+                TX = "เครื่องอัดสปริง";
+
+            }
+            else if (aa.Equals(4))
+            {
+                TX = "เครื่องรัดขอบ";
+
+            }
+            else if (aa.Equals(5))
+            {
+                TX = "ประกอบ Nut";
+
+            }
+            return TX;
+        }
         //private int RowView = 50;
         //private int ColView = 10;
         //DataTable dt = new DataTable();
@@ -247,7 +261,10 @@ namespace StockControl
             {
                 var ListB = db.tb_QCCountPDs.Where(c => c.WONo.Equals(txtWoNo.Text)).ToList();
                 radGridView4.DataSource = null;
-                radGridView4.DataSource = ListB;               
+                radGridView4.DataSource = ListB;
+
+            
+                         
 
 
             }
@@ -319,7 +336,18 @@ namespace StockControl
                             nc.WONo = txtWoNo.Text.ToUpper();
                             nc.DayN = DN;
                             nc.A1 = qq;
-                            nc.ProcessName = ValueText(Gobal);
+
+                            if (txtLineName.Text.Equals("TW10-CB"))
+                            {
+                                // txtScan.Text = ValueText2(Gobal);
+                                nc.ProcessName = ValueText2(Gobal);
+                            }
+                            else
+                            {
+                                // txtScan.Text = ValueText(Gobal);
+                                nc.ProcessName = ValueText(Gobal);
+                            }
+                           
                             nc.Seq = Gobal;
                             db.tb_QCCountPDs.InsertOnSubmit(nc);
                             db.SubmitChanges();

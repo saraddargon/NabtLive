@@ -11,18 +11,18 @@ using Microsoft.VisualBasic;
 
 namespace StockControl
 {
-    public partial class ScanPDAList : Telerik.WinControls.UI.RadRibbonForm
+    public partial class ScanPDAListRC : Telerik.WinControls.UI.RadRibbonForm
     {
-        public ScanPDAList()
+        public ScanPDAListRC()
         {
             InitializeComponent();
         }
-        public ScanPDAList(string STypex)
+        public ScanPDAListRC(string STypex)
         {
             InitializeComponent();
             Stype = STypex;
         }
-        public ScanPDAList(string STypex,string SaleOrderNox,string ItemNox,string Invoice)
+        public ScanPDAListRC(string STypex,string SaleOrderNox,string ItemNox,string Invoice)
         {
             InitializeComponent();
             Stype = STypex;
@@ -237,7 +237,7 @@ namespace StockControl
                                     {
                                         C += 1;
                                         rid = Convert.ToInt32(rd.Cells["id"].Value);
-                                        db.sp_43_ListHistoryLogPDA3_Delete(rid, Stype);
+                                       // db.sp_43_ListHistoryLogPDA3_Delete(rid, Stype);
                                     }
                                 }
 
@@ -559,13 +559,13 @@ namespace StockControl
             using (DataClasses1DataContext db = new DataClasses1DataContext())
             {
                 radGridView1.DataSource = null;
-                if (Stype.Equals("Local"))
+                if (Stype.Equals("REC"))
                 {
-                    radGridView1.DataSource = db.sp_43_ListHistoryLogPDA1(txtSalesOrder.Text,txtItemNo.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value,txtInvoice.Text,txtLotNo.Text);
+                    radGridView1.DataSource = db.sp_43_ListHistoryLogPDA3(txtSalesOrder.Text,txtItemNo.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value,txtInvoice.Text,txtLotNo.Text);
                 }
                 else
                 {
-                    radGridView1.DataSource = db.sp_43_ListHistoryLogPDA2(txtSalesOrder.Text,txtItemNo.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value, txtInvoice.Text, txtLotNo.Text);
+                    //radGridView1.DataSource = db.sp_43_ListHistoryLogPDA2(txtSalesOrder.Text,txtItemNo.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value, txtInvoice.Text, txtLotNo.Text);
                 }
 
                 
@@ -612,7 +612,7 @@ namespace StockControl
                             if (Convert.ToBoolean(x.Cells["CK"].Value))
                             {
                                 ck += 1;
-                                db.sp_43_ListHistoryLogPDA3_Delete(Convert.ToInt32(x.Cells["id"].Value), Stype);
+                                //db.sp_43_ListHistoryLogPDA3_Delete(Convert.ToInt32(x.Cells["id"].Value), Stype);
                             }
                         }
                     }

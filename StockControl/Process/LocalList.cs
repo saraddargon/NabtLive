@@ -22,6 +22,7 @@ namespace StockControl
         //private int RowView = 50;
         //private int ColView = 10;
         DataTable dt = new DataTable();
+        string DBLocal1 = "Data Source=XTH-TOO;Initial Catalog=dbBarcodeNab;User ID=sa;Password=;";
         private void radMenuItem2_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
@@ -45,6 +46,17 @@ namespace StockControl
         }
         private void Unit_Load(object sender, EventArgs e)
         {
+            DBLocal1 = "Data Source=XTH-TOO;Initial Catalog=dbBarcodeNab;User ID=sa;Password=;";
+            //Report.CRRReport.ServerName = b[1];
+            //Report.CRRReport.DbName = c[1];
+            //Report.CRRReport.dbUser = d[1];
+            //Report.CRRReport.dbPass = f[1];
+            DBLocal1 = "";
+            DBLocal1 = "Data Source="+Report.CRRReport.ServerName+";";
+            DBLocal1 += "Initial Catalog=dbBarcodeNab;";
+            DBLocal1 += "User ID=z1;";
+            DBLocal1 += "Password=P@ssw0rd;";
+
             radGridView1.AutoGenerateColumns = false;
            // chkShipDate.Checked = false;
             txtSaleOrderNo.Text = "";
@@ -74,8 +86,9 @@ namespace StockControl
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            CCRow = 0;
-            LoadData();
+          
+           // LoadData();
+            LoadDynamics();
         }
         int Row = 0;
         private void LoadData()
@@ -83,13 +96,13 @@ namespace StockControl
             this.Cursor = Cursors.WaitCursor;
             try
             {
-                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                using (DataClasses1DataContext db = new DataClasses1DataContext(DBLocal1))
                 {
                   //  db.sp_019_LocaDeliveryList_DynamicsUPDate();
-                    db.sp_019_LocaDeliveryList_DynamicsInsert(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text, txtCust.Text);
+                  //  db.sp_019_LocaDeliveryList_DynamicsInsert(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text, txtCust.Text,dbClss.UserID);
                     radGridView1.DataSource = null;
                     //radGridView1.DataSource = db.sp_019_LocaDeliveryList_Dynamics(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text,txtCust.Text).ToList();
-                    radGridView1.DataSource = db.sp_019_LocaDeliveryList_DynamicsSelect().ToList();
+                    radGridView1.DataSource = db.sp_019_LocaDeliveryList_DynamicsSelect("admin").ToList();
                     int CRow = 0;
                     foreach (GridViewRowInfo rd in radGridView1.Rows)
                     {
@@ -98,7 +111,7 @@ namespace StockControl
                     }
                 }
             }
-            catch { }
+            catch(Exception ex) { MessageBox.Show(ex.Message); }
             this.Cursor = Cursors.Default;
 
         }
@@ -284,6 +297,18 @@ namespace StockControl
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+
+            //LoadDynamics();
+            LoadData();
+        }
+        private void LoadDynamics()
+        {
+            CCRow = 0;
+            using (DataClasses1DataContext db = new DataClasses1DataContext(DBLocal1))
+            {
+                db.CommandTimeout = 3600;
+                db.sp_019_LocaDeliveryList_DynamicsInsert(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text, txtCust.Text,"admin");
+            }
             LoadData();
         }
 
@@ -1162,7 +1187,8 @@ namespace StockControl
 
         private void radButtonElement11_Click(object sender, EventArgs e)
         {
-            ScanPDAList spl = new ScanPDAList("Local");
+            ScanPDAList spl = new ScanPDAList("Local", Convert.ToString(radGridView1.CurrentRow.Cells["SaleOrderNo"].Value)
+                , Convert.ToString(radGridView1.CurrentRow.Cells["PartNo"].Value),"");
             spl.Show();
         }
 

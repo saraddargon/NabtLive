@@ -13,6 +13,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -25,7 +26,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -124,6 +124,7 @@
     </Compile>
     <Compile Include="dbClss.cs" />
     <Compile Include="dbShowData.cs" />
+    <Compile Include="dbShowData2.cs" />
     <Compile Include="Main\Display.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -232,6 +233,12 @@
     <Compile Include="Process\ExDN_localdelivery.Designer.cs">
       <DependentUpon>ExDN_localdelivery.cs</DependentUpon>
     </Compile>
+    <Compile Include="Process\ListNews.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\ListNews.Designer.cs">
+      <DependentUpon>ListNews.cs</DependentUpon>
+    </Compile>
     <Compile Include="Process\PlantEdit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -303,6 +310,12 @@
     </Compile>
     <Compile Include="Process\PrintQC.Designer.cs">
       <DependentUpon>PrintQC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Process\QCCheckUserPoint2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\QCCheckUserPoint2.Designer.cs">
+      <DependentUpon>QCCheckUserPoint2.cs</DependentUpon>
     </Compile>
     <Compile Include="Process\QCUpdateCount.cs">
       <SubType>Form</SubType>
@@ -459,6 +472,12 @@
     </Compile>
     <Compile Include="Process\NCRReq.Designer.cs">
       <DependentUpon>NCRReq.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Process\ScanPDAListRC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\ScanPDAListRC.Designer.cs">
+      <DependentUpon>ScanPDAListRC.cs</DependentUpon>
     </Compile>
     <Compile Include="Process\ScanPDAList.cs">
       <SubType>Form</SubType>
@@ -881,6 +900,9 @@
     <EmbeddedResource Include="Process\ExDN_localdelivery.resx">
       <DependentUpon>ExDN_localdelivery.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Process\ListNews.resx">
+      <DependentUpon>ListNews.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Process\PlantEdit.resx">
       <DependentUpon>PlantEdit.cs</DependentUpon>
     </EmbeddedResource>
@@ -916,6 +938,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Process\PrintQC.resx">
       <DependentUpon>PrintQC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\QCCheckUserPoint2.resx">
+      <DependentUpon>QCCheckUserPoint2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Process\QCUpdateCount.resx">
       <DependentUpon>QCUpdateCount.cs</DependentUpon>
@@ -994,6 +1019,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Process\NCRReq.resx">
       <DependentUpon>NCRReq.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\ScanPDAListRC.resx">
+      <DependentUpon>ScanPDAListRC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Process\ScanPDAList.resx">
       <DependentUpon>ScanPDAList.cs</DependentUpon>

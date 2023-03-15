@@ -292,6 +292,7 @@ namespace StockControl
                         if(ev!=null)
                         {
                             txtCode.Text = ev.Code;
+                            txtShipTo.Text = ev.ShipTo;
                             if(!txtCode.Text.Equals("") && Convert.ToString(ev.CustomerSale).Equals("") && Convert.ToString(ev.CustomerShip).Equals(""))
                             {
                                 tb_InvoiceEx_Master ms = db.tb_InvoiceEx_Masters.Where(m => m.Code.Equals(txtCode.Text)).FirstOrDefault();
@@ -372,6 +373,7 @@ namespace StockControl
                             ev.ShippingMark = txtShippingMark.Text;
                             ev.AirType = txtAirType.Text;
                             ev.Code = txtCode.Text;
+                            ev.ShipTo = txtShipTo.Text;
                             ev.InvoiceOrder = txtInvoiceOrder.Text;
                             ev.CountryOriginal = txtCountry.Text;
                             ev.Frieght = txtFreight.Text;
@@ -379,6 +381,8 @@ namespace StockControl
                             ev.Country = txtCurrency.Text;
                             ev.paymentTerm = txtPaymentterm.Text;
                             ev.Attn = txtAttnShip.Text;
+                          
+
                             if(!Convert.ToBoolean(ev.InvoiceFlag))
                             {
                                 ev.InvoiceFlag = true;
@@ -466,11 +470,15 @@ namespace StockControl
             {
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
-                    if (!txtInvNo.Text.Equals("") && !txtCode.Text.Equals(""))
+                    if(txtShipTo.Text.Equals(""))
+                    {
+                        txtShipTo.Text = txtCode.Text;
+                    }
+                    if (!txtInvNo.Text.Equals("") && !txtShipTo.Text.Equals(""))
                     {
 
 
-                        tb_InvoiceEx_Master ms = db.tb_InvoiceEx_Masters.Where(m => m.Code.Equals(txtCode.Text)).FirstOrDefault();
+                        tb_InvoiceEx_Master ms = db.tb_InvoiceEx_Masters.Where(m => m.Code.Equals(txtShipTo.Text)).FirstOrDefault();
                         if (ms != null)
                         {
 
@@ -1257,6 +1265,7 @@ namespace StockControl
                         int.TryParse(txtSteelcase.Text, out Stl);
                         decimal Freight5c = 0;
                         decimal.TryParse(txtFreight5C.Text, out Freight5c);
+                        decimal.TryParse(txtCalPallet.Text,out FobPallet);
                         //Update Cost in ExList//
                         var ListDetail = db.tb_ExportDetails.Where(s => s.InvoiceNo.Equals(txtInvNo.Text)).ToList();
                         foreach (var rd in ListDetail)
@@ -1314,7 +1323,10 @@ namespace StockControl
                             FobCC = 5;
                         if((PL+Stl)>20)
                         {
-                            FobPallet = 700;
+                            if (FobPallet == 0)
+                            {
+                                FobPallet = 700;
+                            }
                         }
 
 
@@ -1344,14 +1356,15 @@ namespace StockControl
                             fb.FobPallet = FobPallet;
                             fb.AmountText = txtAmountTextFOB.Text.ToUpper();
                             fb.Freight5C = Freight5c;
-                            if (TotalFob > 0)
-                            {
-                                txtPaymentText.Text = "T.T.REMITTANCE AT 60 DAYS AFTER B/L DATE";
-                            }
-                            else
-                            {
-                                txtPaymentText.Text = "No Commercial Value.";
-                            }
+                          
+                            //if (TotalFob > 0)
+                            //{
+                            //    txtPaymentText.Text = "T.T.REMITTANCE AT 60 DAYS AFTER B/L DATE";
+                            //}
+                            //else
+                            //{
+                            //    txtPaymentText.Text = "No Commercial Value.";
+                            //}
 
                             if (txtPaymentText.Text.Equals(""))
                             {

@@ -244,9 +244,9 @@ namespace StockControl
             
             try
             {
-               // date1 = Convert.ToDateTime("08:30:00");
+               // date1 = Convert.ToDateTime("08:10:00") - 17:10
                 TimeSpan ts = new TimeSpan(date1.Hour, date1.Minute, date1.Second);
-                if (ts.TotalMinutes >= 510 && ts.TotalMinutes < 1230)
+                if (ts.TotalMinutes >= 495 && ts.TotalMinutes < 1215)
                 //if (ts.TotalMinutes >= 510 && ts.TotalMinutes < 650)
                 {
                     DayN = "D";
@@ -323,7 +323,24 @@ namespace StockControl
                 string DATA = AppDomain.CurrentDomain.BaseDirectory;
                 string tempPath = System.IO.Path.GetTempPath();
                 string FileName = "FM-PD-026.xlsx";
-                string tempfile = tempPath + FileName;
+                //FM-PD-026_17Feb23.xlsx
+                FileName = "FM-PD-026.07.2021.xlsx";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    tb_ProductionHD pd1 = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO)).FirstOrDefault();
+                    if(pd1!=null)
+                    {
+                        DateTime Date1 = Convert.ToDateTime("2023-02-17 00:00:00.000");
+                        if (pd1.Createdate>=Date1)
+                        {
+                            FileName = "FM-PD-026_17Feb23.xlsx";
+                        }
+                    }
+                }
+
+
+
+                    string tempfile = tempPath + FileName;
                 DATA = DATA + @"QC\" + FileName;
 
                 if (File.Exists(tempfile))
@@ -419,8 +436,6 @@ namespace StockControl
                             tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
                             if (qh != null)
                             {
-
-
                                 //////////Find UserName////////////
                                 var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
                                 int r1 = 0;
@@ -448,17 +463,14 @@ namespace StockControl
                                             r1 += 1;
                                             if (r1 > 1)
                                                 cCheckBy1 += ",";
-                                            cCheckBy1 += rd.UserName;
-                                            
-                                            
+                                            cCheckBy1 += rd.UserName;   
                                         }
                                         else if (rd.UDesc.Equals("พนักงานประกอบ MAIN LINE"))
                                         {
                                             r2 += 1;
                                             if (r2 > 1)
                                                 cCheckBy2 += ",";
-                                            cCheckBy2 += rd.UserName;
-                                            
+                                            cCheckBy2 += rd.UserName;                                            
                                         }
                                         else if (rd.UDesc.Equals("พนักงานประกอบ FINAL LINE"))
                                         {
@@ -466,7 +478,6 @@ namespace StockControl
                                             if (r3 > 1)
                                                 cCheckBy3 += ",";
                                             cCheckBy3 += rd.UserName;
-                                           
                                         }
                                     }
                                     else //N
@@ -555,9 +566,9 @@ namespace StockControl
                                 //AA32.Value2 = db.get_QC_SetDataMasterTpic(qh.FormISO, qh.PartNo, 30);
 
                                 //Step 1
-                                int cRow = 22;
+                                int cRow = 41;
                                 string Ppart = "";    
-                                for (int II = 1; II <= 22; II++)
+                                for (int II = 20; II <= 22; II++)
                                 {
                                     cRow += 1;
                                     
@@ -581,10 +592,51 @@ namespace StockControl
                                         Line4.Value2 ="'"+ rds.Lot;
                                     }
 
-
-                                    //if (cRow == 23)
-                                   //     cRow += 1;
                                 }
+                                /////FIND Part Name,Part No.
+                                string Pparg2 = "";
+                                //var QCP = db.sp_46_QCSelectWO_13_GroupPart(qh.WONo).ToList();
+                                var QCP = db.tb_ProductionRMs.Where(p => p.OrderNo.Equals(qh.WONo)).ToList();
+                                cRow = 22;
+                                foreach (var rx in QCP)
+                                {
+                                    Ppart = "";
+                                    Pparg2 = "";
+
+                                    cRow += 1;
+                                    if (cRow < 42)
+                                    {
+                                                                            
+                                        Ppart = rx.PartNoRM;
+                                        Pparg2 = db.getItemNo(rx.PartNoRM);
+                                        if (rx.PartNoRM.ToUpper().Contains("GREASE") || rx.PartNoRM.ToUpper().Contains("LOCTITE"))
+                                        {
+                                            //Pparg2 = rx.PartNo;
+                                            //if (rx.PartNo.ToUpper().Contains("GREASE"))
+                                            //    Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 20);
+                                            //if (rx.PartNo.ToUpper().Contains("LOCTITE 277"))
+                                            //    Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 21);
+                                            //if (rx.PartNo.ToUpper().Contains("LOCTITE 414"))
+                                            //    Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 22);
+
+                                            Pparg2 = "";
+                                        }
+                                        if (Pparg2 != "")
+                                        {
+                                            InsertToExcel(ref worksheet, "G" + cRow.ToString(), Pparg2);
+                                            InsertToExcel(ref worksheet, "L" + cRow.ToString(), Ppart);
+                                            Ppart = rx.PartNoRM;
+                                            var rds = db.sp_46_QCGetValue2601(qh.WONo, Ppart).FirstOrDefault();
+                                            if (rds != null)
+                                            {
+                                                InsertToExcel(ref worksheet, "Q" + cRow.ToString(), rds.DayN);
+                                                InsertToExcel(ref worksheet, "R" + cRow.ToString(), rds.NightN);
+                                                InsertToExcel(ref worksheet, "S" + cRow.ToString(), rds.Lot);
+                                            }
+                                        }
+                                    }
+                                }
+
 
                                 //Step 2
                                 int crow2 = 22;
@@ -952,6 +1004,1648 @@ namespace StockControl
             catch { }
             
         }
+        public static void PrintFMPD001(string WO, string PartNo, string QCNo1,string FromIS)
+        {
+            try
+            {
+                try
+                {                   
+                    string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                    string tempPath = System.IO.Path.GetTempPath();
+                    string FileName = "FM-PD-001_STD.xlsx";
+
+                    string TypeReport = GetReportName("STD.Base", PartNo, FromIS).ToUpper();
+
+                    if (TypeReport.Equals("STD.PPC"))
+                    {
+                        FileName = "FM-PD-001_STDPPC.xlsx";
+                    }
+                    if (TypeReport.Equals("SPG"))
+                    {
+                        FileName = "FM-PD-001_SPG.xlsx";
+                    }
+
+                    string tempfile = tempPath + FileName;
+                    DATA = DATA + @"QC\" + FileName;
+                    if (File.Exists(tempfile))
+                    {
+                        try
+                        {
+                            File.Delete(tempfile);
+                        }
+                        catch { }
+                    }
+
+                    Excel.Application excelApp = new Excel.Application();
+                    Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                      DATA, 0, true, 5,
+                      "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                      0, true);
+                    Excel.Sheets sheets = excelBook.Worksheets;
+                    Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+
+                    // progressBar1.Maximum = 51;
+                    // progressBar1.Minimum = 1;
+                    //int row1 = 22;
+                    //int row2 = 22;
+                    //int Seq = 0;
+                    //int seq2 = 22;
+                    //int CountRow = 0;
+                    string cIssueBy1 = "";
+                    string cIssueBy2 = "";
+                    string cIssueBy3 = "";
+                    string cIssueBy4 = "";
+
+                    string cCheckBy1 = "";
+                    string cCheckBy2 = "";
+                    string cCheckBy3 = "";
+
+                    string cCheckByF1 = "";
+                    string cCheckByF2 = "";
+                    string cCheckByF3 = "";
+
+                    string PV = "P";
+                    string QHNo = QCNo1;
+                    string FormISO = FromIS;
+                    string DN = "";
+                    string SymBo = "～";
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        //string Value1 = "";
+                        //string Value2 = "";
+                        //string LotNo = "";
+
+                        ///////////////SETValue/////////////////
+                        var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                        if (DValue != null)
+                        {
+                            DN = DValue.DayNight;
+
+                            InsertToExcel(ref worksheet, "I5", GetSetDataDWG(PartNo, FromIS));
+                            InsertToExcel(ref worksheet, "AF1", GetSetDataCust(PartNo, FromIS));
+                            InsertToExcel(ref worksheet, "L48", GetSetDataLB(PartNo, FromIS, "LABEL"));
+                            InsertToExcel(ref worksheet, "P3", DValue.CODE.ToString());
+                            InsertToExcel(ref worksheet, "P5", DValue.NAME.ToString());
+                            InsertToExcel(ref worksheet, "D5", DValue.PORDER.ToString());
+                            InsertToExcel(ref worksheet, "D7", DValue.DeliveryDate);
+                            InsertToExcel(ref worksheet, "D9", DValue.LotNo.ToString());
+                            InsertToExcel(ref worksheet, "D11", DValue.OrderQty.ToString());
+                            var gTime = db.sp_46_QCGetValue2601_Time(WO).ToList();
+                            if (gTime.Count > 0)
+                            {
+                                var g = gTime.FirstOrDefault();
+                                DateTime Chtime = Convert.ToDateTime(g.BomTime);
+                                DateTime Chtime2 = Convert.ToDateTime(g.PrintTime);
+                               
+                                if(g.BomTime2!="")
+                                    Chtime= Convert.ToDateTime(g.BomTime2);
+                                if (g.BomTime == g.PrintTime)
+                                {
+                                    Chtime2 = Convert.ToDateTime(g.PrintTime).AddMinutes(30);
+                                }
+                                InsertToExcel(ref worksheet, "AB9", Math.Abs(Convert.ToDecimal((Chtime - Chtime2).TotalMinutes)).ToString("####") + " นาที");
+                                if (!g.StartTime.Equals(""))
+                                {
+                                    InsertToExcel(ref worksheet, "N7", Convert.ToDateTime(Chtime2).ToString("HH:mm"));
+                                    InsertToExcel(ref worksheet, "AA7", Convert.ToDateTime(g.EndTime).ToString("HH:mm"));
+                                    InsertToExcel(ref worksheet, "O9", "'" + Convert.ToDateTime(Chtime).ToString("HH:mm") + " " + SymBo + " " + Convert.ToDateTime(Chtime2).ToString("HH:mm"));
+                                }
+                            }
+                            try
+                            {
+                                tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                                if (qh != null)
+                                {
+                                    //////////Find UserName////////////
+                                    var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                    int r1 = 0;
+                                    int r2 = 0;
+                                    int r3 = 0;
+                                    int rr1 = 0;
+                                    int rr2 = 0;
+                                    int rr3 = 0;
+                                    foreach (var rd in uc)
+                                    {
+                                        DN = rd.DayN;// dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+                                        if (DN.Equals("D"))
+                                        {
+                                            if (rd.UDesc.Equals("ผู้จัดทำเอกสาร"))
+                                                cIssueBy1 = rd.UserName;
+                                            if (rd.UDesc.Equals("ผู้ตรวจสอบก่อนผลิต"))
+                                                cIssueBy2 = rd.UserName;                                       
+                                        }
+                                        else //N
+                                        {
+                                            if (rd.UDesc.Equals("ผู้จัดทำเอกสาร"))
+                                                cIssueBy3 = rd.UserName;
+                                            if (rd.UDesc.Equals("ผู้ตรวจสอบก่อนผลิต"))
+                                                cIssueBy4 = rd.UserName;                                           
+                                        }
+                                    }
+
+                                    InsertToExcel(ref worksheet, "AE10", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet, "AE5", "1. " + cIssueBy1);
+                                    InsertToExcel(ref worksheet, "AE7", "2. " + cIssueBy2);
+                                    InsertToExcel(ref worksheet, "AF5", "1. " + cIssueBy3);
+                                    InsertToExcel(ref worksheet, "AF7", "2. " + cIssueBy4);
+
+                                    if (TypeReport.Equals("STD.PPC"))
+                                    {
+                                        //Main Line
+                                        InsertToExcel(ref worksheet, "E23", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "D"));
+                                        InsertToExcel(ref worksheet, "F23", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "N"));
+
+                                        InsertToExcel(ref worksheet, "E30", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "D"));
+                                        InsertToExcel(ref worksheet, "F30", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "N"));
+
+                                        InsertToExcel(ref worksheet, "E38", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "D"));
+                                        InsertToExcel(ref worksheet, "F38", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "N"));
+
+                                        //Sub Line
+                                        InsertToExcel(ref worksheet, "L55", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 1", "D"));
+                                        InsertToExcel(ref worksheet, "S55", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 1", "N"));
+
+                                        InsertToExcel(ref worksheet, "L56", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 2", "D"));
+                                        InsertToExcel(ref worksheet, "S56", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 2", "N"));
+
+                                        InsertToExcel(ref worksheet, "L57", db.get_QC_UserNameScan(qh.QCNo, "พนักงานประกอบ SUB LINE", "D"));
+                                        InsertToExcel(ref worksheet, "S57", db.get_QC_UserNameScan(qh.QCNo, "พนักงานประกอบ SUB LINE", "N"));
+
+                                        InsertToExcel(ref worksheet, "L58", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานประกอบ SUB LINE", "D"));
+                                        InsertToExcel(ref worksheet, "S58", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานประกอบ SUB LINE", "N"));
+
+                                        InsertToExcel(ref worksheet, "L59", db.get_QC_UserNameScan(qh.QCNo, "พนักงานขัน Plug", "D"));
+                                        InsertToExcel(ref worksheet, "S59", db.get_QC_UserNameScan(qh.QCNo, "พนักงานขัน Plug", "N"));
+
+                                        InsertToExcel(ref worksheet, "L60", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานขัน Plug", "D"));
+                                        InsertToExcel(ref worksheet, "S60", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานขัน Plug", "N"));
+
+                                        //ตอก Lot//
+                                        InsertToExcel(ref worksheet, "AE39", "LOT ( " + qh.LotNo + " )");
+                                        InsertToExcel(ref worksheet, "AE33", db.get_QC_DATAPoint_AG(qh.WONo, 35));
+                                        InsertToExcel(ref worksheet, "AE34", db.get_QC_DATAPoint_AG(qh.WONo, 36));
+
+                                    }
+                                    else if (TypeReport.Equals("SPG"))
+                                    {
+                                        //InsertToExcel(ref worksheet, "E23", db.get_QC_UserNameScan(qh.QCNo, "ขัน Plug", "D"));
+                                        //InsertToExcel(ref worksheet, "F23", db.get_QC_UserNameScan(qh.QCNo, "ขัน Plug", "N"));
+                                        //InsertToExcel(ref worksheet, "E27", db.get_QC_UserNameScan(qh.QCNo, "Sub Line", "D"));
+                                        //InsertToExcel(ref worksheet, "F27", db.get_QC_UserNameScan(qh.QCNo, "Sub Line", "N"));
+                                        //InsertToExcel(ref worksheet, "E31", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "D"));
+                                        //InsertToExcel(ref worksheet, "F31", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "N"));
+
+                                        //InsertToExcel(ref worksheet, "E35", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "D"));
+                                        //InsertToExcel(ref worksheet, "F35", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "N"));
+
+                                        //InsertToExcel(ref worksheet, "E39", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "D"));
+                                        //InsertToExcel(ref worksheet, "F39", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "N"));
+
+                                        InsertToExcel(ref worksheet, "E23", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "D"));
+                                        InsertToExcel(ref worksheet, "F23", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "N"));
+
+                                        InsertToExcel(ref worksheet, "E30", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "D"));
+                                        InsertToExcel(ref worksheet, "F30", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "N"));
+
+                                        InsertToExcel(ref worksheet, "E38", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "D"));
+                                        InsertToExcel(ref worksheet, "F38", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "N"));
+
+
+                                        //Sub Line
+                                        InsertToExcel(ref worksheet, "L55", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 1", "D"));
+                                        InsertToExcel(ref worksheet, "S55", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 1", "N"));
+
+                                        InsertToExcel(ref worksheet, "L56", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 2", "D"));
+                                        InsertToExcel(ref worksheet, "S56", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 2", "N"));
+
+                                        InsertToExcel(ref worksheet, "L57", db.get_QC_UserNameScan(qh.QCNo, "พนักงานประกอบ SUB LINE", "D"));
+                                        InsertToExcel(ref worksheet, "S57", db.get_QC_UserNameScan(qh.QCNo, "พนักงานประกอบ SUB LINE", "N"));
+                                        InsertToExcel(ref worksheet, "L58", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานประกอบ SUB LINE", "D"));
+                                        InsertToExcel(ref worksheet, "S58", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานประกอบ SUB LINE", "N"));
+
+                                        InsertToExcel(ref worksheet, "L59", db.get_QC_UserNameScan(qh.QCNo, "พนักงานขัน Plug", "D"));
+                                        InsertToExcel(ref worksheet, "S59", db.get_QC_UserNameScan(qh.QCNo, "พนักงานขัน Plug", "N"));
+                                        InsertToExcel(ref worksheet, "L60", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานขัน Plug", "D"));
+                                        InsertToExcel(ref worksheet, "S60", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานขัน Plug", "N"));
+
+                                        //ตอก Lot//
+                                        InsertToExcel(ref worksheet, "AE45", "LOT ( " + qh.LotNo + " )");
+                                        InsertToExcel(ref worksheet, "AE33", db.get_QC_DATAPoint_AG(qh.WONo, 35));
+                                        InsertToExcel(ref worksheet, "AE34", db.get_QC_DATAPoint_AG(qh.WONo, 36));
+                                    }
+                                    else if(TypeReport.ToUpper().Equals("STD.BASE"))
+                                    {
+                                        InsertToExcel(ref worksheet, "E23", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "D"));
+                                        InsertToExcel(ref worksheet, "F23", db.get_QC_UserNameScan(qh.QCNo, "Stamp Lot /ประกอบ", "N"));
+
+                                        InsertToExcel(ref worksheet, "E30", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "D"));
+                                        InsertToExcel(ref worksheet, "F30", db.get_QC_UserNameScan(qh.QCNo, "Test Leak", "N"));
+
+                                        InsertToExcel(ref worksheet, "E38", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "D"));
+                                        InsertToExcel(ref worksheet, "F38", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "N"));
+
+                                        //Sub Line
+                                        InsertToExcel(ref worksheet, "L55", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 1", "D"));
+                                        InsertToExcel(ref worksheet, "S55", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 1", "N"));
+
+                                        InsertToExcel(ref worksheet, "L56", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 2", "D"));
+                                        InsertToExcel(ref worksheet, "S56", db.get_QC_UserNameScan(qh.QCNo, "พนักงานตรวจสอบ SUB LINE 2", "N"));
+
+                                        InsertToExcel(ref worksheet, "L57", db.get_QC_UserNameScan(qh.QCNo, "พนักงานประกอบ SUB LINE", "D"));
+                                        InsertToExcel(ref worksheet, "S57", db.get_QC_UserNameScan(qh.QCNo, "พนักงานประกอบ SUB LINE", "N"));
+                                        InsertToExcel(ref worksheet, "L58", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานประกอบ SUB LINE", "D"));
+                                        InsertToExcel(ref worksheet, "S58", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานประกอบ SUB LINE", "N"));
+
+                                        InsertToExcel(ref worksheet, "L59", db.get_QC_UserNameScan(qh.QCNo, "พนักงานขัน Plug", "D"));
+                                        InsertToExcel(ref worksheet, "S59", db.get_QC_UserNameScan(qh.QCNo, "พนักงานขัน Plug", "N"));
+
+                                        InsertToExcel(ref worksheet, "L60", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานขัน Plug", "D"));
+                                        InsertToExcel(ref worksheet, "S60", db.get_QC_UserNameScanTime(qh.QCNo, "พนักงานขัน Plug", "N"));
+
+                                        //ตอก Lot//
+                                        InsertToExcel(ref worksheet, "AE45", "LOT ( " + qh.LotNo + " )");
+                                        InsertToExcel(ref worksheet, "AE33", db.get_QC_DATAPoint_AG(qh.WONo, 35));
+                                        InsertToExcel(ref worksheet, "AE34", db.get_QC_DATAPoint_AG(qh.WONo, 36));
+                                    }
+                                    //Find CountPD
+                                    /////////////////////////////
+
+                                    /////////////////////////////
+                                    var co = db.tb_QCCountPDs.Where(c => c.WONo.Equals(WO)).ToList();                                    
+                                    foreach (var rd in co)
+                                    {
+                                        if (rd.DayN.Equals("D"))
+                                        {
+                                            InsertToExcel(ref worksheet, "F" + (62 + rd.Seq).ToString(), rd.A1);
+                                        }
+                                        else
+                                        {
+                                            InsertToExcel(ref worksheet, "H" + (62 + rd.Seq).ToString(), rd.A1);
+                                        }  
+
+                                    }
+                                    //Find Problem//
+
+                                    tb_QCProblem pb = db.tb_QCProblems.Where(p => p.QCNo.Equals(QHNo)).FirstOrDefault();
+                                    if (pb != null)
+                                    {
+                                        if (pb.TypeProblem.Equals("Man"))
+                                        {
+                                            InsertToExcel(ref worksheet, "F13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Machine"))
+                                        {
+                                            InsertToExcel(ref worksheet, "F13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Method"))
+                                        {
+                                            InsertToExcel(ref worksheet, "M13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Material"))
+                                        {
+                                            InsertToExcel(ref worksheet, "P13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Other"))
+                                        {
+                                            InsertToExcel(ref worksheet, "S13", "P");
+                                            InsertToExcel(ref worksheet, "X13", pb.TypeRemark);
+                                        }
+                                        InsertToExcel(ref worksheet, "E14", pb.ProblemSeeBy);
+                                        InsertToExcel(ref worksheet, "N14", pb.ProblemName);
+                                        InsertToExcel(ref worksheet, "AC14", pb.ProblemWare);
+                                        InsertToExcel(ref worksheet, "E15", pb.ProblemTime);
+                                        InsertToExcel(ref worksheet, "N15", pb.ProblemWhy);
+                                        InsertToExcel(ref worksheet, "E17", pb.ProblemFix);
+                                        InsertToExcel(ref worksheet, "V18", pb.FixBy);
+                                        InsertToExcel(ref worksheet, "AE18", pb.CheckBy);
+
+                                    }
+                                    ////Scan Time///
+                                    var urList = db.tb_QCCheckUserTimes.Where(p => p.QCNo.Equals(QCNo1) && !p.BoxNo.Equals("")).ToList();
+                                    if(urList.Count>0)
+                                    {
+                                        foreach (var rd in urList)
+                                        {
+
+                                            if (rd.UDesc.Equals("ประกอบ"))
+                                            {
+                                                InsertToExcel(ref worksheet, CheckColumnTime(rd.BoxNo)+"51", rd.UserName);
+                                            }
+                                            else if (rd.UDesc.Equals("Test Leak"))
+                                            {
+                                                InsertToExcel(ref worksheet, CheckColumnTime(rd.BoxNo) + "52", rd.UserName);
+                                            }
+                                            else
+                                            {
+                                                InsertToExcel(ref worksheet, CheckColumnTime(rd.BoxNo) + "53", rd.UserName);
+                                            }
+                                        }
+                                    }
+                                    ////////////////
+
+                                    ////Set Topic//
+                                    //Step 1
+                                    int cRow = 22;
+                                    int IR = 0;
+                                    string Ppart = "";
+                                    string Pparg2 = "";
+
+                                    //for (int II = 1; II <= 26; II++)
+                                    //{
+
+                                    //    cRow += 1;
+                                    //    if (II <26)
+                                    //    {
+                                    //        Ppart = db.get_QC_SetDataMasterX(qh.FormISO, qh.PartNo, II - 2);
+                                    //        Pparg2 = db.get_QC_SetDataMasterX(qh.FormISO, qh.PartNo, II - 2);
+
+                                    //        InsertToExcel(ref worksheet, "G" + cRow.ToString(), Ppart);
+                                    //        InsertToExcel(ref worksheet, "L" + cRow.ToString(), Pparg2);
+
+                                    //        var rds = db.sp_46_QCGetValue2601(qh.WONo, Ppart).FirstOrDefault();
+                                    //        if (rds != null)
+                                    //        {
+                                    //            InsertToExcel(ref worksheet, "Q" + cRow.ToString(), rds.DayN);
+                                    //            InsertToExcel(ref worksheet, "R" + cRow.ToString(), rds.NightN);
+                                    //            InsertToExcel(ref worksheet, "S" + cRow.ToString(), rds.Lot);
+                                    //        }
+                                    //    }                                    
+
+                                    //}
+                                  //  var QCP = db.sp_46_QCSelectWO_13_GroupPart(qh.WONo).ToList();
+                                    var QCP1 = db.tb_ProductionRMs.Where(p => p.OrderNo.Equals(qh.WONo)).ToList();
+                                    cRow = 22;                                    
+                                    foreach (var rx in QCP1)
+                                    {
+                                        Ppart = "";
+                                        Pparg2 = "";
+
+                                        cRow += 1;
+                                        if (cRow < 48)
+                                        {
+                                            // MOLYBDENUM GREASE (S - GREASE)                                           
+                                            Ppart = rx.PartNoRM;
+                                            Pparg2 = db.getItemNo(rx.PartNoRM);
+                                            if (rx.PartNoRM.ToUpper().Contains("MOLYBDENUM") || rx.PartNoRM.ToUpper().Contains("DYNAMAX") ||rx.PartNoRM.ToUpper().Contains("LOCTITE"))
+                                            {
+                                               // Pparg2 = rx.PartNo;
+                                                //if (rx.PartNo.ToUpper().Contains("MOLYBDENUM"))                                                    
+                                                //     Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 21);
+                                                //if (rx.PartNo.ToUpper().Contains("DYNAMAX"))
+                                                //    Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 22);
+                                                //if (rx.PartNo.ToUpper().Contains("LOCTITE"))
+                                                //    Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 23);
+
+                                                Pparg2 = "";
+                                            }
+                                            if (Pparg2 != "")
+                                            {
+                                                InsertToExcel(ref worksheet, "G" + cRow.ToString(), Pparg2);
+                                                InsertToExcel(ref worksheet, "L" + cRow.ToString(), Ppart);
+                                                Ppart = rx.PartNoRM;
+                                                var rds = db.sp_46_QCGetValue2601(qh.WONo, Ppart).FirstOrDefault();
+                                                if (rds != null)
+                                                {
+                                                    InsertToExcel(ref worksheet, "Q" + cRow.ToString(), rds.DayN);
+                                                    InsertToExcel(ref worksheet, "R" + cRow.ToString(), rds.NightN);
+                                                    InsertToExcel(ref worksheet, "S" + cRow.ToString(), rds.Lot);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Ppart = "";
+                                    Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 24);
+                                    if (!Ppart.Equals(""))
+                                    {
+                                        InsertToExcel(ref worksheet, "L48", Ppart);
+                                    }
+
+                                    string Ppart1 = "";
+                                    string Ppart2 = "";
+                                    string Ppart3 = "";
+                                    Ppart1 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 21);                                   
+                                    Ppart2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 22);                                   
+                                    Ppart3 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 23);                                    
+                                    InsertToExcel(ref worksheet, "L45", Ppart1);
+                                    InsertToExcel(ref worksheet, "L46", Ppart2);
+                                    InsertToExcel(ref worksheet, "L47", Ppart3);
+                                    Ppart1 = "";
+                                    Ppart2 = "";
+                                    Ppart3 = "";
+                                    Ppart1 = db.get_QC_SetDataMaster2(qh.FormISO, qh.PartNo, 21);
+                                    Ppart2 = db.get_QC_SetDataMaster2(qh.FormISO, qh.PartNo, 22);
+                                    Ppart3 = db.get_QC_SetDataMaster2(qh.FormISO, qh.PartNo, 23);
+                                    InsertToExcel(ref worksheet, "G45", Ppart1);
+                                    InsertToExcel(ref worksheet, "G46", Ppart2);
+                                    InsertToExcel(ref worksheet, "G47", Ppart3);
+
+                                    var rds1 = db.sp_46_QCGetValue2601(qh.WONo, Ppart1).FirstOrDefault();
+                                    if (rds1 != null)
+                                    {
+                                        InsertToExcel(ref worksheet, "Q45", rds1.DayN);
+                                        InsertToExcel(ref worksheet, "R45", rds1.NightN);
+                                        InsertToExcel(ref worksheet, "S45", rds1.Lot);
+                                    }
+
+                                    var rds2 = db.sp_46_QCGetValue2601(qh.WONo, Ppart2).FirstOrDefault();
+                                    if (rds2 != null)
+                                    {
+                                        InsertToExcel(ref worksheet, "Q46", rds2.DayN);
+                                        InsertToExcel(ref worksheet, "R46", rds2.NightN);
+                                        InsertToExcel(ref worksheet, "S46", rds2.Lot);
+                                    }
+
+                                    var rds3 = db.sp_46_QCGetValue2601(qh.WONo, Ppart3).FirstOrDefault();
+                                    if (rds3 != null)
+                                    {
+                                        InsertToExcel(ref worksheet, "Q47", rds3.DayN);
+                                        InsertToExcel(ref worksheet, "R47", rds3.NightN);
+                                        InsertToExcel(ref worksheet, "S47", rds3.Lot);
+                                    }
+
+                                    /////Step 2
+                                    ////  int crow2 = 22;
+                                    cRow = 22;
+                                    int CK = 0;
+                                    int N23 = 0;
+                                    int D23 = 0;
+                                    for (int II = 25; II <= 74; II++)
+                                    {
+                                       
+                                        cRow += 1;
+                                       // crow2 += 1;
+                                        
+
+                                        if (TypeReport.Equals("STD.PPC"))
+                                        {
+                                            if (II == 44)
+                                            {
+                                              //  II += 3;
+                                                cRow += 2;
+                                            }
+
+                                            Ppart = "";
+                                            Ppart = db.get_QC_SetDataMasterP01(qh.FormISO, qh.PartNo, II);
+                                            if (!Ppart.ToLower().Equals("xnonex"))
+                                            {
+                                                if (("AE" + cRow.ToString()).Equals("AE39") || ("AE" + cRow.ToString()).Equals("AE33") || ("AE" + cRow.ToString()).Equals("AE34"))
+                                                {
+
+                                                }
+                                                else
+                                                { 
+                                                    
+                                                    InsertToExcel(ref worksheet, "AE" + cRow.ToString(), Ppart);
+                                                }
+                                            }
+                                            if (II == 37)
+                                                cRow = 35;
+                                            if (II == 38)
+                                                cRow = 37;
+                                            if (II == 39)
+                                                cRow = 39;
+                                        }
+                                        else
+                                        {
+
+                                            if (II == 43)
+                                                cRow = 43;
+                                            Ppart = "";
+                                            Ppart = db.get_QC_SetDataMasterP01(qh.FormISO, qh.PartNo, II);
+                                            if (!Ppart.ToLower().Equals("xnonex"))
+                                            {
+
+                                                if (("AE" + cRow.ToString()).Equals("AE45") || ("AE" + cRow.ToString()).Equals("AE33") || ("AE" + cRow.ToString()).Equals("AE34"))
+                                                {
+
+                                                }
+                                                else
+                                                {
+                                                    InsertToExcel(ref worksheet, "AE" + cRow.ToString(), Ppart);
+                                                }
+
+                                            }
+                                           
+
+                                        }
+                                      
+                                        ////Line 1 //
+                                        CK = Convert.ToInt32(db.get_QC_DATAPoint_AG_2D(qh.WONo,qh.PartNo,qh.FormISO, II));
+                                        if (CK == 1)
+                                        {
+                                            InsertToExcel(ref worksheet, "AG" + cRow.ToString(), "P");
+                                            D23 += 1;
+                                        }
+                                        else if (CK == 2)
+                                        {
+                                            InsertToExcel(ref worksheet, "AH" + cRow.ToString(), "P");
+                                            N23 += 1;
+                                        }        
+                                        else if(CK==3)
+                                        {
+                                            if (D23 > 0)
+                                            {
+                                                InsertToExcel(ref worksheet, "AG" + cRow.ToString(), "P");
+                                            }
+                                            if (N23 > 23)
+                                            {
+                                                InsertToExcel(ref worksheet, "AH" + cRow.ToString(), "P");
+                                            }
+                                        }  
+                                        else
+                                        {
+
+                                        }                              
+                                    }
+
+                                }
+                            }
+                            catch { }
+                        }
+                        ////////////////////////////////////////
+                    }
+                    excelBook.SaveAs(tempfile);
+                    excelBook.Close(false);
+                    excelApp.Quit();
+                    releaseObject(worksheet);
+                    releaseObject(excelBook);
+                    releaseObject(excelApp);
+                    Marshal.FinalReleaseComObject(worksheet);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+                    GC.GetTotalMemory(false);
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    GC.GetTotalMemory(true);
+                    System.Diagnostics.Process.Start(tempfile);
+
+                }
+                catch { }
+            }
+            catch { }
+        }
+        public static void PrintFMPD002(string WO, string PartNo, string QCNo1, string FromIS)
+        {
+            try
+            {                
+                string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = System.IO.Path.GetTempPath();
+                string FileName = "FM-PD-002_STD.xlsx";
+                string TypeReport = GetReportName("STD", PartNo, FromIS).ToUpper();
+                string HeaderText = "100% Inspection Check Sheet BRAKE CHAMBER";
+                if (TypeReport.Equals("SPG"))
+                {
+                    HeaderText = "100% Inspection Check Sheet SPRING CHAMBER";
+                }
+                string tempfile = tempPath + FileName;
+                DATA = DATA + @"QC\" + FileName;
+                if (File.Exists(tempfile))
+                {
+                    try
+                    {
+                        File.Delete(tempfile);
+                    }
+                    catch { }
+                }
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                  DATA, 0, true, 5,
+                  "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                  0, true);
+                Excel.Sheets sheets = excelBook.Worksheets;
+                Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+                Excel.Worksheet worksheet2 = (Excel.Worksheet)sheets.get_Item(2);
+                Excel.Worksheet worksheet3 = (Excel.Worksheet)sheets.get_Item(3);
+                Excel.Worksheet worksheet4 = (Excel.Worksheet)sheets.get_Item(4);
+                // progressBar1.Maximum = 51;
+                // progressBar1.Minimum = 1;
+                int row1 = 6;
+                int Seq = 0;
+                int TG = 0;
+                string PV = "P";
+                string QHNo = QCNo1;
+                string FormISO = "";
+                string [] Inspector= new string[10];
+                string cCheckBy1 = "";
+                string cCheckBy2 = "";
+                string cCheckBy3 = "";
+                string cCheckBy4 = "";
+                string cCheckBy5 = "";
+                string cCheckBy6 = "";
+                string[] SetData = new string[10];
+                bool PAGE1 = true;
+                bool PAGE2 = false;
+                bool PAGE3 = false;
+                bool PAGE4 = false;
+                bool chek24 = true;
+                string DN = "";
+                string LotMark = "ตอกที่ Base มี4 ตำแหน่ง , มีการตอก Lot ถูกต้อง , ชัดเจน , สามารถอ่านได้ ";
+                string Line1Part = "";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    string RefValue1 = "";
+                    string RefValue2 = "";
+                    string RefValue3 = "";
+                    string PartName = "";
+                    string C9 = "";
+                    string GP5 = "";
+                    ///////////////SETValue/////////////////////////////////
+                    var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                    if (DValue != null)
+                    {
+                        LotMark = LotMark + " ( "+DValue.LotNo+" )";
+                        var PTAGList = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QHNo)).ToList();
+                        if (PTAGList.Count > 40)
+                        {
+                            PAGE2 = true;
+                        }
+                        if (PTAGList.Count > 80)
+                        {
+                            PAGE3 = true;
+                        }
+                        if (PTAGList.Count > 120)
+                        {
+                            PAGE4 = true;
+                        }
+                        DN = DValue.DayNight;
+                        PartName = DValue.NAME;
+
+                       
+
+                        if (PAGE1)
+                        {
+                            InsertToExcel(ref worksheet, "A3", HeaderText);
+                            InsertToExcel(ref worksheet, "S3", DValue.CODE);
+                            InsertToExcel(ref worksheet, "S4", DValue.NAME);
+                            InsertToExcel(ref worksheet, "Q5", DValue.PORDER);
+                            InsertToExcel(ref worksheet, "Y5", DValue.LotNo);                            
+                        }
+                        if (PAGE2)
+                        {
+                            InsertToExcel(ref worksheet2, "A3", HeaderText);
+                            InsertToExcel(ref worksheet2, "S3", DValue.CODE);
+                            InsertToExcel(ref worksheet2, "S4", DValue.NAME);
+                            InsertToExcel(ref worksheet2, "Q5", DValue.PORDER);
+                            InsertToExcel(ref worksheet2, "Y5", DValue.LotNo);
+                        }
+                        if (PAGE3)
+                        {
+                            InsertToExcel(ref worksheet3, "A3", HeaderText);
+                            InsertToExcel(ref worksheet3, "S3", DValue.CODE);
+                            InsertToExcel(ref worksheet3, "S4", DValue.NAME);
+                            InsertToExcel(ref worksheet3, "Q5", DValue.PORDER);
+                            InsertToExcel(ref worksheet3, "Y5", DValue.LotNo);
+                        }
+                        if (PAGE4)
+                        {
+                            InsertToExcel(ref worksheet4, "A3", HeaderText);
+                            InsertToExcel(ref worksheet4, "S3", DValue.CODE);
+                            InsertToExcel(ref worksheet4, "S4", DValue.NAME);
+                            InsertToExcel(ref worksheet4, "Q5", DValue.PORDER);
+                            InsertToExcel(ref worksheet4, "Y5", DValue.LotNo);
+                        }          
+                        
+
+                        try
+                        {
+                            tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if (qh != null)
+                            {
+                                //////////Find UserName////////////
+                                var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                foreach (var rd in uc)
+                                {
+                                    DN = rd.DayN;
+                                    if (DN.Equals("D"))
+                                    {
+                                        if (rd.UDesc.Equals("Check By"))
+                                        {
+                                            if (cCheckBy1.Equals(""))
+                                                cCheckBy1 = rd.UserName;
+                                            else
+                                                cCheckBy1 = cCheckBy1 + "/" + rd.UserName;                                            
+                                        }
+                                       
+                                    }
+                                    else
+                                    {
+                                        if (rd.UDesc.Equals("Check By"))
+                                        {
+
+                                            if (cCheckBy4.Equals(""))
+                                                cCheckBy4 = rd.UserName;
+                                            else
+                                                cCheckBy4 = cCheckBy4 + "/" + rd.UserName;
+                                            // DN1 = dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+                                        }
+                                    
+                                    }
+                                }
+                                FormISO = qh.FormISO;
+                                QHNo = qh.QCNo;
+                                RefValue1 = qh.RefValue1;
+                                RefValue2 = qh.RefValue2;
+                                RefValue3 = qh.RefValue3;
+                                string E5 = "";
+                                int RowS = 6;
+                                var GroupPartList = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(PartNo) && p.FormISO.Equals(FromIS) && p.GroupPart.Trim().Equals("")).OrderBy(s=>s.Seq).ToList();
+
+                                if (PAGE1)
+                                {
+                                    InsertToExcel(ref worksheet, "AD4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet, "AN4", cCheckBy1);
+                                    InsertToExcel(ref worksheet, "AQ4", cCheckBy4);
+                                    //Step ตรวจสอบ//
+                                    InsertToExcel(ref worksheet, "Y25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 0));
+                                    InsertToExcel(ref worksheet, "AC25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 0));
+                                    InsertToExcel(ref worksheet, "AG25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 0));
+                                    InsertToExcel(ref worksheet, "AK25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 0));
+                                    InsertToExcel(ref worksheet, "AO25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 0));
+
+                                    InsertToExcel(ref worksheet, "Y26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 1));
+                                    InsertToExcel(ref worksheet, "AC26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 1));
+                                    InsertToExcel(ref worksheet, "AG26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 1));
+                                    InsertToExcel(ref worksheet, "AK26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 1));
+                                    InsertToExcel(ref worksheet, "AO26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 1));
+                                    //End Step//
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet, "E5", E5);
+                                    InsertToExcel(ref worksheet, "D4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet, "E4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet, "G4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    
+                                    
+                                      
+                                    RowS = 6;
+                                    foreach(var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet, "A"+(RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet, "B" + (RowS).ToString(), rd.TopPic);                                      
+                                        Line1Part = rd.SetData;
+                                        if (rd.TopPic.ToUpper().Equals("LOT"))
+                                        {
+                                            Line1Part = LotMark;
+                                        }
+                                        InsertToExcel(ref worksheet, "C" + (RowS).ToString(), Line1Part);                                        
+                                    }                                 
+                                }
+
+                                if (PAGE2)
+                                {
+                                    InsertToExcel(ref worksheet2, "AD4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet2, "AN4", cCheckBy1);
+                                    InsertToExcel(ref worksheet2, "AQ4", cCheckBy4);
+                                    //Step ตรวจสอบ//
+                                    InsertToExcel(ref worksheet2, "Y25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 0));
+                                    InsertToExcel(ref worksheet2, "AC25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 0));
+                                    InsertToExcel(ref worksheet2, "AG25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 0));
+                                    InsertToExcel(ref worksheet2, "AK25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 0));
+                                    InsertToExcel(ref worksheet2, "AO25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 0));
+
+                                    InsertToExcel(ref worksheet2, "Y26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 1));
+                                    InsertToExcel(ref worksheet2, "AC26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 1));
+                                    InsertToExcel(ref worksheet2, "AG26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 1));
+                                    InsertToExcel(ref worksheet2, "AK26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 1));
+                                    InsertToExcel(ref worksheet2, "AO26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 1));
+                                    //End Step//
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet2, "E5", E5);
+                                    InsertToExcel(ref worksheet2, "D4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet2, "E4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet2, "G4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    //InsertToExcel(ref worksheet, "I4", E5); //OK
+                                    //InsertToExcel(ref worksheet, "K4", E5); //Net NG    
+                                    RowS = 6;
+                                    foreach (var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet2, "A" + (RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet2, "B" + (RowS).ToString(), rd.TopPic);
+                                        Line1Part = rd.SetData;
+                                        if (rd.TopPic.ToUpper().Equals("LOT"))
+                                        {
+                                            Line1Part = LotMark;
+                                        }
+                                        InsertToExcel(ref worksheet2, "C" + (RowS).ToString(), Line1Part);
+                                    }
+                                }
+                                if (PAGE3)
+                                {
+                                    InsertToExcel(ref worksheet3, "AD4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet3, "AN4", cCheckBy1);
+                                    InsertToExcel(ref worksheet3, "AQ4", cCheckBy4);
+                                    //Step ตรวจสอบ//
+                                    InsertToExcel(ref worksheet3, "Y25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 0));
+                                    InsertToExcel(ref worksheet3, "AC25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 0));
+                                    InsertToExcel(ref worksheet3, "AG25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 0));
+                                    InsertToExcel(ref worksheet3, "AK25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 0));
+                                    InsertToExcel(ref worksheet3, "AO25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 0));
+
+                                    InsertToExcel(ref worksheet3, "Y26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 1));
+                                    InsertToExcel(ref worksheet3, "AC26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 1));
+                                    InsertToExcel(ref worksheet3, "AG26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 1));
+                                    InsertToExcel(ref worksheet3, "AK26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 1));
+                                    InsertToExcel(ref worksheet3, "AO26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 1));
+                                    //End Step//
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet3, "E5", E5);
+                                    InsertToExcel(ref worksheet3, "D4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet3, "E4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet3, "G4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    //InsertToExcel(ref worksheet, "I4", E5); //OK
+                                    //InsertToExcel(ref worksheet, "K4", E5); //Net NG    
+                                    RowS = 6;
+                                    foreach (var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet3, "A" + (RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet3, "B" + (RowS).ToString(), rd.TopPic);
+                                        Line1Part = rd.SetData;
+                                        if (rd.TopPic.ToUpper().Equals("LOT"))
+                                        {
+                                            Line1Part = LotMark;
+                                        }
+                                        InsertToExcel(ref worksheet3, "C" + (RowS).ToString(), Line1Part);
+                                    }
+                                }
+                                if (PAGE4)
+                                {
+                                    InsertToExcel(ref worksheet4, "AD4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet4, "AN4", cCheckBy1);
+                                    InsertToExcel(ref worksheet4, "AQ4", cCheckBy4);
+                                    //Step ตรวจสอบ//
+                                    InsertToExcel(ref worksheet4, "Y25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 0));
+                                    InsertToExcel(ref worksheet4, "AC25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 0));
+                                    InsertToExcel(ref worksheet4, "AG25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 0));
+                                    InsertToExcel(ref worksheet4, "AK25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 0));
+                                    InsertToExcel(ref worksheet4, "AO25", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 0));
+
+                                    InsertToExcel(ref worksheet4, "Y26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 1", 1));
+                                    InsertToExcel(ref worksheet4, "AC26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 2", 1));
+                                    InsertToExcel(ref worksheet4, "AG26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 3", 1));
+                                    InsertToExcel(ref worksheet4, "AK26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 4", 1));
+                                    InsertToExcel(ref worksheet4, "AO26", db.get_QC_CheckUserBoxNo(qh.QCNo, "ผู้ตรวจสอบ 5", 1));
+                                    //End Step//
+
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet4, "E5", E5);
+                                    InsertToExcel(ref worksheet4, "D4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet4, "E4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet4, "G4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    //InsertToExcel(ref worksheet, "I4", E5); //OK
+                                    //InsertToExcel(ref worksheet, "K4", E5); //Net NG    
+                                    RowS = 6;
+                                    foreach (var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet4, "A" + (RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet4, "B" + (RowS).ToString(), rd.TopPic);
+                                        Line1Part = rd.SetData;
+                                        if (rd.TopPic.ToUpper().Equals("LOT"))
+                                        {
+                                            Line1Part = LotMark;
+                                        }
+                                        InsertToExcel(ref worksheet4, "C" + (RowS).ToString(), Line1Part);
+                                    }
+                                }
+                            }
+
+                        }
+                        catch (Exception ex) { MessageBox.Show("first " + ex.Message); }
+                    }
+
+                    ////////////////////////////////////////
+
+                    int countA = 0;
+                    int CountB = 0;
+                    int CountC = 0;
+                    int CountD = 0;
+                    int TAG2 = 0;
+                    int CA = 0;
+                    int TG2 = 0;
+                    int NGA = 0;
+                    int NGB = 0;
+                    int NGC = 0;
+                    string TAGOf1 = "";
+                    string TAGOf2 = "";
+                    string TAGOf3 = "";
+
+                    int CountTAG = 0;
+                    var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelect(QHNo).ToList();                                       
+                    CountTAG = listPoint.Count;
+                    if (listPoint.Count > 0)
+                    {
+                        foreach (var rs in listPoint)
+                        {
+                            countA += 1;
+                            if (countA > 40)
+                            {
+                                CountB += 1;
+                            }
+                            if (countA > 80)
+                            {
+                                CountC += 1;
+                            }
+                            if (countA > 120)
+                            {
+                                CountD += 1;
+                            }
+                            TG = 0;
+
+                            string[] PPTAG = rs.BarcodeTag.Split(',');
+                            TG = Convert.ToInt32(PPTAG[2]);
+                            TAG2 += TG;                           
+                            TG2 = 0;
+                            TG2 = Convert.ToInt32(db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3));
+
+                            if (listPoint.Count == countA)
+                            {
+                                NGA = TG;
+                                TAGOf1 = PPTAG[5];
+                            }
+                            if ((listPoint.Count - 1) == countA)
+                            {
+                                NGB = TG;
+                                TAGOf2 = PPTAG[5];
+                            }
+                            if ((listPoint.Count - 2) == countA)
+                            {
+                                NGC = TG;
+                                TAGOf3 = PPTAG[5];
+                            }
+                            row1 = 6;
+                            Seq = 0;
+                            var listPart = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FromIS) && q.PartNo.Equals(DValue.CODE) && q.GroupPart.Trim().Equals("")).OrderBy(o => o.Seq).ToList();
+                            CA = listPart.Count();
+                            foreach (var rd in listPart)
+                            {
+                                row1 += 1;
+                                Seq += 1;
+                                if (!rd.SetData.Equals("") && row1 <= 18)
+                                {
+                                    try
+                                    {
+                                        var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                        PV = "P";
+                                        if (gValue.CountA > 0)
+                                        {
+                                            PV = "O";
+
+                                            if (gValue.CountA == 99)
+                                            {
+                                                PV = "";
+                                            }
+                                        }
+                                        //if (rd.Seq.Equals(9) && C9.Equals(""))
+                                        //{
+                                        //    PV = "";
+                                        //}
+                                        if (countA <= 40)
+                                        {                                          
+                                            InsertToExcel(ref worksheet, Getcolumn(countA + 4) + row1.ToString(), PV);
+                                        }
+                                        if (countA > 40 && countA <= 80)
+                                        {
+                                            InsertToExcel(ref worksheet2, Getcolumn(CountB + 4) + row1.ToString(), PV);
+                                        }
+                                        if (countA > 80 && countA <= 120)
+                                        {                                           
+                                            InsertToExcel(ref worksheet3, Getcolumn(CountC + 4) + row1.ToString(), PV);
+                                        }
+                                        if (countA > 120 && countA <= 160)
+                                        {
+                                            InsertToExcel(ref worksheet4, Getcolumn(CountD + 4) + row1.ToString(), PV);
+                                        }
+                                    }
+                                    catch { }
+                                    //catch (Exception ex) { MessageBox.Show("Mid " + ex.Message); }
+
+                                }
+                                //SumNG//       
+
+                                if (countA <= 40)
+                                {                 
+                                    InsertToExcel(ref worksheet, Getcolumn(countA + 4) + "20", (TG - TG2));
+                                    InsertToExcel(ref worksheet, Getcolumn(countA + 4) + "21", TG2);
+                                }
+                                else if (countA > 40 && countA <= 80)
+                                {
+                                    if (PAGE2)
+                                    {
+                                        InsertToExcel(ref worksheet2, Getcolumn(CountB + 4) + "20", (TG - TG2));
+                                        InsertToExcel(ref worksheet2, Getcolumn(CountB + 4) + "21", TG2);
+                                    }
+                                }
+                                else if (countA > 80 && countA <= 120)
+                                {
+                                    if (PAGE3)
+                                    {
+                                        InsertToExcel(ref worksheet3, Getcolumn(CountC + 4) + "20", (TG - TG2));
+                                        InsertToExcel(ref worksheet3, Getcolumn(CountC + 4) + "21", TG2);
+
+                                    }
+                                }
+                                else if (countA > 120 && countA <= 160)
+                                {
+                                    if (PAGE4)
+                                    {
+                                        InsertToExcel(ref worksheet4, Getcolumn(CountD + 4) + "20", (TG - TG2));
+                                        InsertToExcel(ref worksheet4, Getcolumn(CountD + 4) + "21", TG2);
+                                    }
+                                }
+
+                            }//foreach 
+                             //}//cunt A //Page 1 End
+                        }//for
+
+                        ////NGQty and Remark//
+                        int RM = 0;
+                        int TNG1 = 0;
+                        int TNG2 = 0;
+                        int TNG3 = 0;
+                        tb_QCProblem qcp = db.tb_QCProblems.Where(p => p.QCNo.Equals(QHNo) && !p.NGQty.Equals(0)).FirstOrDefault();
+                        if (qcp != null)
+                        {
+                            var tgf = db.tb_QCTAGs.Where(s => s.QCNo.Equals(QHNo)).ToList();
+                            foreach (var tf in tgf)
+                            {
+                                if (tf.ofTAG.Equals(TAGOf1))
+                                {
+                                    TNG1 = Convert.ToInt32(tf.NGQty);
+                                }
+                                else if (tf.ofTAG.Equals(TAGOf2))
+                                {
+                                    TNG2 = Convert.ToInt32(tf.NGQty);
+                                }
+                                else if (tf.ofTAG.Equals(TAGOf3))
+                                {
+                                    TNG3 = Convert.ToInt32(tf.NGQty);
+                                }
+                            }
+
+                            if (countA <= 40)
+                            {   //NG Qty//                
+                                InsertToExcel(ref worksheet, "C19", qcp.ProblemName);
+                                ///////////////////////////////
+                                if (qcp.NGQty > 0)
+                                {
+                                    if (NGA < (qcp.NGQty + TNG1))
+                                    {                                        
+                                        InsertToExcel(ref worksheet, Getcolumn(countA + 4) + "19", "O");
+                                        InsertToExcel(ref worksheet, Getcolumn(countA + 4) + "20", 0);
+                                        InsertToExcel(ref worksheet, Getcolumn(countA + 4) + "21",NGA);
+                                        RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                        if (RM > 0)
+                                        {
+                                            if (NGB < (RM + TNG2))
+                                            {                                                
+                                                InsertToExcel(ref worksheet, Getcolumn((countA -1) + 4) + "19", "O");
+                                                InsertToExcel(ref worksheet, Getcolumn((countA -1) + 4) + "20", 0);
+                                                InsertToExcel(ref worksheet, Getcolumn((countA -1) + 4) + "21", NGB);
+                                                RM = (RM + TNG2) - NGB;
+                                                if (RM > 0)
+                                                {
+                                                    if (NGC < (RM + TNG3))
+                                                    {                                                        
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + 4) + "20", 0);
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + 4) + "21", NGC);
+                                                    }
+                                                    else
+                                                    {                                                        
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + 4) + "20", NGC - (RM + TNG3));
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + 4) + "21", RM + TNG3);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {                                                
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + 4) + "19", "O");
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + 4) + "20", NGB - (RM + TNG2));
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + 4) + "21", (RM + TNG2));
+                                            }
+                                        }
+
+
+                                    }
+                                    else
+                                    {                                     
+                                        InsertToExcel(ref worksheet, Getcolumn((countA - 0) + 4) + "19", "O");
+                                        InsertToExcel(ref worksheet, Getcolumn((countA - 0) + 4) + "20", NGA - (qcp.NGQty + TNG1));
+                                        InsertToExcel(ref worksheet, Getcolumn((countA - 0) + 4) + "21", (qcp.NGQty + TNG1));
+
+                                    }
+
+                                }
+
+                            }
+                            else if (countA > 40 && countA <= 80)
+                            {
+                                if (PAGE2)
+                                {
+                                    //NG Qty//                                   
+                                    InsertToExcel(ref worksheet2, "C19", qcp.ProblemName);
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty + TNG1))
+                                        {                                           
+                                            InsertToExcel(ref worksheet2, Getcolumn(countA + 4) + "19", "O");
+                                            InsertToExcel(ref worksheet2, Getcolumn(countA + 4) + "20", 0);
+                                            InsertToExcel(ref worksheet2, Getcolumn(countA + 4) + "21", NGA);
+                                            RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM + TNG2))
+                                                {
+                                                    
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + 4) + "19", "O");
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + 4) + "20", 0);
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + 4) + "21", NGB);
+
+                                                    RM = (RM + TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM + TNG3))
+                                                        {
+                                                            
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + 4) + "20", 0);
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + 4) + "21", NGC);
+                                                        }
+                                                        else
+                                                        {                                                            
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + 4) + "20", NGC - (RM + TNG3));
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + 4) + "21", RM + TNG3);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {                                                    
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + 4) + "19", "O");
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + 4) + "20", NGB - (RM + TNG2));
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + 4) + "21", (RM + TNG2));
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {                                           
+                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 0) + 4) + "19", "O");
+                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 0) + 4) + "20", NGA - (qcp.NGQty + TNG1));
+                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 0) + 4) + "21", (qcp.NGQty + TNG1));
+                                        }
+
+                                    }
+                                }
+                            }
+                            else if (countA > 80 && countA <= 120)
+                            {
+                                if (PAGE3)
+                                {
+                                    //NG Qty//                                   
+                                    InsertToExcel(ref worksheet3, "C19", qcp.ProblemName);
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty + TNG1))
+                                        {                                            
+                                            InsertToExcel(ref worksheet3, Getcolumn(countA + 4) + "19", "O");
+                                            InsertToExcel(ref worksheet3, Getcolumn(countA + 4) + "20", 0);
+                                            InsertToExcel(ref worksheet3, Getcolumn(countA + 4) + "21", NGA);
+                                            RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM + TNG2))
+                                                {                                                   
+
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + 4) + "19", "O");
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + 4) + "20", 0);
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + 4) + "21", NGB);
+                                                    RM = (RM + TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM + TNG3))
+                                                        {                                                           
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + 4) + "20", 0);
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + 4) + "21", NGC);
+                                                        }
+                                                        else
+                                                        {                                                           
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + 4) + "20", NGC - (RM + TNG3));
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + 4) + "21", RM + TNG3);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {                                                    
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + 4) + "19", "O");
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + 4) + "20", NGB - (RM + TNG2));
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + 4) + "21", (RM + TNG2));
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {                                            
+                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 0) + 4) + "19", "O");
+                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 0) + 4) + "20", NGA - (qcp.NGQty + TNG1));
+                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 0) + 4) + "21", (qcp.NGQty + TNG1));
+                                        }
+
+                                    }
+                                }
+                            }
+                            else if (countA > 120 && countA <= 160)
+                            {
+                                if (PAGE4)
+                                {
+                                    //NG Qty//                                    
+                                    InsertToExcel(ref worksheet4, "C19", qcp.ProblemName);
+
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty + TNG1))
+                                        {                                           
+                                            InsertToExcel(ref worksheet4, Getcolumn(countA + 4) + "19", "O");
+                                            InsertToExcel(ref worksheet4, Getcolumn(countA + 4) + "20", 0);
+                                            InsertToExcel(ref worksheet4, Getcolumn(countA + 4) + "21", NGA);
+                                            RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM + TNG2))
+                                                {                                                    
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + 4) + "19", "O");
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + 4) + "20", 0);
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + 4) + "21", NGB);
+                                                    RM = (RM + TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM + TNG3))
+                                                        {                                                           
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + 4) + "20", 0);
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + 4) + "21", NGC);
+                                                        }
+                                                        else
+                                                        {                                                            
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + 4) + "19", "O");
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + 4) + "20", NGC - (RM + TNG3));
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + 4) + "21", RM + TNG3);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {                                                   
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + 4) + "19", "O");
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + 4) + "20", NGB - (RM + TNG2));
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + 4) + "21", (RM + TNG2));
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {                                            
+                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 0) + 4) + "19", "O");
+                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 0) + 4) + "20", NGA - (qcp.NGQty + TNG1));
+                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 0) + 4) + "21", (qcp.NGQty + TNG1));
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+
+                        ////// PC Check ///
+                    }
+
+
+
+                }
+
+                excelBook.SaveAs(tempfile);
+                excelBook.Close(false);
+                excelApp.Quit();
+                releaseObject(worksheet);
+                releaseObject(worksheet2);
+                releaseObject(worksheet3);
+                releaseObject(excelBook);
+                releaseObject(excelApp);
+
+                Marshal.FinalReleaseComObject(worksheet);
+                Marshal.FinalReleaseComObject(worksheet2);
+                Marshal.FinalReleaseComObject(worksheet3);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet2);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet3);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                GC.GetTotalMemory(false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.GetTotalMemory(true);
+                System.Diagnostics.Process.Start(tempfile);
+
+            }
+            catch (Exception ex) { MessageBox.Show("last " + ex.Message); }
+        }
+        public static void PrintFMPD003(string WO, string PartNo, string QCNo1, string FromIS)
+        {
+            try
+            {
+                string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = System.IO.Path.GetTempPath();
+                string FileName = "FM-PD-003_STD.xlsx";
+                string tempfile = tempPath + FileName;
+               
+
+                string TypeReport = GetReportName("STD", PartNo, FromIS).ToUpper();
+                string HeaderText = " Shipping Check  result in process  ( Brake chamber)";
+                if (TypeReport.Equals("SPG"))
+                {
+                    HeaderText = " Shipping Check  result in process  ( SPG B/ CH-W)";
+                    FileName = "FM-PD-003_SPG.xlsx";
+                }
+                DATA = DATA + @"QC\" + FileName;
+
+                if (File.Exists(tempfile))
+                {
+                    try
+                    {
+                        File.Delete(tempfile);
+                    }
+                    catch { }
+                }
+
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                  DATA, 0, true, 5,
+                  "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                  0, true);
+                Excel.Sheets sheets = excelBook.Worksheets;
+                Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+
+                // progressBar1.Maximum = 51;
+                // progressBar1.Minimum = 1;
+                int row1 = 14;
+
+                string PV = "P";
+                string QHNo = QCNo1;
+                string FormISO = FromIS;
+                string DN = "";                
+                string cCheckBy1 = "";
+                string cCheckBy2 = "";
+                string cCheckBy3 = "";
+                string LotRemark = "";
+                string E5 = "";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {   string PartName = "";
+                    string LotNo = "";
+                    ///////////////SETValue/////////////////
+                    var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                    if (DValue != null)
+                    {
+                        DN = DValue.DayNight;
+                        PartName = DValue.NAME;
+                        InsertToExcel(ref worksheet, "A4", HeaderText);
+                        InsertToExcel(ref worksheet, "C6", DValue.NAME);
+                        InsertToExcel(ref worksheet, "C7", DValue.CODE);
+                        InsertToExcel(ref worksheet, "C8", db.get_QC_ItemCustomerNo(DValue.CODE,""));                        
+                        E5 = " วัน "+ Convert.ToDateTime(DValue.CreateDate).ToString("dd") + " เดือน " + Convert.ToDateTime(DValue.CreateDate).ToString("MM") + " ปี  " + Convert.ToDateTime(DValue.CreateDate).ToString("yyyy") + "";
+                        InsertToExcel(ref worksheet, "C9", E5);
+                        InsertToExcel(ref worksheet, "C10",DValue.OrderQty);
+                        InsertToExcel(ref worksheet, "C11", DValue.LotNo);
+                        InsertToExcel(ref worksheet, "D13", DValue.PORDER);
+                        LotRemark = "ตอก Lot ที่ Base ต้องไม่ลืมตอก, ไม่ตอกผิดตำแหน่งที่กำหนดไว้  มีการตอก Lot ถูกต้อง , ชัดเจน , สามารถอ่านได้ ( " + DValue.LotNo + " ) ";
+                        try
+                        {
+                            tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if (qh != null)
+                            {
+                                FormISO = qh.FormISO;
+                                LotNo = qh.LotNo;
+                                //////////Find UserName////////////
+                                var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                foreach (var rd in uc)
+                                {
+                                    DN = dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 1"))
+                                        cCheckBy1 = rd.UserName;
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 2"))
+                                        cCheckBy2 = rd.UserName;
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 3"))
+                                        cCheckBy3 = rd.UserName;
+                                }
+
+
+                                InsertToExcel(ref worksheet, "J8", cCheckBy1);
+                                InsertToExcel(ref worksheet, "K8", cCheckBy2);
+                                InsertToExcel(ref worksheet, "H7", db.QC_GetUserName(qh.ApproveBy));
+                                QHNo = qh.QCNo;
+
+                                if (db.QC_CheckNG(QHNo) == "P")
+                                {
+                                    InsertToExcel(ref worksheet, "J10", "P");
+                                }
+                                else
+                                {
+                                    InsertToExcel(ref worksheet, "H10", "P");
+                                }
+
+                                //Excel.Range O19 = worksheet.get_Range("O19");
+                                //O19.Value2 = db.get_QC_DATAPoint(qh.QCNo, "", 8);
+                                //Excel.Range O20 = worksheet.get_Range("O20");
+                                //O20.Value2 = db.get_QC_DATAPoint(qh.QCNo, "", 9);
+                            }
+
+                        }
+                        catch { }
+
+                    }
+
+                    ////////////////////////////////////////
+                    ////Insert Desc.//
+                    int countA = 0;
+                    row1 = 14;
+                    string setPart = "";
+                    var vList = db.tb_QCGroupParts.Where(p => p.FormISO.Equals(FromIS) && p.PartNo.Equals(PartNo) && !p.TopPic.Trim().Equals("")
+                                && p.GroupPart.Trim().Equals("")).OrderBy(s => s.Seq).ToList();
+                    foreach(var ls in vList)
+                    {
+                        countA += 1;
+                        row1 += 1;
+                        setPart = ls.SetData.Trim();
+                        if(ls.TopPic.Trim().Equals("Lot No."))
+                        {
+                            setPart = LotRemark;
+                        }
+                        InsertToExcel(ref worksheet, "A"+ row1.ToString(), countA);
+                        InsertToExcel(ref worksheet, "B" + row1.ToString(), ls.TopPic.Trim());
+                        InsertToExcel(ref worksheet, "D" + row1.ToString(), setPart);
+
+                    }
+
+                    ////////////////
+
+
+                    countA = 0;
+                    string Colm = "";
+                    //var ListQ = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QCNo1)).ToList();
+                    //int SQ = 0;
+                    //foreach(var re in ListQ)
+                    //{
+                    //    if(re.BarcodeTag.Contains("Head"))
+                    //    {
+                    //        SQ = 1;
+                    //    }
+                    //    else if(re.BarcodeTag.Equals(""))
+                    //    {
+                    //        SQ = 2;
+                    //    }
+                    //    else
+                    //    {
+                    //        SQ = 3;
+
+                    //    }
+                    //    tb_QCTAG pUpdate = db.tb_QCTAGs.Where(s => s.id.Equals(re.id)).FirstOrDefault();
+                    //    if(pUpdate!=null)
+                    //    {
+                    //        pUpdate.TAGQ = SQ;
+                    //        db.SubmitChanges();
+                    //    }
+                          
+                    //}
+                    var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelectPD(QHNo).ToList();                    
+                    if (listPoint.Count > 0)
+                    {
+                        foreach (var rs in listPoint)
+                        {
+                            countA += 1; 
+                            if (countA <= 3)
+                            {
+                                row1 = 14;
+                                var listPart = db.tb_QCGroupParts.Where(p => p.FormISO.Equals(FromIS) && p.PartNo.Equals(PartNo) && !p.TopPic.Trim().Equals("")
+                                                && p.GroupPart.Trim().Equals("")).OrderBy(s => s.Seq).ToList();
+                                foreach (var rd in listPart)
+                                {                                   
+                                    row1 += 1;                                   
+                                    if (!rd.SetData.Equals("") && row1 <= 40)
+                                    {
+                                        try
+                                        {
+
+                                            var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                            PV = "OK";
+
+                                            if (gValue.CountA > 0)
+                                            {
+                                                PV = "OK";
+                                                if (gValue.CountA > 0)
+                                                    PV = "NG";
+                                                if (gValue.CountA == 99)
+                                                    PV = "";
+                                            }
+
+
+
+                                            if (rs.BarcodeTag.Contains("Head"))
+                                            {
+                                                Colm = "H";
+                                            }
+                                            else if (rs.BarcodeTag.Contains("Middle"))
+                                            {
+                                                Colm = "J";
+                                            }else
+                                            {
+                                                Colm = "K";
+                                            }
+                                           
+                                        
+
+                                            if (TypeReport.ToUpper().Equals("SPG"))
+                                            {
+                                                if(row1>=15 && row1<=22)
+                                                {
+                                                    //2-8
+                                                    //input digital
+                                                    if (row1 != 15)
+                                                        PV = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    if(Colm.Equals("J") || Colm.Equals("K"))
+                                                    {
+                                                        if (row1 >= 15 && row1 <= 19)
+                                                        {
+                                                            PV = "";
+                                                        }
+                                                    }
+                                                }
+                                               
+                                            }
+                                            else
+                                            {
+                                                if (row1 >= 15 && row1 <19)
+                                                {
+                                                    //2-4
+                                                    //Input digital
+                                                    if(row1!=15)
+                                                         PV = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                    if (Colm.Equals("J") || Colm.Equals("K"))
+                                                    {
+                                                        if (row1 >= 15 && row1 <= 18)
+                                                        {
+                                                            PV = "";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        //Input Value///
+                                          InsertToExcel(ref worksheet, Colm + row1.ToString(), PV); 
+                                        }
+                                        catch (Exception ex) { MessageBox.Show(ex.Message); }
+                                    }
+
+                                }//foreach
+                            }//cunt A
+                        }//for
+                    }
+
+
+
+                }
+
+                excelBook.SaveAs(tempfile);
+                excelBook.Close(false);
+                excelApp.Quit();
+
+                releaseObject(worksheet);
+                releaseObject(excelBook);
+                releaseObject(excelApp);
+                Marshal.FinalReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                GC.GetTotalMemory(false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.GetTotalMemory(true);
+                System.Diagnostics.Process.Start(tempfile);
+
+            }
+            catch { }
+        }
         public static void PrintData5601(string WO, string PartNo, string QCNo1)
         {
             try
@@ -964,7 +2658,9 @@ namespace StockControl
                 // FileName = "FM-QA-056_02_1.xlsx";
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
-                    tb_ProductionHD pd = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO) && p.LineName2.Equals("TW10-CB")).FirstOrDefault();
+                    
+                    tb_ProductionHD pd = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO) 
+                    && (p.LineName2.Equals("TW10-CB") || p.LineName2.Equals("TS10-SC_CB") || p.LineName2.Equals("TW02-SC_PB"))).FirstOrDefault();
                     if (pd != null)
                     {
                         FileName = "FM-QA-056_CM.xlsx";
@@ -1325,6 +3021,8 @@ namespace StockControl
                     string I6 = "P";
                     string L6 = "";
                     string ValueInvalid = "";
+                    string A1 = "";
+                    
                     ///////////////SETValue/////////////////
                     var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
                     if (DValue != null)
@@ -1332,7 +3030,7 @@ namespace StockControl
 
                         //Sampling inspection report BRAKE CHAMBER
                         //Sampling inspection report piggyback
-
+                        
                         DN = DValue.DayNight;
                         Excel.Range CPart = worksheet.get_Range("C3");
                         CPart.Value2 = DValue.NAME;
@@ -1353,6 +3051,11 @@ namespace StockControl
                             tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
                             if (qh != null)
                             {
+                                if(qh.LineName.Equals("TW02-SC_PB"))
+                                {
+                                    InsertToExcel(ref worksheet, "A1", "Sampling inspection report piggyback");
+                                }
+                               
 
                                 Excel.Range App = worksheet.get_Range("I3");
                                 App.Value2 = db.QC_GetUserName(qh.ApproveBy);
@@ -1458,6 +3161,8 @@ namespace StockControl
                                     string setValueDT= db.get_QC_SetDataMaster(FormISO, rd.PartNo, rd.Seq);
                                     Excel.Range SetDT = worksheet.get_Range("D" + row1.ToString());
                                     SetDT.Value2 = setValueDT;
+                                    
+
                                     if (setValueDT.Contains("Æ"))
                                     {                                                                               
                                         int addint = setValueDT.IndexOf("Æ");
@@ -1582,8 +3287,8 @@ namespace StockControl
                     //    }
                     //}
 
-                    Excel.Range Col82 = worksheet.get_Range("D17");
-                    Col82.Value2 = ValueInvalid;
+                  //  Excel.Range Col82 = worksheet.get_Range("D17");
+                   // Col82.Value2 = ValueInvalid;
 
 
 
@@ -1628,7 +3333,8 @@ namespace StockControl
                 DATA = DATA + @"QC\" + FileName;
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
-                    tb_ProductionHD pd = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO) && p.LineName2.Equals("TW10-CB")).FirstOrDefault();
+                    tb_ProductionHD pd = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO) 
+                    && (p.LineName2.Equals("TW10-CB") || p.LineName2.Equals("TS10-SC_CB") || p.LineName2.Equals("TW02-SC_PB"))).FirstOrDefault();
                     if (pd != null)
                     {
                         FileName = "FM-QA-055_CM.xlsx";
@@ -2542,6 +4248,7 @@ namespace StockControl
                     bool chek24 = true;
                     decimal CKQty = 0;
                     int PackI = 6;
+                    decimal SNP = 0;
                     ///////////////SETValue/////////////////
                     var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
                     if (DValue != null)
@@ -2557,26 +4264,39 @@ namespace StockControl
                         QD.Value2 = DValue.OrderQty;
                         Excel.Range CDate = worksheet.get_Range("D4");
                         CDate.Value2 = DValue.LotNo;
-                        tb_QCHD qcd = db.tb_QCHDs.Where(p => p.QCNo.Equals(QCNo1)).FirstOrDefault();
+                        // db.sp_46_QCSelectWO_12_UpdateOKQty(QCNo1);
+                        string AA = "CHAMBER       100% INSPECTION CHECK SHEET";
+
+                        tb_QCHD qcd = db.tb_QCHDs.Where(p => p.QCNo.Equals(QHNo)).FirstOrDefault();
                         if (qcd != null)
                         {
+                            //
+                            if (qcd.LineName.Equals(""))
+                            {
+                                AA = " PIGGYBACK            100% INSPECTION CHECK SHEET";
+                            }
+                           
+                            SNP = Convert.ToDecimal(db.getLOtSizeTPICS_Dynamics(qcd.PartNo));
+                            //
                             CKQty = Convert.ToDecimal(db.get_QCSumQtyTAGNG(QCNo1, "", 96));
                             Excel.Range PDQ1 = worksheet.get_Range("I4");
                             PDQ1.Value2 = CKQty;
-                            Excel.Range QCOK1 = worksheet.get_Range("M4");
-                            QCOK1.Value2 = qcd.OKQty;
+                            //Excel.Range QCOK1 = worksheet.get_Range("M4");
+                            //QCOK1.Value2 = qcd.OKQty;
                             Excel.Range QCNG1 = worksheet.get_Range("Q4");
-                            QCNG1.Value2 = qcd.NGQty;
-
-                            tb_QCTAG tcg = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QCNo1)).FirstOrDefault();
-                            if(tcg!=null)
-                            {
-                                string[] TAG = tcg.BarcodeTag.Split(',');
-                                if(TAG[2]=="4")
-                                {
-                                    PackI = 4;
-                                }
-                            }
+                            QCNG1.Value2 = qcd.NGQty;                            
+                            Excel.Range G15SNP1 = worksheet.get_Range("F20");
+                            G15SNP1.Value2 = SNP;
+                            InsertToExcel(ref worksheet, "A1", AA);
+                            //tb_QCTAG tcg = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            //if(tcg!=null)
+                            //{
+                            //    string[] TAG = tcg.BarcodeTag.Split(',');
+                            //    if(TAG[2]=="4")
+                            //    {
+                            //        PackI = 4;
+                            //    }
+                            //}
 
 
 
@@ -2589,14 +4309,15 @@ namespace StockControl
                             QD2.Value2 = DValue.OrderQty;
                             Excel.Range CDate2 = worksheet2.get_Range("D4");
                             CDate2.Value2 = DValue.LotNo;
-
                             Excel.Range PDQ2 = worksheet2.get_Range("I4");
                             PDQ2.Value2 = CKQty;
-                            Excel.Range QCOK2 = worksheet2.get_Range("M4");
-                            QCOK2.Value2 = qcd.OKQty;
+                            //Excel.Range QCOK2 = worksheet2.get_Range("M4");
+                            //QCOK2.Value2 = qcd.OKQty;
                             Excel.Range QCNG2 = worksheet2.get_Range("Q4");
                             QCNG2.Value2 = qcd.NGQty;
-
+                            Excel.Range G15SNP2 = worksheet2.get_Range("F20");
+                            G15SNP2.Value2 = SNP;
+                            InsertToExcel(ref worksheet2, "A1", AA);
 
                             //WorkSheet3
                             Excel.Range CStamp3 = worksheet3.get_Range("A4");
@@ -2607,13 +4328,15 @@ namespace StockControl
                             QD3.Value2 = DValue.OrderQty;
                             Excel.Range CDate3 = worksheet3.get_Range("D4");
                             CDate3.Value2 = DValue.LotNo;
-
                             Excel.Range PDQ3 = worksheet3.get_Range("I4");
                             PDQ3.Value2 = CKQty;
-                            Excel.Range QCOK3 = worksheet3.get_Range("M4");
-                            QCOK3.Value2 = qcd.OKQty;
+                            //Excel.Range QCOK3 = worksheet3.get_Range("M4");
+                            //QCOK3.Value2 = qcd.OKQty;
                             Excel.Range QCNG3 = worksheet3.get_Range("Q4");
                             QCNG3.Value2 = qcd.NGQty;
+                            Excel.Range G15SNP3 = worksheet3.get_Range("F20");
+                            G15SNP3.Value2 = SNP;
+                            InsertToExcel(ref worksheet3, "A1", AA);
 
 
                             //WorkSheet4
@@ -2625,13 +4348,15 @@ namespace StockControl
                             QD4.Value2 = DValue.OrderQty;
                             Excel.Range CDate4 = worksheet4.get_Range("D4");
                             CDate4.Value2 = DValue.LotNo;
-
                             Excel.Range PDQ4 = worksheet4.get_Range("I4");
                             PDQ4.Value2 = CKQty;
-                            Excel.Range QCOK4 = worksheet4.get_Range("M4");
-                            QCOK4.Value2 = qcd.OKQty;
+                            //Excel.Range QCOK4 = worksheet4.get_Range("M4");
+                            //QCOK4.Value2 = qcd.OKQty;
                             Excel.Range QCNG4 = worksheet4.get_Range("Q4");
                             QCNG4.Value2 = qcd.NGQty;
+                            Excel.Range G15SNP4 = worksheet4.get_Range("F20");
+                            G15SNP4.Value2 = SNP;
+                            InsertToExcel(ref worksheet4, "A1", AA);
 
                             //WorkSheet5
                             Excel.Range CStamp5 = worksheet5.get_Range("A4");
@@ -2642,13 +4367,15 @@ namespace StockControl
                             QD5.Value2 = DValue.OrderQty;
                             Excel.Range CDate5 = worksheet5.get_Range("D4");
                             CDate5.Value2 = DValue.LotNo;
-
                             Excel.Range PDQ5 = worksheet5.get_Range("I4");
                             PDQ5.Value2 = CKQty;
-                            Excel.Range QCOK5 = worksheet5.get_Range("M4");
-                            QCOK5.Value2 = qcd.OKQty;
+                            //Excel.Range QCOK5 = worksheet5.get_Range("M4");
+                            //QCOK5.Value2 = qcd.OKQty;
                             Excel.Range QCNG5 = worksheet5.get_Range("Q4");
                             QCNG5.Value2 = qcd.NGQty;
+                            Excel.Range G15SNP5 = worksheet5.get_Range("F20");
+                            G15SNP5.Value2 = SNP;
+                            InsertToExcel(ref worksheet5, "A1", AA);
 
 
                             //WorkSheet6
@@ -2660,40 +4387,44 @@ namespace StockControl
                             QD6.Value2 = DValue.OrderQty;
                             Excel.Range CDate6 = worksheet6.get_Range("D4");
                             CDate6.Value2 = DValue.LotNo;
-
                             Excel.Range PDQ6 = worksheet6.get_Range("I4");
                             PDQ6.Value2 = CKQty;
-                            Excel.Range QCOK6 = worksheet6.get_Range("M4");
-                            QCOK6.Value2 = qcd.OKQty;
+                            //Excel.Range QCOK6 = worksheet6.get_Range("M4");
+                            //QCOK6.Value2 = qcd.OKQty;
                             Excel.Range QCNG6 = worksheet6.get_Range("Q4");
                             QCNG6.Value2 = qcd.NGQty;
+                            Excel.Range G15SNP6 = worksheet6.get_Range("F20");
+                            G15SNP6.Value2 = SNP;
+                            InsertToExcel(ref worksheet6, "A1", AA);
 
 
                         }
                         
 
                         chek24 = false;
-                        string GP5 = "";
-                        string GP6 = "";
-                       
+                      //  string GP5 = "";
+                       // string GP6 = "";
+
 
                         
-                            if (PackI==6)
+                        
+                        if (PackI==6)
                             {
                                // GP5 = "16-24";
                                // GP6 = "A";
-                                Excel.Range G16 = worksheet.get_Range("G19");
-                                G16.Value2 = "P";
-                                Excel.Range G162 = worksheet2.get_Range("G19");
-                                G162.Value2 = "P";
-                                Excel.Range G163 = worksheet3.get_Range("G19");
-                                G163.Value2 = "P";
-                                Excel.Range G164 = worksheet4.get_Range("G19");
-                                G164.Value2 = "P";
-                                Excel.Range G165 = worksheet5.get_Range("G19");
-                                G165.Value2 = "P";
-                                Excel.Range G166 = worksheet6.get_Range("G19");
-                                G166.Value2 = "P";
+
+                                //Excel.Range G16 = worksheet.get_Range("G19");
+                                //G16.Value2 = "P";
+                                //Excel.Range G162 = worksheet2.get_Range("G19");
+                                //G162.Value2 = "P";
+                                //Excel.Range G163 = worksheet3.get_Range("G19");
+                                //G163.Value2 = "P";
+                                //Excel.Range G164 = worksheet4.get_Range("G19");
+                                //G164.Value2 = "P";
+                                //Excel.Range G165 = worksheet5.get_Range("G19");
+                                //G165.Value2 = "P";
+                                //Excel.Range G166 = worksheet6.get_Range("G19");
+                                //G166.Value2 = "P";
 
 
                             }
@@ -2701,18 +4432,19 @@ namespace StockControl
                             {
                                // GP5 = "20-24";
                                // GP6 = "B";
-                                Excel.Range G17 = worksheet.get_Range("G20");
-                                G17.Value2 = "P";
-                                Excel.Range G172 = worksheet2.get_Range("G20");
-                                G172.Value2 = "P";
-                                Excel.Range G173 = worksheet3.get_Range("G20");
-                                G173.Value2 = "P";
-                                Excel.Range G174 = worksheet4.get_Range("G20");
-                                G174.Value2 = "P";
-                                Excel.Range G175 = worksheet5.get_Range("G20");
-                                G175.Value2 = "P";
-                                Excel.Range G176 = worksheet6.get_Range("G20");
-                                G176.Value2 = "P";
+
+                                //Excel.Range G17 = worksheet.get_Range("G20");
+                                //G17.Value2 = "P";
+                                //Excel.Range G172 = worksheet2.get_Range("G20");
+                                //G172.Value2 = "P";
+                                //Excel.Range G173 = worksheet3.get_Range("G20");
+                                //G173.Value2 = "P";
+                                //Excel.Range G174 = worksheet4.get_Range("G20");
+                                //G174.Value2 = "P";
+                                //Excel.Range G175 = worksheet5.get_Range("G20");
+                                //G175.Value2 = "P";
+                                //Excel.Range G176 = worksheet6.get_Range("G20");
+                                //G176.Value2 = "P";
 
                             }
                             
@@ -2944,28 +4676,90 @@ namespace StockControl
 
                     //Insert Header//
                     int rx = 6;
+                    int TGx = 0;
+                    int RowCountA = 0;
+                    string Rank = "B";
+                    var listPoint2 = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QCNo1)).FirstOrDefault();
+                    if (listPoint2 != null)
+                    {
+                        // 1of10
+                        string[] PPTAG2 = listPoint2.ofTAG.Split('f');
+                        if (PPTAG2.Length > 1)
+                            TGx = Convert.ToInt32(PPTAG2[1]);
+                    }
                     var listPart2 = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FormISO) && q.PartNo.Equals(DValue.CODE)).OrderBy(o => o.Seq).ToList();
                     foreach (var rd in listPart2)
                     {
                         rx += 1;
+                        RowCountA += 1;
+                        if (RowCountA == 1)
+                            Rank = "A";
+                        else
+                            Rank = "B";
+
                         string SetValueHD = db.get_QC_SetDataMaster2(FormISO, rd.PartNo, rd.Seq);
-                        Excel.Range SetHD = worksheet.get_Range("B" + rx.ToString());
-                        SetHD.Value2 = SetValueHD;
-
                         string setValueDT = db.get_QC_SetDataMaster(FormISO, rd.PartNo, rd.Seq);
-                        Excel.Range SetDT = worksheet.get_Range("C" + rx.ToString());
-                        SetDT.Value2 = setValueDT;
+                       
+                        InsertToExcel(ref worksheet, "B" + rx.ToString(), SetValueHD);
+                        InsertToExcel(ref worksheet, "C" + rx.ToString(), setValueDT);
 
-                        if (setValueDT.Contains("Æ"))
+                        InsertToExcel(ref worksheet, "A" + rx.ToString(), RowCountA.ToString());
+                        InsertToExcel(ref worksheet, "D" + rx.ToString(), "Visual");
+                        InsertToExcel(ref worksheet, "E" + rx.ToString(), Rank);
+                        InsertToExcel(ref worksheet, "F" + rx.ToString(), "100%");
+
+                        if (TGx > 25)
                         {
-                            int addint = setValueDT.IndexOf("Æ");
-                            // SetDT.Characters[5, 10].Font.Color = Color.Red; // "Symbol";//AngsanaUPC
-                            SetDT.Characters[addint, 2].Font.Name = "Symbol";//
-                          //  SetDT.Characters[2, setValueDT.Length - 2].Font.Name = "Angsana New";
+                            InsertToExcel(ref worksheet2, "B" + rx.ToString(), SetValueHD);
+                            InsertToExcel(ref worksheet2, "C" + rx.ToString(), setValueDT);
+
+                            InsertToExcel(ref worksheet2, "A" + rx.ToString(), RowCountA.ToString());
+                            InsertToExcel(ref worksheet2, "D" + rx.ToString(), "Visual");
+                            InsertToExcel(ref worksheet2, "E" + rx.ToString(), Rank);
+                            InsertToExcel(ref worksheet2, "F" + rx.ToString(), "100%");
+                        }
+                        if (TGx > 50)
+                        {
+                            InsertToExcel(ref worksheet3, "B" + rx.ToString(), SetValueHD);
+                            InsertToExcel(ref worksheet3, "C" + rx.ToString(), setValueDT);
+
+                            InsertToExcel(ref worksheet3, "A" + rx.ToString(), RowCountA.ToString());
+                            InsertToExcel(ref worksheet3, "D" + rx.ToString(), "Visual");
+                            InsertToExcel(ref worksheet3, "E" + rx.ToString(), Rank);
+                            InsertToExcel(ref worksheet3, "F" + rx.ToString(), "100%");
+                        }
+                        if (TGx > 75)
+                        {
+                            InsertToExcel(ref worksheet4, "B" + rx.ToString(), SetValueHD);
+                            InsertToExcel(ref worksheet4, "C" + rx.ToString(), setValueDT);
+
+                            InsertToExcel(ref worksheet4, "A" + rx.ToString(), RowCountA.ToString());
+                            InsertToExcel(ref worksheet4, "D" + rx.ToString(), "Visual");
+                            InsertToExcel(ref worksheet4, "E" + rx.ToString(), Rank);
+                            InsertToExcel(ref worksheet4, "F" + rx.ToString(), "100%");
+                        }
+                        if (TGx > 100)
+                        {
+                            InsertToExcel(ref worksheet5, "B" + rx.ToString(), SetValueHD);
+                            InsertToExcel(ref worksheet5, "C" + rx.ToString(), setValueDT);
+
+                            InsertToExcel(ref worksheet5, "A" + rx.ToString(), RowCountA.ToString());
+                            InsertToExcel(ref worksheet5, "D" + rx.ToString(), "Visual");
+                            InsertToExcel(ref worksheet5, "E" + rx.ToString(), Rank);
+                            InsertToExcel(ref worksheet5, "F" + rx.ToString(), "100%");
+                        }
+                        if (TGx > 125)
+                        {
+                            InsertToExcel(ref worksheet6, "B" + rx.ToString(), SetValueHD);
+                            InsertToExcel(ref worksheet6, "C" + rx.ToString(), setValueDT);
+
+                            InsertToExcel(ref worksheet6, "A" + rx.ToString(), RowCountA.ToString());
+                            InsertToExcel(ref worksheet6, "D" + rx.ToString(), "Visual");
+                            InsertToExcel(ref worksheet6, "E" + rx.ToString(), Rank);
+                            InsertToExcel(ref worksheet6, "F" + rx.ToString(), "100%");
                         }
 
-                        //Excel.Range SetHDA = worksheet.get_Range("A" + row1.ToString());
-                        //SetHDA.Value2 = rd.Seq.ToString();
+
 
                     }
 
@@ -2993,6 +4787,7 @@ namespace StockControl
                             {
                                 row1 = 6;
                                 rowOther = 0;
+                               // CP = TG;
                                 if (TG <= 25)
                                 {
                                     CP = TG;
@@ -4772,7 +6567,1499 @@ namespace StockControl
             catch { }
 
         }
-        public static void InsertQCChecker(string Uid,string QCNo,string TypeS,string Desc)
+        public static void PrintFMPD112(string WO, string PartNo, string QCNo1, string FromIS)
+        {
+            try
+            {
+                string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = System.IO.Path.GetTempPath();
+                string FileName = "FM-PD-112.xlsx";
+                string TypeReport = GetReportName("HINO", PartNo, FromIS).ToUpper();
+                string HeaderText = "CHECK SHEET ตรวจสอบ100% " + Environment.NewLine + " ";
+                if (TypeReport.Equals("HINO"))
+                {
+                    HeaderText += "S-CAM PIGGY BACK  (HINO)";
+                }
+                else
+                {
+                    HeaderText += "S-CAM PIGGY BACK  (ISUZU)";
+                }
+                string tempfile = tempPath + FileName;
+                DATA = DATA + @"QC\" + FileName;
+                if (File.Exists(tempfile))
+                {
+                    try
+                    {
+                        File.Delete(tempfile);
+                    }
+                    catch { }
+                }
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                  DATA, 0, true, 5,
+                  "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                  0, true);
+                Excel.Sheets sheets = excelBook.Worksheets;
+                Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+                Excel.Worksheet worksheet2 = (Excel.Worksheet)sheets.get_Item(2);
+                Excel.Worksheet worksheet3 = (Excel.Worksheet)sheets.get_Item(3);
+                Excel.Worksheet worksheet4 = (Excel.Worksheet)sheets.get_Item(4);
+                // progressBar1.Maximum = 51;
+                // progressBar1.Minimum = 1;
+                int row1 = 6;
+                int Seq = 0;
+                int TG = 0;
+                string PV = "P";
+                string QHNo = QCNo1;
+                string FormISO = "";
+                string[] Inspector = new string[10];
+                string cCheckBy1 = "";
+                string cCheckBy2 = "";
+                string cCheckBy3 = "";
+                string cCheckBy4 = "";
+                string cCheckBy5 = "";
+                string cCheckBy6 = "";
+                string[] SetData = new string[10];
+                bool PAGE1 = true;
+                bool PAGE2 = false;
+                bool PAGE3 = false;
+                bool PAGE4 = false;
+              //  bool chek24 = true;
+
+                string DN = "";
+                string LotMark = "LOT ต้องถูกต้อง, มีความชัดเจนสามารถอ่านได้ " + Environment.NewLine + " " ;
+                string Line1Part = "";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    string RefValue1 = "";
+                    string RefValue2 = "";
+                    string RefValue3 = "";
+                    string PartName = "";
+                    string C9 = "";
+                    string GP5 = "";
+                    ///////////////SETValue/////////////////////////////////
+                    var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                    if (DValue != null)
+                    {
+                        LotMark = LotMark + " ( " + DValue.LotNo + " )";
+                        var PTAGList = db.tb_QCTAGs.Where(p => p.QCNo.Equals(QHNo)).ToList();
+                        if (PTAGList.Count > 40)
+                        {
+                            PAGE2 = true;
+                        }
+                        if (PTAGList.Count > 80)
+                        {
+                            PAGE3 = true;
+                        }
+                        if (PTAGList.Count > 120)
+                        {
+                            PAGE4 = true;
+                        }
+
+                        DN = DValue.DayNight;
+                        PartName = DValue.NAME;
+                        if (PAGE1)
+                        {
+                            InsertToExcel(ref worksheet, "A4", HeaderText);
+                            InsertToExcel(ref worksheet, "Y3", DValue.CODE);
+                            InsertToExcel(ref worksheet, "Y4", DValue.NAME);
+                            InsertToExcel(ref worksheet, "W5", DValue.PORDER);
+                            InsertToExcel(ref worksheet, "AE5", DValue.LotNo);
+                        }
+                        if (PAGE2)
+                        {
+                            InsertToExcel(ref worksheet2, "A4", HeaderText);
+                            InsertToExcel(ref worksheet2, "Y3", DValue.CODE);
+                            InsertToExcel(ref worksheet2, "Y4", DValue.NAME);
+                            InsertToExcel(ref worksheet2, "W5", DValue.PORDER);
+                            InsertToExcel(ref worksheet2, "AE5", DValue.LotNo);
+                        }
+                        if (PAGE3)
+                        {
+                            InsertToExcel(ref worksheet3, "A4", HeaderText);
+                            InsertToExcel(ref worksheet3, "Y3", DValue.CODE);
+                            InsertToExcel(ref worksheet3, "Y4", DValue.NAME);
+                            InsertToExcel(ref worksheet3, "W5", DValue.PORDER);
+                            InsertToExcel(ref worksheet3, "AE5", DValue.LotNo);
+                        }
+                        if (PAGE4)
+                        {
+                            InsertToExcel(ref worksheet4, "A4", HeaderText);
+                            InsertToExcel(ref worksheet4, "Y3", DValue.CODE);
+                            InsertToExcel(ref worksheet4, "Y4", DValue.NAME);
+                            InsertToExcel(ref worksheet4, "W5", DValue.PORDER);
+                            InsertToExcel(ref worksheet4, "AE5", DValue.LotNo);
+                        }
+
+
+                        try
+                        {
+                            tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if (qh != null)
+                            {
+                                //////////Find UserName////////////
+                                var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                foreach (var rd in uc)
+                                {
+                                    DN = rd.DayN;
+                                    if (DN.Equals("D"))
+                                    {
+                                        if (rd.UDesc.Equals("ผู้ตรวจสอบ"))
+                                        {
+                                            if (cCheckBy1.Equals(""))
+                                                cCheckBy1 = rd.UserName;
+                                            else
+                                                cCheckBy1 = cCheckBy1 + "/" + rd.UserName;
+                                        }
+                                        if (rd.UDesc.Equals("Check"))
+                                        {
+                                            if (cCheckBy2.Equals(""))
+                                                cCheckBy2 = rd.UserName;
+                                            else
+                                                cCheckBy2 = cCheckBy2 + "/" + rd.UserName;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (rd.UDesc.Equals("ผู้ตรวจสอบ"))
+                                        {
+
+                                            if (cCheckBy3.Equals(""))
+                                                cCheckBy3 = rd.UserName;
+                                            else
+                                                cCheckBy3 = cCheckBy3 + "/" + rd.UserName;                                            
+                                        }
+                                        if (rd.UDesc.Equals("Check"))
+                                        {
+                                            if (cCheckBy4.Equals(""))
+                                                cCheckBy4 = rd.UserName;
+                                            else
+                                                cCheckBy4 = cCheckBy4 + "/" + rd.UserName;
+                                        }
+                                    }
+                                }
+
+
+                                FormISO = qh.FormISO;
+                                QHNo = qh.QCNo;
+                                RefValue1 = qh.RefValue1;
+                                RefValue2 = qh.RefValue2;
+                                RefValue3 = qh.RefValue3;
+                                string E5 = "";
+                                int RowS = 6;
+                                var GroupPartList = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(PartNo) && p.FormISO.Equals(FromIS) && p.GroupPart.Trim().Equals("")).OrderBy(s => s.Seq).ToList();
+
+                                if (PAGE1)
+                                {
+                                    InsertToExcel(ref worksheet, "AJ4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet, "AT5", cCheckBy1);
+                                    InsertToExcel(ref worksheet, "AW5", cCheckBy3);
+                                    //Step ตรวจสอบ//                                   
+                                    //End Step//
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet, "K5", E5);
+                                    InsertToExcel(ref worksheet, "J4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet, "K4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet, "M4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    RowS = 6;
+                                    foreach (var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet, "A" + (RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet, "B" + (RowS).ToString(), rd.SetData);                                       
+                                        if (rd.SetData.ToUpper().Equals("LOT"))
+                                        {                                           
+                                            InsertToExcel(ref worksheet, "B" + (RowS).ToString(), LotMark);
+                                        }                                        
+                                    }
+                                    //LOT ต้องถูกต้อง, มีความชัดเจนสามารถอ่านได้ ( )
+                                    LotMark = "LOT ต้องถูกต้อง, มีความชัดเจนสามารถอ่านได้ ( "+DValue.LotNo+" )";
+                                    InsertToExcel(ref worksheet, "B14", LotMark);
+                                    if (!TypeReport.Equals("HINO"))
+                                    {
+                                        InsertToExcel(ref worksheet, "A18", "");
+                                        InsertToExcel(ref worksheet, "A19", "");
+                                        InsertToExcel(ref worksheet, "B18", "");
+                                        InsertToExcel(ref worksheet, "B19", "");
+                                    }
+                                }
+
+                                if (PAGE2)
+                                {
+                                    InsertToExcel(ref worksheet2, "AJ4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet2, "AT5", cCheckBy1);
+                                    InsertToExcel(ref worksheet2, "AW5", cCheckBy3);
+                                    //Step ตรวจสอบ//                                   
+                                    //End Step//
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet2, "K5", E5);
+                                    InsertToExcel(ref worksheet2, "J4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet2, "K4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet2, "M4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    RowS = 6;
+                                    foreach (var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet2, "A" + (RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet2, "B" + (RowS).ToString(), rd.SetData);
+                                        if (rd.SetData.ToUpper().Equals("LOT"))
+                                        {
+                                            InsertToExcel(ref worksheet2, "B" + (RowS).ToString(), LotMark);
+                                        }
+                                    }
+
+                                    LotMark = "LOT ต้องถูกต้อง, มีความชัดเจนสามารถอ่านได้ ( " + DValue.LotNo + " )";
+                                    InsertToExcel(ref worksheet2, "B14", LotMark);
+                                    if (!TypeReport.Equals("HINO"))
+                                    {
+                                        InsertToExcel(ref worksheet2, "A18", "");
+                                        InsertToExcel(ref worksheet2, "A19", "");
+                                        InsertToExcel(ref worksheet2, "B18", "");
+                                        InsertToExcel(ref worksheet2, "B19", "");
+                                    }
+                                }
+                                if (PAGE3)
+                                {
+                                    InsertToExcel(ref worksheet3, "AJ4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet3, "AT5", cCheckBy1);
+                                    InsertToExcel(ref worksheet3, "AW5", cCheckBy3);
+                                    //Step ตรวจสอบ//                                   
+                                    //End Step//
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet3, "K5", E5);
+                                    InsertToExcel(ref worksheet3, "J4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet3, "K4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet3, "M4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    RowS = 6;
+                                    foreach (var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet3, "A" + (RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet3, "B" + (RowS).ToString(), rd.SetData);
+                                        if (rd.SetData.ToUpper().Equals("LOT"))
+                                        {
+                                            InsertToExcel(ref worksheet3, "B" + (RowS).ToString(), LotMark);
+                                        }
+                                    }
+                                    LotMark = "LOT ต้องถูกต้อง, มีความชัดเจนสามารถอ่านได้ ( " + DValue.LotNo + " )";
+                                    InsertToExcel(ref worksheet3, "B14", LotMark);
+                                    if (!TypeReport.Equals("HINO"))
+                                    {
+                                        InsertToExcel(ref worksheet3, "A18", "");
+                                        InsertToExcel(ref worksheet3, "A19", "");
+                                        InsertToExcel(ref worksheet3, "B18", "");
+                                        InsertToExcel(ref worksheet3, "B19", "");
+                                    }
+                                }
+                                if (PAGE4)
+                                {
+                                    InsertToExcel(ref worksheet4, "AJ4", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet4, "AT5", cCheckBy1);
+                                    InsertToExcel(ref worksheet4, "AW5", cCheckBy3);
+                                    //Step ตรวจสอบ//                                   
+                                    //End Step//
+                                    E5 = Convert.ToDateTime(qh.CreateDate).ToString("dd") + " วัน " + Convert.ToDateTime(qh.CreateDate).ToString("MM") + " เดือน  " + Convert.ToDateTime(qh.CreateDate).ToString("yyyy") + " ปี";
+                                    InsertToExcel(ref worksheet4, "K5", E5);
+                                    InsertToExcel(ref worksheet4, "J4", qh.OrderQty); //Prod. Qty
+                                    InsertToExcel(ref worksheet4, "K4", db.get_QCSumQtyNG_RE(qh.QCNo, 1)); // NG
+                                    InsertToExcel(ref worksheet4, "M4", db.get_QCSumQtyNG_RE(qh.QCNo, 2)); //Rework
+                                    RowS = 6;
+                                    foreach (var rd in GroupPartList)
+                                    {
+                                        RowS += 1;
+                                        InsertToExcel(ref worksheet4, "A" + (RowS).ToString(), rd.Seq);
+                                        InsertToExcel(ref worksheet4, "B" + (RowS).ToString(), rd.SetData);
+                                        if (rd.SetData.ToUpper().Equals("LOT"))
+                                        {
+                                            InsertToExcel(ref worksheet4, "B" + (RowS).ToString(), LotMark);
+                                        }
+                                    }
+                                    LotMark = "LOT ต้องถูกต้อง, มีความชัดเจนสามารถอ่านได้ ( " + DValue.LotNo + " )";
+                                    InsertToExcel(ref worksheet4, "B14", LotMark);
+                                    if (!TypeReport.Equals("HINO"))
+                                    {
+                                        InsertToExcel(ref worksheet4, "A18", "");
+                                        InsertToExcel(ref worksheet4, "A19", "");
+                                        InsertToExcel(ref worksheet4, "B18", "");
+                                        InsertToExcel(ref worksheet4, "B19", "");
+                                    }
+                                }
+                            }
+
+                        }
+                        catch (Exception ex) { MessageBox.Show("first " + ex.Message); }
+                    }
+
+                    ////////////////////////////////////////
+                    int SetCol = 10;
+                    int countA = 0;
+                    int CountB = 0;
+                    int CountC = 0;
+                    int CountD = 0;
+                    int TAG2 = 0;
+                    int CA = 0;
+                    int TG2 = 0;
+                    int NGA = 0;
+                    int NGB = 0;
+                    int NGC = 0;
+                    string TAGOf1 = "";
+                    string TAGOf2 = "";
+                    string TAGOf3 = "";
+
+                    int CountTAG = 0;
+                    var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelect(QHNo).ToList();
+                    CountTAG = listPoint.Count;
+                    if (listPoint.Count > 0)
+                    {
+                        foreach (var rs in listPoint)
+                        {
+                            countA += 1;
+                            if (countA > 40)
+                            {
+                                CountB += 1;
+                            }
+                            if (countA > 80)
+                            {
+                                CountC += 1;
+                            }
+                            if (countA > 120)
+                            {
+                                CountD += 1;
+                            }
+                            TG = 0;
+
+                            string[] PPTAG = rs.BarcodeTag.Split(',');
+                            TG = Convert.ToInt32(PPTAG[2]);
+                            TAG2 += TG;
+                            TG2 = 0;
+                            TG2 = Convert.ToInt32(db.get_QCSumQtyTAGNG(QHNo, rs.BarcodeTag, 3));
+
+                            if (listPoint.Count == countA)
+                            {
+                                NGA = TG;
+                                TAGOf1 = PPTAG[5];
+                            }
+                            if ((listPoint.Count - 1) == countA)
+                            {
+                                NGB = TG;
+                                TAGOf2 = PPTAG[5];
+                            }
+                            if ((listPoint.Count - 2) == countA)
+                            {
+                                NGC = TG;
+                                TAGOf3 = PPTAG[5];
+                            }
+                            row1 = 6;
+                            Seq = 0;
+                           
+                            var listPart = db.tb_QCGroupParts.Where(q => q.FormISO.Equals(FromIS) && q.PartNo.Equals(DValue.CODE) && q.GroupPart.Trim().Equals("")).OrderBy(o => o.Seq).ToList();
+                            CA = listPart.Count();
+                            foreach (var rd in listPart)
+                            {
+                                row1 += 1;
+                                Seq += 1;
+                                if (!rd.SetData.Equals("") && row1 <= 19)
+                                {
+                                    try
+                                    {
+                                        var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                        PV = "P";
+                                        if (gValue.CountA > 0)
+                                        {
+                                            PV = "O";
+
+                                            if (gValue.CountA == 99)
+                                            {
+                                                PV = "";
+                                            }
+                                        }
+                                        //if (rd.Seq.Equals(9) && C9.Equals(""))
+                                        //{
+                                        //    PV = "";
+                                        //}
+                                        if (countA <= 40)
+                                        {
+                                            InsertToExcel(ref worksheet, Getcolumn(countA + SetCol) + row1.ToString(), PV);
+                                        }
+                                        if (countA > 40 && countA <= 80)
+                                        {
+                                            InsertToExcel(ref worksheet2, Getcolumn(CountB + SetCol) + row1.ToString(), PV);
+                                        }
+                                        if (countA > 80 && countA <= 120)
+                                        {
+                                            InsertToExcel(ref worksheet3, Getcolumn(CountC + SetCol) + row1.ToString(), PV);
+                                        }
+                                        if (countA > 120 && countA <= 160)
+                                        {
+                                            InsertToExcel(ref worksheet4, Getcolumn(CountD + SetCol) + row1.ToString(), PV);
+                                        }
+                                    }
+                                    catch { }
+                                    //catch (Exception ex) { MessageBox.Show("Mid " + ex.Message); }
+
+                                }
+                                //SumNG//       
+
+                                if (countA <= 40)
+                                {
+                                    InsertToExcel(ref worksheet, Getcolumn(countA + SetCol) + "21", (TG - TG2));
+                                    InsertToExcel(ref worksheet, Getcolumn(countA + SetCol) + "22", TG2);
+                                }
+                                else if (countA > 40 && countA <= 80)
+                                {
+                                    if (PAGE2)
+                                    {
+                                        InsertToExcel(ref worksheet2, Getcolumn(CountB + SetCol) + "21", (TG - TG2));
+                                        InsertToExcel(ref worksheet2, Getcolumn(CountB + SetCol) + "22", TG2);
+                                    }
+                                }
+                                else if (countA > 80 && countA <= 120)
+                                {
+                                    if (PAGE3)
+                                    {
+                                        InsertToExcel(ref worksheet3, Getcolumn(CountC + SetCol) + "21", (TG - TG2));
+                                        InsertToExcel(ref worksheet3, Getcolumn(CountC + SetCol) + "22", TG2);
+
+                                    }
+                                }
+                                else if (countA > 120 && countA <= 160)
+                                {
+                                    if (PAGE4)
+                                    {
+                                        InsertToExcel(ref worksheet4, Getcolumn(CountD + SetCol) + "21", (TG - TG2));
+                                        InsertToExcel(ref worksheet4, Getcolumn(CountD + SetCol) + "22", TG2);
+                                    }
+                                }
+
+                            }//foreach 
+                             //}//cunt A //Page 1 End
+                        }//for
+
+                        ////NGQty and Remark//
+                        int RM = 0;
+                        int TNG1 = 0;
+                        int TNG2 = 0;
+                        int TNG3 = 0;
+                        tb_QCProblem qcp = db.tb_QCProblems.Where(p => p.QCNo.Equals(QHNo) && !p.NGQty.Equals(0)).FirstOrDefault();
+                        if (qcp != null)
+                        {
+                            var tgf = db.tb_QCTAGs.Where(s => s.QCNo.Equals(QHNo)).ToList();
+                            foreach (var tf in tgf)
+                            {
+                                if (tf.ofTAG.Equals(TAGOf1))
+                                {
+                                    TNG1 = Convert.ToInt32(tf.NGQty);
+                                }
+                                else if (tf.ofTAG.Equals(TAGOf2))
+                                {
+                                    TNG2 = Convert.ToInt32(tf.NGQty);
+                                }
+                                else if (tf.ofTAG.Equals(TAGOf3))
+                                {
+                                    TNG3 = Convert.ToInt32(tf.NGQty);
+                                }
+                            }
+
+                            if (countA <= 40)
+                            {   //NG Qty//                
+                                InsertToExcel(ref worksheet, "B20", qcp.ProblemName);
+                                ///////////////////////////////
+                                if (qcp.NGQty > 0)
+                                {
+                                    if (NGA < (qcp.NGQty + TNG1))
+                                    {
+                                        InsertToExcel(ref worksheet, Getcolumn(countA + SetCol) + "20", "O");
+                                        InsertToExcel(ref worksheet, Getcolumn(countA + SetCol) + "21", 0);
+                                        InsertToExcel(ref worksheet, Getcolumn(countA + SetCol) + "22", NGA);
+                                        RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                        if (RM > 0)
+                                        {
+                                            if (NGB < (RM + TNG2))
+                                            {
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + SetCol) + "21", 0);
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + SetCol) + "22", NGB);
+                                                RM = (RM + TNG2) - NGB;
+                                                if (RM > 0)
+                                                {
+                                                    if (NGC < (RM + TNG3))
+                                                    {
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + SetCol) + "21", 0);
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + SetCol) + "22", NGC);
+                                                    }
+                                                    else
+                                                    {
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + SetCol) + "21", NGC - (RM + TNG3));
+                                                        InsertToExcel(ref worksheet, Getcolumn((countA - 2) + SetCol) + "22", RM + TNG3);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + SetCol) + "21", NGB - (RM + TNG2));
+                                                InsertToExcel(ref worksheet, Getcolumn((countA - 1) + SetCol) + "22", (RM + TNG2));
+                                            }
+                                        }
+
+
+                                    }
+                                    else
+                                    {
+                                        InsertToExcel(ref worksheet, Getcolumn((countA - 0) + SetCol) + "20", "O");
+                                        InsertToExcel(ref worksheet, Getcolumn((countA - 0) + SetCol) + "21", NGA - (qcp.NGQty + TNG1));
+                                        InsertToExcel(ref worksheet, Getcolumn((countA - 0) + SetCol) + "22", (qcp.NGQty + TNG1));
+
+                                    }
+
+                                }
+
+                            }
+                            else if (countA > 40 && countA <= 80)
+                            {
+                                if (PAGE2)
+                                {
+                                    //NG Qty//                                   
+                                    InsertToExcel(ref worksheet2, "B20", qcp.ProblemName);
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty + TNG1))
+                                        {
+                                            InsertToExcel(ref worksheet2, Getcolumn(countA + SetCol) + "20", "O");
+                                            InsertToExcel(ref worksheet2, Getcolumn(countA + SetCol) + "21", 0);
+                                            InsertToExcel(ref worksheet2, Getcolumn(countA + SetCol) + "22", NGA);
+                                            RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM + TNG2))
+                                                {
+
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + SetCol) + "21", 0);
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + SetCol) + "22", NGB);
+
+                                                    RM = (RM + TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM + TNG3))
+                                                        {
+
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + SetCol) + "21", 0);
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + SetCol) + "22", NGC);
+                                                        }
+                                                        else
+                                                        {
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + SetCol) + "21", NGC - (RM + TNG3));
+                                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 2) + SetCol) + "22", RM + TNG3);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + SetCol) + "21", NGB - (RM + TNG2));
+                                                    InsertToExcel(ref worksheet2, Getcolumn((countA - 1) + SetCol) + "22", (RM + TNG2));
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 0) + SetCol) + "20", "O");
+                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 0) + SetCol) + "21", NGA - (qcp.NGQty + TNG1));
+                                            InsertToExcel(ref worksheet2, Getcolumn((countA - 0) + SetCol) + "22", (qcp.NGQty + TNG1));
+                                        }
+
+                                    }
+                                }
+                            }
+                            else if (countA > 80 && countA <= 120)
+                            {
+                                if (PAGE3)
+                                {
+                                    //NG Qty//                                   
+                                    InsertToExcel(ref worksheet3, "B20", qcp.ProblemName);
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty + TNG1))
+                                        {
+                                            InsertToExcel(ref worksheet3, Getcolumn(countA + SetCol) + "20", "O");
+                                            InsertToExcel(ref worksheet3, Getcolumn(countA + SetCol) + "21", 0);
+                                            InsertToExcel(ref worksheet3, Getcolumn(countA + SetCol) + "22", NGA);
+                                            RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM + TNG2))
+                                                {
+
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + SetCol) + "21", 0);
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + SetCol) + "22", NGB);
+                                                    RM = (RM + TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM + TNG3))
+                                                        {
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + SetCol) + "21", 0);
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + SetCol) + "22", NGC);
+                                                        }
+                                                        else
+                                                        {
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + SetCol) + "21", NGC - (RM + TNG3));
+                                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 2) + SetCol) + "22", RM + TNG3);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + SetCol) + "21", NGB - (RM + TNG2));
+                                                    InsertToExcel(ref worksheet3, Getcolumn((countA - 1) + SetCol) + "22", (RM + TNG2));
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 0) + SetCol) + "20", "O");
+                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 0) + SetCol) + "21", NGA - (qcp.NGQty + TNG1));
+                                            InsertToExcel(ref worksheet3, Getcolumn((countA - 0) + SetCol) + "22", (qcp.NGQty + TNG1));
+                                        }
+
+                                    }
+                                }
+                            }
+                            else if (countA > 120 && countA <= 160)
+                            {
+                                if (PAGE4)
+                                {
+                                    //NG Qty//                                    
+                                    InsertToExcel(ref worksheet4, "BC20", qcp.ProblemName);
+
+                                    if (qcp.NGQty > 0)
+                                    {
+                                        if (NGA < (qcp.NGQty + TNG1))
+                                        {
+                                            InsertToExcel(ref worksheet4, Getcolumn(countA + SetCol) + "20", "O");
+                                            InsertToExcel(ref worksheet4, Getcolumn(countA + SetCol) + "21", 0);
+                                            InsertToExcel(ref worksheet4, Getcolumn(countA + SetCol) + "22", NGA);
+                                            RM = (Convert.ToInt32(qcp.NGQty) + TNG1) - NGA;
+                                            if (RM > 0)
+                                            {
+                                                if (NGB < (RM + TNG2))
+                                                {
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + SetCol) + "21", 0);
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + SetCol) + "22", NGB);
+                                                    RM = (RM + TNG2) - NGB;
+                                                    if (RM > 0)
+                                                    {
+                                                        if (NGC < (RM + TNG3))
+                                                        {
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + SetCol) + "21", 0);
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + SetCol) + "22", NGC);
+                                                        }
+                                                        else
+                                                        {
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + SetCol) + "20", "O");
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + SetCol) + "21", NGC - (RM + TNG3));
+                                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 2) + SetCol) + "22", RM + TNG3);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + SetCol) + "20", "O");
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + SetCol) + "21", NGB - (RM + TNG2));
+                                                    InsertToExcel(ref worksheet4, Getcolumn((countA - 1) + SetCol) + "22", (RM + TNG2));
+                                                }
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 0) + SetCol) + "20", "O");
+                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 0) + SetCol) + "21", NGA - (qcp.NGQty + TNG1));
+                                            InsertToExcel(ref worksheet4, Getcolumn((countA - 0) + SetCol) + "22", (qcp.NGQty + TNG1));
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+
+                        ////// PC Check ///
+                    }
+
+
+
+                }
+
+                excelBook.SaveAs(tempfile);
+                excelBook.Close(false);
+                excelApp.Quit();
+                releaseObject(worksheet);
+                releaseObject(worksheet2);
+                releaseObject(worksheet3);
+                releaseObject(excelBook);
+                releaseObject(excelApp);
+
+                Marshal.FinalReleaseComObject(worksheet);
+                Marshal.FinalReleaseComObject(worksheet2);
+                Marshal.FinalReleaseComObject(worksheet3);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet2);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet3);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                GC.GetTotalMemory(false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.GetTotalMemory(true);
+                System.Diagnostics.Process.Start(tempfile);
+
+            }
+            catch (Exception ex) { MessageBox.Show("last " + ex.Message); }
+        }
+
+        public static void PrintFMPD109(string WO, string PartNo, string QCNo1, string FromIS)
+        {
+            try
+            {
+                try
+                {
+                    string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                    string tempPath = System.IO.Path.GetTempPath();
+                    string FileName = "FM-PD-109.xlsx";
+                    FromIS = "FM-PD-109";
+
+
+                    string tempfile = tempPath + FileName;
+                    DATA = DATA + @"QC\" + FileName;
+                    if (File.Exists(tempfile))
+                    {
+                        try
+                        {
+                            File.Delete(tempfile);
+                        }
+                        catch { }
+                    }
+
+                    Excel.Application excelApp = new Excel.Application();
+                    Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                      DATA, 0, true, 5,
+                      "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                      0, true);
+                    Excel.Sheets sheets = excelBook.Worksheets;
+                    Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+
+                    // progressBar1.Maximum = 51;
+                    // progressBar1.Minimum = 1;
+                    //int row1 = 22;
+                    //int row2 = 22;
+                    //int Seq = 0;
+                    //int seq2 = 22;
+                    //int CountRow = 0;
+                    string cIssueBy1 = "";
+                    string cIssueBy2 = "";
+                    string cIssueBy3 = "";
+                    string cIssueBy4 = "";
+
+                    string cCheckBy1 = "";
+                    string cCheckBy2 = "";
+                    string cCheckBy3 = "";
+
+                    string cCheckByF1 = "";
+                    string cCheckByF2 = "";
+                    string cCheckByF3 = "";
+
+                    string PV = "P";
+                    string QHNo = QCNo1;
+                    string FormISO = FromIS;
+                    string DN = "";
+                    string SymBo = "～";
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        //string Value1 = "";
+                        //string Value2 = "";
+                        //string LotNo = "";
+
+                        ///////////////SETValue/////////////////
+                        var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                        if (DValue != null)
+                        {
+                            DN = DValue.DayNight;
+
+                            InsertToExcel(ref worksheet, "I5", GetDWG(PartNo, 1));
+                            InsertToExcel(ref worksheet, "AF1", GetDWG(PartNo, 2));
+                            
+                            InsertToExcel(ref worksheet, "P3", DValue.CODE.ToString());
+                            InsertToExcel(ref worksheet, "P5", DValue.NAME.ToString());
+                            //InsertToExcel(ref worksheet, "D3", "TW02-SC_PB");
+                            InsertToExcel(ref worksheet, "D5", DValue.PORDER.ToString());
+                            InsertToExcel(ref worksheet, "D7", DValue.DeliveryDate);
+                            InsertToExcel(ref worksheet, "D9", DValue.LotNo.ToString());
+                            InsertToExcel(ref worksheet, "D11", DValue.OrderQty.ToString());
+                            var gTime = db.sp_46_QCGetValue2601_Time(WO).ToList();
+                            if (gTime.Count > 0)
+                            {
+                                var g = gTime.FirstOrDefault();
+                                DateTime Chtime = Convert.ToDateTime(g.BomTime);
+                                DateTime Chtime2 = Convert.ToDateTime(g.PrintTime);
+
+                                if (g.BomTime2 != "")
+                                    Chtime = Convert.ToDateTime(g.BomTime2);
+                                if (g.BomTime == g.PrintTime)
+                                {
+                                    Chtime2 = Convert.ToDateTime(g.PrintTime).AddMinutes(30);
+                                }
+                                InsertToExcel(ref worksheet, "AB9", Math.Abs(Convert.ToDecimal((Chtime - Chtime2).TotalMinutes)).ToString("####") + " นาที");
+                                if (!g.StartTime.Equals(""))
+                                {
+                                    InsertToExcel(ref worksheet, "N7", Convert.ToDateTime(Chtime2).ToString("HH:mm"));
+                                    InsertToExcel(ref worksheet, "AA7", Convert.ToDateTime(g.EndTime).ToString("HH:mm"));
+                                    InsertToExcel(ref worksheet, "O9", "'" + Convert.ToDateTime(Chtime).ToString("HH:mm") + " " + SymBo + " " + Convert.ToDateTime(Chtime2).ToString("HH:mm"));
+                                }
+                            }
+                            try
+                            {
+                                tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                                if (qh != null)
+                                {
+                                    //////////Find UserName////////////
+                                    var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                    int r1 = 0;
+                                    int r2 = 0;
+                                    int r3 = 0;
+                                    int rr1 = 0;
+                                    int rr2 = 0;
+                                    int rr3 = 0;
+                                    foreach (var rd in uc)
+                                    {
+                                        DN = rd.DayN;// dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+                                        if (DN.Equals("D"))
+                                        {
+                                            if (rd.UDesc.Equals("ผู้จัดทำเอกสาร"))
+                                                cIssueBy1 = rd.UserName;
+                                            if (rd.UDesc.Equals("ผู้ตรวจสอบก่อนผลิต"))
+                                                cIssueBy2 = rd.UserName;
+                                        }
+                                        else //N
+                                        {
+                                            if (rd.UDesc.Equals("ผู้จัดทำเอกสาร"))
+                                                cIssueBy3 = rd.UserName;
+                                            if (rd.UDesc.Equals("ผู้ตรวจสอบก่อนผลิต"))
+                                                cIssueBy4 = rd.UserName;
+                                        }
+                                    }
+
+                                    InsertToExcel(ref worksheet, "AE10", db.QC_GetUserName(qh.ApproveBy));
+                                    InsertToExcel(ref worksheet, "AE5", "1. " + cIssueBy1);
+                                    InsertToExcel(ref worksheet, "AE7", "2. " + cIssueBy2);
+                                    InsertToExcel(ref worksheet, "AF5", "1. " + cIssueBy3);
+                                    InsertToExcel(ref worksheet, "AF7", "2. " + cIssueBy4);
+
+                                    //Main Line
+                                    InsertToExcel(ref worksheet, "E23", db.get_QC_UserNameScan(qh.QCNo, "Sub line", "D"));
+                                    InsertToExcel(ref worksheet, "F23", db.get_QC_UserNameScan(qh.QCNo, "Sub line", "N"));
+
+                                    InsertToExcel(ref worksheet, "E32", db.get_QC_UserNameScan(qh.QCNo, "Main line", "D"));
+                                    InsertToExcel(ref worksheet, "F32", db.get_QC_UserNameScan(qh.QCNo, "Main line", "N"));
+
+                                    InsertToExcel(ref worksheet, "E40", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "D"));
+                                    InsertToExcel(ref worksheet, "F40", db.get_QC_UserNameScan(qh.QCNo, "ตรวจสอบท้ายไลน์", "N"));
+
+
+                                    //ตอก Lot//
+                                    InsertToExcel(ref worksheet, "AE36", "LOT ( " + qh.LotNo + " )");
+                                    InsertToExcel(ref worksheet, "AE37", DValue.DayNight);
+                                    // InsertToExcel(ref worksheet, "AE33", db.get_QC_DATAPoint_AG(qh.WONo, 35));
+                                    //    InsertToExcel(ref worksheet, "AE34", db.get_QC_DATAPoint_AG(qh.WONo, 36));
+
+
+                                    //Find CountPD
+                                    /////////////////////////////
+
+                                    /////////////////////////////
+                                    var co = db.tb_QCCountPDs.Where(c => c.WONo.Equals(WO)).ToList();
+                                    foreach (var rd in co)
+                                    {
+                                        if (rd.DayN.Equals("D"))
+                                        {
+                                            InsertToExcel(ref worksheet, "F" + (46 + rd.Seq).ToString(), rd.A1);
+                                        }
+                                        else
+                                        {
+                                            InsertToExcel(ref worksheet, "H" + (46 + rd.Seq).ToString(), rd.A1);
+                                        }
+
+                                    }
+                                    //Find Problem//
+
+                                    tb_QCProblem pb = db.tb_QCProblems.Where(p => p.QCNo.Equals(QHNo)).FirstOrDefault();
+                                    if (pb != null)
+                                    {
+                                        if (pb.TypeProblem.Equals("Man"))
+                                        {
+                                            InsertToExcel(ref worksheet, "F13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Machine"))
+                                        {
+                                            InsertToExcel(ref worksheet, "F13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Method"))
+                                        {
+                                            InsertToExcel(ref worksheet, "M13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Material"))
+                                        {
+                                            InsertToExcel(ref worksheet, "P13", "P");
+                                        }
+                                        else if (pb.TypeProblem.Equals("Other"))
+                                        {
+                                            InsertToExcel(ref worksheet, "S13", "P");
+                                            InsertToExcel(ref worksheet, "X13", pb.TypeRemark);
+                                        }
+                                        InsertToExcel(ref worksheet, "E14", pb.ProblemSeeBy);
+                                        InsertToExcel(ref worksheet, "N14", pb.ProblemName);
+                                        InsertToExcel(ref worksheet, "AC14", pb.ProblemWare);
+                                        InsertToExcel(ref worksheet, "E15", pb.ProblemTime);
+                                        InsertToExcel(ref worksheet, "N15", pb.ProblemWhy);
+                                        InsertToExcel(ref worksheet, "E17", pb.ProblemFix);
+                                        InsertToExcel(ref worksheet, "V18", pb.FixBy);
+                                        InsertToExcel(ref worksheet, "AE18", pb.CheckBy);
+
+                                    }
+                                    ////Scan Time///                        
+
+                                    ////Set Topic//
+
+                                    InsertToExcel(ref worksheet, "L42", db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 50));
+                                    InsertToExcel(ref worksheet, "L43", db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 51));
+                                    InsertToExcel(ref worksheet, "L44", db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 52));
+                                    //Step 1
+                                    int cRow = 22;                                   
+                                    string Ppart = "";
+                                    string Pparg2 = "";
+                                    var QCP = db.sp_46_QCSelectWO_13_GroupPart(qh.WONo).ToList();
+                                    cRow = 22;
+                                    foreach (var rx in QCP)
+                                    {
+                                        Ppart = "";
+                                        Pparg2 = "";
+                                        cRow += 1;
+                                        if (cRow < 42)
+                                        {                                                                                      
+                                            Ppart = rx.PartNo;
+                                            Pparg2 = db.getItemNo(rx.PartNo);
+                                            if (rx.PartNo.ToUpper().Contains("GREASE") || rx.PartNo.ToUpper().Contains("SILICON") || rx.PartNo.ToUpper().Contains("LOCTITE"))
+                                            {
+                                                Pparg2 = "";
+                                                //if (rx.PartNo.ToUpper().Contains("GREASE"))
+                                                //    Pparg2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo,50 );
+                                                //if (rx.PartNo.ToUpper().Contains("SILICON"))
+                                                //    Pparg2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 51);
+                                                //if (rx.PartNo.ToUpper().Contains("LOCTITE"))
+                                                //    Pparg2 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 53);                                                                                               
+                                            }
+                                           
+                                            if (Pparg2 != "")
+                                            {
+                                                InsertToExcel(ref worksheet, "G" + cRow.ToString(), Pparg2);
+                                                InsertToExcel(ref worksheet, "L" + cRow.ToString(), Ppart);
+                                                Ppart = rx.PartNo;
+                                                var rds = db.sp_46_QCGetValue2601(qh.WONo, Ppart).FirstOrDefault();
+                                                if (rds != null)
+                                                {
+                                                    InsertToExcel(ref worksheet, "Q" + cRow.ToString(), rds.DayN);
+                                                    InsertToExcel(ref worksheet, "R" + cRow.ToString(), rds.NightN);
+                                                    InsertToExcel(ref worksheet, "S" + cRow.ToString(), rds.Lot);
+                                                }
+                                            }
+                                        }
+                                    }
+
+
+
+                                    /////Step 2
+                                    ////  int crow2 = 22;
+                                    cRow = 22;
+                                    int CK = 0;
+                                    int N23 = 0;
+                                    int D23 = 0;
+                                    string HINO = "";
+
+                                    for (int II = 1; II <= 13; II++)
+                                    {
+
+                                        cRow += 1; 
+                                        Ppart = "";
+                                        Pparg2 = "";
+                                        Ppart = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, II); //Set Data
+                                        Pparg2 = db.get_QC_SetDataMaster2(qh.FormISO, qh.PartNo, II);//Topic
+                                        InsertToExcel(ref worksheet, "AA" + cRow.ToString(), Pparg2);
+                                        InsertToExcel(ref worksheet, "AE" + cRow.ToString(), Ppart);
+                                        if (Ppart.ToUpper().Contains("HINO"))
+                                        {
+                                            HINO = "HINO";
+                                        }
+
+                                        ////Line 1 //
+                                        CK = Convert.ToInt32(db.get_QC_DATAPoint_AG_2D(qh.WONo, qh.PartNo, qh.FormISO, II));
+                                        if (CK == 1)
+                                        {
+                                            InsertToExcel(ref worksheet, "AG" + cRow.ToString(), "P");
+                                            D23 += 1;
+                                        }
+                                        else if (CK == 2)
+                                        {
+                                            InsertToExcel(ref worksheet, "AH" + cRow.ToString(), "P");
+                                            N23 += 1;
+                                        }
+                                        else if (CK == 3)
+                                        {
+                                            D23 += 1;
+                                            N23 += 1;                                            
+                                            InsertToExcel(ref worksheet, "AG" + cRow.ToString(), "P");                                           
+                                            InsertToExcel(ref worksheet, "AH" + cRow.ToString(), "P");                                            
+                                        }
+                                        if (II == 9)
+                                        {
+                                            if (D23 > 0)
+                                            {
+                                                InsertToExcel(ref worksheet, "AG" + cRow.ToString(), "P");
+                                            }
+                                            if (N23 > 23)
+                                            {
+                                                InsertToExcel(ref worksheet, "AH" + cRow.ToString(), "P");
+                                            }
+                                        }
+                                    }
+                                    //Update ISUZU//
+                                    if (HINO.Equals(""))
+                                    {
+                                        InsertToExcel(ref worksheet, "Z39", "");
+                                        InsertToExcel(ref worksheet, "AA39", "");
+                                        InsertToExcel(ref worksheet, "AA41", "");
+                                        InsertToExcel(ref worksheet, "AE39", "");
+                                        InsertToExcel(ref worksheet, "AE41", "");
+                                        InsertToExcel(ref worksheet, "AG39", "");
+                                        InsertToExcel(ref worksheet, "AH39", "");
+                                        InsertToExcel(ref worksheet, "AG41", "");
+                                        InsertToExcel(ref worksheet, "AH41", "");
+
+                                    }
+                                }
+                                
+                            }
+                            catch { }
+                        }
+                        ////////////////////////////////////////
+                    }
+                    excelBook.SaveAs(tempfile);
+                    excelBook.Close(false);
+                    excelApp.Quit();
+                    releaseObject(worksheet);
+                    releaseObject(excelBook);
+                    releaseObject(excelApp);
+                    Marshal.FinalReleaseComObject(worksheet);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+                    GC.GetTotalMemory(false);
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    GC.GetTotalMemory(true);
+                    System.Diagnostics.Process.Start(tempfile);
+
+                }
+                catch { }
+            }
+            catch { }
+        }
+        public static void PrintFMPD003_S(string WO, string PartNo, string QCNo1, string FromIS)
+        {
+            try
+            {
+                string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = System.IO.Path.GetTempPath();
+                string FileName = "FM-PD-003_S_HINO.xlsx";
+                string tempfile = tempPath + FileName;
+                string TypeReport = GetReportName("HINO", PartNo, FromIS).ToUpper();
+                string HeaderText = " Shipping Check  result in process  (Piggy Back Piston Type)";             
+                
+                if (!TypeReport.Equals("HINO"))
+                {
+                    FileName = "FM-PD-003_S_ISUZU.xlsx";
+                    tempfile = tempPath + FileName;
+                }
+                DATA = DATA + @"QC\" + FileName;
+                if (File.Exists(tempfile))
+                {
+                    try
+                    {
+                        File.Delete(tempfile);
+                    }
+                    catch { }
+                }
+
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                  DATA, 0, true, 5,
+                  "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                  0, true);
+                Excel.Sheets sheets = excelBook.Worksheets;
+                Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+                //if (!TypeReport.Equals("HINO"))
+                //{                    
+                //    worksheet = (Excel.Worksheet)sheets.get_Item(2);
+                //}
+                worksheet.Activate();
+
+                // progressBar1.Maximum = 51;
+                // progressBar1.Minimum = 1;
+                int row1 = 14;
+
+                string PV = "P";
+                string QHNo = QCNo1;
+                string FormISO = FromIS;
+                string DN = "";
+                string cCheckBy1 = "";
+                string cCheckBy2 = "";
+                string cCheckBy3 = "";
+                string LotRemark = "";
+                string E5 = "";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    string PartName = "";
+                    string LotNo = "";
+                    ///////////////SETValue/////////////////
+                    var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                    if (DValue != null)
+                    {
+                        DN = DValue.DayNight;
+                        PartName = DValue.NAME;
+                        InsertToExcel(ref worksheet, "A4", HeaderText);
+                        InsertToExcel(ref worksheet, "C6", DValue.NAME);
+                        InsertToExcel(ref worksheet, "C7", DValue.CODE);
+                        InsertToExcel(ref worksheet, "C8", db.get_QC_ItemCustomerNo(DValue.CODE, ""));
+                        E5 = " วัน " + Convert.ToDateTime(DValue.CreateDate).ToString("dd") + " เดือน " + Convert.ToDateTime(DValue.CreateDate).ToString("MM") + " ปี  " + Convert.ToDateTime(DValue.CreateDate).ToString("yyyy") + "";
+                        InsertToExcel(ref worksheet, "C9", E5);
+                        InsertToExcel(ref worksheet, "C10", DValue.OrderQty);
+                        InsertToExcel(ref worksheet, "C11", DValue.LotNo);
+                        InsertToExcel(ref worksheet, "D13", DValue.PORDER);
+                        LotRemark = "มีการตอก Lot no.ถูกต้อง,ชัดเจน,ตำแหน่งการตอกถูกต้อง ( " + DValue.LotNo + " ) ";
+                        InsertToExcel(ref worksheet, "D22", LotRemark);
+                        if (TypeReport.Equals("HINO"))
+                        {
+                            InsertToExcel(ref worksheet, "D26", db.get_QC_SetDataMaster(FromIS,DValue.CODE,12));
+                            InsertToExcel(ref worksheet, "D27", db.get_QC_SetDataMaster(FromIS, DValue.CODE, 13));
+                        }
+                        try
+                        {
+                            tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if (qh != null)
+                            {
+                                FormISO = qh.FormISO;
+                                LotNo = qh.LotNo;
+                                //////////Find UserName////////////
+                                var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                foreach (var rd in uc)
+                                {
+                                    DN = dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 1"))
+                                        cCheckBy1 = rd.UserName;
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 2"))
+                                        cCheckBy2 = rd.UserName;
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 3"))
+                                        cCheckBy3 = rd.UserName;
+                                }
+
+
+                                InsertToExcel(ref worksheet, "J7", cCheckBy1);
+                                //InsertToExcel(ref worksheet, "K8", cCheckBy2);
+                                InsertToExcel(ref worksheet, "H7", db.QC_GetUserName(qh.ApproveBy));
+                                QHNo = qh.QCNo;
+
+                                if (db.QC_CheckNG(QHNo) == "P")
+                                {
+                                    InsertToExcel(ref worksheet, "J10", "P");
+                                }
+                                else
+                                {
+                                    InsertToExcel(ref worksheet, "H10", "P");
+                                }
+
+                                //Excel.Range O19 = worksheet.get_Range("O19");
+                                //O19.Value2 = db.get_QC_DATAPoint(qh.QCNo, "", 8);
+                                //Excel.Range O20 = worksheet.get_Range("O20");
+                                //O20.Value2 = db.get_QC_DATAPoint(qh.QCNo, "", 9);
+                            }
+
+                        }
+                        catch { }
+
+                    }
+
+                    ////////////////////////////////////////
+                    ////Insert Desc.//
+                    int countA = 0;
+                    //row1 = 14;
+                    //string setPart = "";
+                    //var vList = db.tb_QCGroupParts.Where(p => p.FormISO.Equals(FromIS) && p.PartNo.Equals(PartNo) && !p.TopPic.Trim().Equals("")
+                    //            && p.GroupPart.Trim().Equals("")).OrderBy(s => s.Seq).ToList();
+                    //foreach (var ls in vList)
+                    //{
+                    //    countA += 1;
+                    //    row1 += 1;
+                    //    setPart = ls.SetData.Trim();
+                    //    if (ls.TopPic.Trim().Equals("Lot No."))
+                    //    {
+                    //        setPart = LotRemark;
+                    //    }
+                    //    InsertToExcel(ref worksheet, "A" + row1.ToString(), countA);
+                    //    InsertToExcel(ref worksheet, "B" + row1.ToString(), ls.TopPic.Trim());
+                    //    InsertToExcel(ref worksheet, "D" + row1.ToString(), setPart);
+
+                    //}
+
+                    ////////////////
+
+
+                    countA = 0;
+                    string Colm = "";             
+                    var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelectPD(QHNo).ToList();
+                    if (listPoint.Count > 0)
+                    {
+                        foreach (var rs in listPoint)
+                        {
+                            countA += 1;
+                            if (true)
+                            {
+                                row1 = 14;
+                                var listPart = db.tb_QCGroupParts.Where(p => p.FormISO.Equals(FromIS) && p.PartNo.Equals(PartNo) && !p.TopPic.Trim().Equals("")
+                                                && p.GroupPart.Trim().Equals("")).OrderBy(s => s.Seq).ToList();
+                                foreach (var rd in listPart)
+                                {
+                                    row1 += 1;
+                                    if (!rd.SetData.Equals("") && row1 <= 40)
+                                    {
+                                        try
+                                        {
+
+                                            var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                            PV = "OK";
+
+                                            if (gValue.CountA > 0)
+                                            {
+                                                PV = "OK";
+                                                if (gValue.CountA > 0)
+                                                    PV = "NG";
+                                                if (gValue.CountA == 99)
+                                                    PV = "";
+                                            }
+
+
+
+                                            if (rs.BarcodeTag.Contains("Head"))
+                                            {
+                                                Colm = "H";
+                                            }
+                                            else if (rs.BarcodeTag.Contains("Middle"))
+                                            {
+                                                Colm = "J";
+                                            }
+                                            else
+                                            {
+                                                Colm = "K";
+                                            }                                          
+                                            if (row1 == 18)
+                                            {
+                                                PV = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                            }
+                                                //Input Value///
+                                                InsertToExcel(ref worksheet, Colm + row1.ToString(), PV);
+                                        }
+                                        catch (Exception ex) { MessageBox.Show(ex.Message); }
+                                    }
+
+                                }//foreach
+                            }//cunt A
+                        }//for
+                    }
+
+
+
+                }
+
+                excelBook.SaveAs(tempfile);
+                excelBook.Close(false);
+                excelApp.Quit();
+
+                releaseObject(worksheet);
+                releaseObject(excelBook);
+                releaseObject(excelApp);
+                Marshal.FinalReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                GC.GetTotalMemory(false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.GetTotalMemory(true);
+                System.Diagnostics.Process.Start(tempfile);
+
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// //////////////////////////////////////////////////////
+        /// </summary>
+        public static string CheckColumnTime(string Timex)
+        {
+            //cboTime.Items.Clear();
+            //cboTime.Items.Add("11:00-12:00");
+            //cboTime.Items.Add("12:00-13:00");
+            //cboTime.Items.Add("17:00-17:30");
+            //cboTime.Items.Add("17:30-18:00");
+
+            //cboTime.Items.Add("23:00-24:00");
+            //cboTime.Items.Add("00:00-01:00");
+            //cboTime.Items.Add("05:00-05:30");
+            //cboTime.Items.Add("05:30-06:00");
+            string Time = "C";
+            if (Timex.Equals("11:00-12:00"))
+                Time = "C";
+            else if (Timex.Equals("12:00-13:00"))
+                Time = "F";
+            else if (Timex.Equals("17:00-17:30"))
+                Time = "I";
+            else if (Timex.Equals("17:30-18:00"))
+                Time = "L";
+            else if (Timex.Equals("23:00-24:00"))
+                Time = "O";
+            else if (Timex.Equals("00:00-01:00"))
+                Time = "R";
+            else if (Timex.Equals("05:00-05:30"))
+                Time = "T";
+            else if (Timex.Equals("05:30-06:00"))
+                Time = "W";
+
+            return Time;
+        }
+        public static string GetReportName(string defaultx, string PartNo, string FromIS)
+        {
+            string RP = defaultx;
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                tb_QCGroupPart gp = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(PartNo) && p.FormISO.Equals(FromIS) && p.StepPart.Equals("USE REPORT")
+                && p.TopPic.Equals("Report")).FirstOrDefault();
+                if (gp != null)
+                {
+                    
+                        RP = gp.SetData.ToString();
+                    
+                }
+
+            }
+
+            return RP;
+        }
+        public static string GetSetDataDWG(string PartNo, string FromIS)
+        {
+            string RP = "";
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                tb_QCGroupPart gp = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(PartNo) && p.FormISO.Equals(FromIS) && p.StepPart.Trim().ToUpper().Equals("DWG  NO.")
+                && p.GroupPart.ToUpper().Equals("YES")).FirstOrDefault();
+                if (gp != null)
+                {
+                    RP = gp.SetData.ToString();
+                }
+
+            }
+
+            return RP;
+        }
+        public static string GetSetDataCust(string PartNo, string FromIS)
+        {
+            string RP = "";
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                tb_QCGroupPart gp = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(PartNo) && p.FormISO.Equals(FromIS) && p.StepPart.Trim().ToUpper().Equals("CUSTOMER REF.")
+                && p.GroupPart.ToUpper().Equals("YES")).FirstOrDefault();
+                if (gp != null)
+                {
+                    RP = gp.SetData.ToString();
+                }
+
+            }
+
+            return RP;
+        }
+        public static string GetSetDataLB(string PartNo, string FromIS,string Topic)
+        {
+            string RP = "";
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                tb_QCGroupPart gp = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(PartNo) && p.FormISO.Equals(FromIS) && p.StepPart.Trim().ToUpper().Equals(Topic.ToUpper())).FirstOrDefault();
+                if (gp != null)
+                {
+                    RP = gp.SetData.ToString();
+                }
+
+            }
+
+            return RP;
+        }
+        public static string GetSetData(string PartNo, string FromIS,int Seq)
+        {
+            string RP = "";
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                tb_QCGroupPart gp = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(PartNo) && p.FormISO.Equals(FromIS) && p.Seq.Equals(Seq)).FirstOrDefault();
+                if (gp != null)
+                {
+                    RP = gp.SetData.ToString();
+                }
+
+            }
+
+            return RP;
+        }
+
+        public static void InsertToExcel(ref Excel.Worksheet exc,string Column,dynamic Values)
+        {
+            try
+            {                
+                Excel.Range refs = exc.get_Range(Column);
+                refs.Value2 = Values;
+                if (Values.Contains("Æ"))
+                {
+                    int addint = Values.IndexOf("Æ");
+                    refs.Characters[addint, 2].Font.Name = "Symbol";//                          
+                }
+            }
+            catch { }
+        }
+        public static void InsertQCChecker(string Uid,string QCNo,string TypeS,string Desc,string BoxNo)
         {
             try
             {
@@ -4803,6 +8090,7 @@ namespace StockControl
                                 cn.UType = TypeS;
                                 cn.DayN = DN;
                                 cn.UDesc = Desc;
+                                cn.BoxNo = BoxNo;
                                 db.tb_QCCheckUsers.InsertOnSubmit(cn);
                                 db.SubmitChanges();
                             }
@@ -4971,6 +8259,16 @@ namespace StockControl
             else if (Col.Equals(50))
                 RT = "AX";
 
+
+            return RT;
+        }
+        private static string GetDWG(string PartNo,int AC)
+        {
+            string RT = "";
+            using (DataClasses1DataContext db3 = new DataClasses1DataContext())
+            {
+                RT = db3.getItemNo_DWG(PartNo, AC);
+            }
 
             return RT;
         }

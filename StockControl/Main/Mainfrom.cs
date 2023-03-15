@@ -457,5 +457,19 @@ namespace StockControl
             }
             catch { }
         }
+
+        private void radMenuItem31_Click(object sender, EventArgs e)
+        {
+            //Forcast web
+            ListNews ln = new ListNews("Forcast");
+            ln.Show();
+        }
+
+        private void radMenuItem32_Click(object sender, EventArgs e)
+        {
+            //New Web
+            ListNews ln = new ListNews("News");
+            ln.Show();
+        }
     }
 }

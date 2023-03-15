@@ -30,15 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Mainfrom));
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Master List");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Dynamics NAV");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Receive List");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Production List");
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Export List");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Local Delivery List");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Check Stock List");
-            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Move Stock");
-            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("QC List");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Master List");
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Dynamics NAV");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Receive List");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Production List");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Export List");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Local Delivery List");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Check Stock List");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Move Stock");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("QC List");
             this.office2010BlueTheme1 = new Telerik.WinControls.Themes.Office2010BlueTheme();
             this.radStatusStrip1 = new Telerik.WinControls.UI.RadStatusStrip();
             this.radLabelElement1 = new Telerik.WinControls.UI.RadLabelElement();
@@ -100,6 +100,8 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.radMenu1 = new Telerik.WinControls.UI.RadMenu();
+            this.radMenuItem31 = new Telerik.WinControls.UI.RadMenuItem();
+            this.radMenuItem32 = new Telerik.WinControls.UI.RadMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.radMenu1)).BeginInit();
@@ -325,7 +327,9 @@
             this.radMenuSeparatorItem4,
             this.radMenuItem21,
             this.radMenuItem22,
-            this.radMenuItem29});
+            this.radMenuItem29,
+            this.radMenuItem31,
+            this.radMenuItem32});
             this.radMenuItem2.Name = "radMenuItem2";
             this.radMenuItem2.Text = "&Administrator";
             // 
@@ -543,34 +547,34 @@
             this.TreeManu.ImageList = this.ImageList;
             this.TreeManu.Location = new System.Drawing.Point(0, 31);
             this.TreeManu.Name = "TreeManu";
-            treeNode1.Name = "MasterList";
-            treeNode1.Text = "Master List";
-            treeNode2.Name = "TPIC";
-            treeNode2.Text = "Dynamics NAV";
-            treeNode3.Name = "Receive";
-            treeNode3.Text = "Receive List";
-            treeNode4.Name = "Production";
-            treeNode4.Text = "Production List";
-            treeNode5.Name = "Export";
-            treeNode5.Text = "Export List";
-            treeNode6.Name = "Local";
-            treeNode6.Text = "Local Delivery List";
-            treeNode7.Name = "CheckStock";
-            treeNode7.Text = "Check Stock List";
-            treeNode8.Name = "MoveStock";
-            treeNode8.Text = "Move Stock";
-            treeNode9.Name = "QCList";
-            treeNode9.Text = "QC List";
+            treeNode10.Name = "MasterList";
+            treeNode10.Text = "Master List";
+            treeNode11.Name = "TPIC";
+            treeNode11.Text = "Dynamics NAV";
+            treeNode12.Name = "Receive";
+            treeNode12.Text = "Receive List";
+            treeNode13.Name = "Production";
+            treeNode13.Text = "Production List";
+            treeNode14.Name = "Export";
+            treeNode14.Text = "Export List";
+            treeNode15.Name = "Local";
+            treeNode15.Text = "Local Delivery List";
+            treeNode16.Name = "CheckStock";
+            treeNode16.Text = "Check Stock List";
+            treeNode17.Name = "MoveStock";
+            treeNode17.Text = "Move Stock";
+            treeNode18.Name = "QCList";
+            treeNode18.Text = "QC List";
             this.TreeManu.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3,
-            treeNode4,
-            treeNode5,
-            treeNode6,
-            treeNode7,
-            treeNode8,
-            treeNode9});
+            treeNode10,
+            treeNode11,
+            treeNode12,
+            treeNode13,
+            treeNode14,
+            treeNode15,
+            treeNode16,
+            treeNode17,
+            treeNode18});
             this.TreeManu.SelectedImageIndex = 4;
             this.TreeManu.ShowNodeToolTips = true;
             this.TreeManu.Size = new System.Drawing.Size(212, 495);
@@ -645,6 +649,18 @@
             ((Telerik.WinControls.UI.RadMenuElement)(this.radMenu1.GetChildAt(0))).BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             ((Telerik.WinControls.Primitives.FillPrimitive)(this.radMenu1.GetChildAt(0).GetChildAt(1))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(4)))), ((int)(((byte)(129)))));
             ((Telerik.WinControls.Primitives.FillPrimitive)(this.radMenu1.GetChildAt(0).GetChildAt(1))).ClipDrawing = false;
+            // 
+            // radMenuItem31
+            // 
+            this.radMenuItem31.Name = "radMenuItem31";
+            this.radMenuItem31.Text = "Update Forcast Web";
+            this.radMenuItem31.Click += new System.EventHandler(this.radMenuItem31_Click);
+            // 
+            // radMenuItem32
+            // 
+            this.radMenuItem32.Name = "radMenuItem32";
+            this.radMenuItem32.Text = "Update News Web";
+            this.radMenuItem32.Click += new System.EventHandler(this.radMenuItem32_Click);
             // 
             // Mainfrom
             // 
@@ -746,5 +762,7 @@
         private Telerik.WinControls.UI.RadMenuItem radMenuItem28;
         private Telerik.WinControls.UI.RadMenuItem radMenuItem29;
         private Telerik.WinControls.UI.RadMenuItem radMenuItem30;
+        private Telerik.WinControls.UI.RadMenuItem radMenuItem31;
+        private Telerik.WinControls.UI.RadMenuItem radMenuItem32;
     }
 }

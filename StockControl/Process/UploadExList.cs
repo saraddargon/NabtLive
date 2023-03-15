@@ -87,6 +87,7 @@ namespace StockControl
                 string Country2 = "";
                 //New Cell in Excel import//
                 string Code = "";
+                string ShipTo = "";
                 string Fright = "";
                 string attn = "";
                 string ShipVia = "";
@@ -123,6 +124,10 @@ namespace StockControl
                 //New Cell///
                 Excel.Range Cell1x = worksheet.get_Range("D5");
                     Code = Convert.ToString(Cell1x.Value2);
+
+                Excel.Range Cellgx = worksheet.get_Range("G5");
+                    ShipTo = Convert.ToString(Cellgx.Value2);
+
                 Excel.Range Cell2x = worksheet.get_Range("C7");
                     Fright = Convert.ToString(Cell2x.Value2);
                 Excel.Range Cell3x = worksheet.get_Range("C8");
@@ -167,9 +172,13 @@ namespace StockControl
                         }
                         else
                         {
+                            if (ShipTo=="")
+                            {
+                                ShipTo = Code;
+                            }
                             //InsertHeader//
-                           // MessageBox.Show(DateTime.FromOADate(Convert.ToDouble(ETDDate)).ToShortDateString());
-                            tb_ExportList ed = new tb_ExportList();
+                            // MessageBox.Show(DateTime.FromOADate(Convert.ToDouble(ETDDate)).ToShortDateString());
+                                tb_ExportList ed = new tb_ExportList();
                             ed.InvoiceNo = InvoiceNo;
                             ed.LoadDate = dtDatetime.Value;
                             ed.ShippingBy = ShipBy;
@@ -199,8 +208,9 @@ namespace StockControl
                             ed.InvoiceOrder = "";
                             ed.InvoiceFlag = false;
                             ed.paymentTerm = "60 Days";
+                            ed.ShipTo = ShipTo;
                            // ed.InvoiceDate = null;
-                      
+
 
                             ed.ETADatex = dtETA.Value;
                             ed.ETDDatex = dtETD.Value;

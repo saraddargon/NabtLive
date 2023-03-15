@@ -68,6 +68,11 @@ namespace StockControl
                 {
                     PathFile = ph.PathFile;
                 }
+                var qf = db.tb_QCFormMasters.ToList();
+                cboISO.DataSource = null;
+                cboISO.DataSource = qf;
+                cboISO.ValueMember = "FormISO";
+                cboISO.DisplayMember = "FormISO";
 
             }
 
@@ -519,7 +524,7 @@ namespace StockControl
                   0, true);
                 Excel.Sheets sheets = excelBook.Worksheets;
                 Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
-                progressBar1.Maximum = 61;
+                progressBar1.Maximum = 81;
                 progressBar1.Minimum = 1;
                 int row1 = 0;
                 int RNo = 0;
@@ -530,13 +535,13 @@ namespace StockControl
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
                     {
                         db.sp_46_QCDeleteMaster01(cboISO.Text, txtPartNo.Text);
-                        for (int ixi = 0; ixi <= 60; ixi++)
+                        for (int ixi = 0; ixi <= 80; ixi++)
                         {
                             row1 += 1;
                             progressBar1.Value = row1;
                             progressBar1.PerformStep();
                             System.Array myvalues;
-                            Excel.Range range = worksheet.get_Range("A" + row1.ToString(), "J" + row1.ToString());
+                            Excel.Range range = worksheet.get_Range("A" + row1.ToString(), "K" + row1.ToString());
                             myvalues = (System.Array)range.Cells.Value;
 
                             string[] strArray = ConvertToStringArray(myvalues);

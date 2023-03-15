@@ -167,6 +167,9 @@
             this.btnFilter = new Telerik.WinControls.UI.RadButtonElement();
             this.Unfilter = new Telerik.WinControls.UI.RadButtonElement();
             this.radRibbonBarButtonGroup5 = new Telerik.WinControls.UI.RadRibbonBarButtonGroup();
+            this.radLabel63 = new Telerik.WinControls.UI.RadLabel();
+            this.radLabel64 = new Telerik.WinControls.UI.RadLabel();
+            this.txtShipTo = new Telerik.WinControls.UI.RadTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.radRibbonBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -288,6 +291,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.dtETADate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtETDDate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtLoadDate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel63)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel64)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtShipTo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             this.SuspendLayout();
             // 
@@ -481,8 +487,11 @@
             // radPanel1
             // 
             this.radPanel1.BackColor = System.Drawing.Color.AliceBlue;
+            this.radPanel1.Controls.Add(this.radLabel63);
             this.radPanel1.Controls.Add(this.radLabel62);
+            this.radPanel1.Controls.Add(this.radLabel64);
             this.radPanel1.Controls.Add(this.txtAmountTextFOB2);
+            this.radPanel1.Controls.Add(this.txtShipTo);
             this.radPanel1.Controls.Add(this.radLabel61);
             this.radPanel1.Controls.Add(this.groupBox2);
             this.radPanel1.Controls.Add(this.txtFreight5C);
@@ -1244,11 +1253,11 @@
             // 
             // radLabel15
             // 
-            this.radLabel15.Location = new System.Drawing.Point(386, 119);
+            this.radLabel15.Location = new System.Drawing.Point(367, 119);
             this.radLabel15.Name = "radLabel15";
-            this.radLabel15.Size = new System.Drawing.Size(38, 18);
+            this.radLabel15.Size = new System.Drawing.Size(57, 18);
             this.radLabel15.TabIndex = 32;
-            this.radLabel15.Text = "Code :";
+            this.radLabel15.Text = "SOLD TO :";
             // 
             // radLabel19
             // 
@@ -1309,7 +1318,7 @@
             // 
             // radLabel17
             // 
-            this.radLabel17.Location = new System.Drawing.Point(562, 120);
+            this.radLabel17.Location = new System.Drawing.Point(528, 120);
             this.radLabel17.Name = "radLabel17";
             this.radLabel17.Size = new System.Drawing.Size(43, 18);
             this.radLabel17.TabIndex = 34;
@@ -1414,7 +1423,7 @@
             // 
             this.txtCode.Location = new System.Drawing.Point(426, 119);
             this.txtCode.Name = "txtCode";
-            this.txtCode.Size = new System.Drawing.Size(130, 20);
+            this.txtCode.Size = new System.Drawing.Size(96, 20);
             this.txtCode.TabIndex = 33;
             // 
             // txtAirType
@@ -1589,6 +1598,29 @@
             this.radRibbonBarButtonGroup5.ShowBorder = false;
             this.radRibbonBarButtonGroup5.Text = "radRibbonBarButtonGroup4";
             // 
+            // radLabel63
+            // 
+            this.radLabel63.Location = new System.Drawing.Point(568, 120);
+            this.radLabel63.Name = "radLabel63";
+            this.radLabel63.Size = new System.Drawing.Size(53, 18);
+            this.radLabel63.TabIndex = 35;
+            this.radLabel63.Text = "SHIP TO :";
+            // 
+            // radLabel64
+            // 
+            this.radLabel64.Location = new System.Drawing.Point(729, 121);
+            this.radLabel64.Name = "radLabel64";
+            this.radLabel64.Size = new System.Drawing.Size(43, 18);
+            this.radLabel64.TabIndex = 37;
+            this.radLabel64.Text = "// Excel";
+            // 
+            // txtShipTo
+            // 
+            this.txtShipTo.Location = new System.Drawing.Point(627, 120);
+            this.txtShipTo.Name = "txtShipTo";
+            this.txtShipTo.Size = new System.Drawing.Size(96, 20);
+            this.txtShipTo.TabIndex = 36;
+            // 
             // InvoiceEx_Update
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1731,6 +1763,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.dtETADate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtETDDate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtLoadDate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel63)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radLabel64)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtShipTo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1877,5 +1912,8 @@
         private Telerik.WinControls.UI.RadLabel radLabel62;
         private Telerik.WinControls.UI.RadTextBox txtAmountTextFOB2;
         private Telerik.WinControls.UI.RadButtonElement radButtonElement3;
+        private Telerik.WinControls.UI.RadLabel radLabel63;
+        private Telerik.WinControls.UI.RadLabel radLabel64;
+        private Telerik.WinControls.UI.RadTextBox txtShipTo;
     }
 }

@@ -42,13 +42,9 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn10 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn11 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn12 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn13 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition2 = new Telerik.WinControls.UI.TableViewDefinition();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem1 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem2 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem3 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem4 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem5 = new Telerik.WinControls.UI.RadListDataItem();
             this.radRibbonBar1 = new Telerik.WinControls.UI.RadRibbonBar();
             this.ribbonTab1 = new Telerik.WinControls.UI.RibbonTab();
             this.radRibbonBarGroup1 = new Telerik.WinControls.UI.RadRibbonBarGroup();
@@ -506,6 +502,10 @@
             gridViewTextBoxColumn12.HeaderText = "Use Machine";
             gridViewTextBoxColumn12.Name = "UseMachine";
             gridViewTextBoxColumn12.Width = 100;
+            gridViewTextBoxColumn13.FieldName = "SetDate2";
+            gridViewTextBoxColumn13.HeaderText = "SetKey";
+            gridViewTextBoxColumn13.Name = "SetDate2";
+            gridViewTextBoxColumn13.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewTextBoxColumn1,
             gridViewTextBoxColumn2,
@@ -518,7 +518,8 @@
             gridViewTextBoxColumn9,
             gridViewTextBoxColumn10,
             gridViewTextBoxColumn11,
-            gridViewTextBoxColumn12});
+            gridViewTextBoxColumn12,
+            gridViewTextBoxColumn13});
             this.radGridView1.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
             this.radGridView1.Name = "radGridView1";
@@ -629,16 +630,6 @@
             // 
             // cboISO
             // 
-            radListDataItem1.Text = "FM-PD-026_1";
-            radListDataItem2.Text = "FM-PD-033_1";
-            radListDataItem3.Text = "FM-PD-035_1";
-            radListDataItem4.Text = "FM-QA-055_02_1";
-            radListDataItem5.Text = "FM-QA-056_02_1";
-            this.cboISO.Items.Add(radListDataItem1);
-            this.cboISO.Items.Add(radListDataItem2);
-            this.cboISO.Items.Add(radListDataItem3);
-            this.cboISO.Items.Add(radListDataItem4);
-            this.cboISO.Items.Add(radListDataItem5);
             this.cboISO.Location = new System.Drawing.Point(97, 38);
             this.cboISO.Name = "cboISO";
             this.cboISO.Size = new System.Drawing.Size(221, 20);

@@ -715,7 +715,6 @@ namespace StockControl
                 Report.Reportx1.Value[0] = PartNo;
                 Report.Reportx1.Value[1] = LotNo;
                 // Report.Reportx1.Value[2] = txtAC.Text;
-
                 Report.Reportx1 op = new Report.Reportx1("PartBomList.rpt");
                 op.Show();
             }

@@ -54,13 +54,14 @@ namespace StockControl
             }
             else if (keyData == (Keys.F12))
             {
-                txtISO.Text = "";
-                QCSetMasterSelect ms = new QCSetMasterSelect(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text.ToUpper(), txtISO, "PD");
-                ms.ShowDialog();
-                if (!txtISO.Text.Equals(""))
-                {
-                    CheckLoad(txtISO.Text);
-                }
+                CheckLineName();
+                //txtISO.Text = "";
+                //QCSetMasterSelect ms = new QCSetMasterSelect(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text.ToUpper(), txtISO, "PD");
+                //ms.ShowDialog();
+                //if (!txtISO.Text.Equals(""))
+                //{
+                //    CheckLoad(txtISO.Text);
+                //}
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
@@ -69,6 +70,7 @@ namespace StockControl
         //private int ColView = 10;
         DataTable dt = new DataTable();
         string LineName2 = "TW01-PB";
+        string FormISO2 = "FM-PD-026_1";
         private void radMenuItem2_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
@@ -100,9 +102,19 @@ namespace StockControl
             // radGridView1.AutoGenerateColumns = false;
             //  GETDTRow();   
             // DataLoad();
-
             DefaultLoad();
-            
+            if (LineName2.Equals("TW10-CB"))
+            {
+                FormISO2 = "FM-PD-001";
+            }
+            if (LineName2.Equals("TW02-SC_PB"))
+            {
+                FormISO2 = "FM-PD-109";
+            }
+
+
+
+
         }
         private void DefaultLoad()
         {
@@ -118,6 +130,15 @@ namespace StockControl
                 }
             }
             catch { }
+
+            if (txtWorkCenter.Text.Equals("TW10-CB"))
+            {
+                FormISO2 = "FM-PD-001";
+            }
+            if (txtWorkCenter.Equals("TW02-SC_PB"))
+            {
+                FormISO2 = "FM-PD-109";
+            }
         }
         private void QCTAB()
         {
@@ -170,9 +191,6 @@ namespace StockControl
                 //}
 
             }
-
-
-
         }
         private bool CheckDuplicate(string code)
         {
@@ -188,7 +206,6 @@ namespace StockControl
             //}
             return ck;
         }
-
         private bool AddUnit()
         {
             bool ck = false;
@@ -261,6 +278,10 @@ namespace StockControl
             radGridView1.DataSource = null;
             radGridView2.DataSource = null;
             radGridView3.DataSource = null;
+            //txtStartTime.Text = "";
+            dtStartTime.Value = DateTime.Now;
+            txtEndTime.Text = "";
+           
 
         }
 
@@ -446,6 +467,14 @@ namespace StockControl
                     */
 
                 }
+                if (LineName2.Equals("TW10-CB"))
+                {
+                    FormISO2 = "FM-PD-001";
+                }
+                if (LineName2.Equals("TW02-SC_PB"))
+                {
+                    FormISO2 = "FM-PD-109";
+                }
             }
             catch { }
         }
@@ -543,6 +572,7 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     int RowS = 0;
+                    
                     radGridView3.DataSource = null;
                     radGridView3.DataSource = db.sp_46_QCSelectWO_02(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text, "PD").ToList();
                     foreach (GridViewRowInfo rd in radGridView3.Rows)
@@ -562,12 +592,16 @@ namespace StockControl
                 {
                     int RowS = 0;
                     radGridView4.DataSource = null;
-                    radGridView4.DataSource = db.sp_49_QC_CheckLoadMC(txtOrderNo.Text.ToUpper()).ToList();
-                    //foreach (GridViewRowInfo rd in radGridView3.Rows)
-                    //{
-                    //    RowS += 1;
-                    //    rd.Cells["No"].Value = RowS;
-                    //}
+                    if (txtWorkCenter.Text.Equals("TW02-SC_PB"))
+                    {
+                        //FM-PD-109
+                        radGridView4.DataSource = db.sp_49_QC_CheckLoadMC3(txtOrderNo.Text.ToUpper(), FormISO2).ToList();
+                    }
+                    else
+                    {
+                        radGridView4.DataSource = db.sp_49_QC_CheckLoadMC2(txtOrderNo.Text.ToUpper(), FormISO2).ToList();
+                    }
+                    
                 }
             }
             catch { }
@@ -639,7 +673,19 @@ namespace StockControl
                                 txtSNP.Text = Convert.ToDecimal(rd.OrderQty).ToString("########0");
                             }
                             txtWorkCenter.Text = rd.BUMO.ToString();
-                           // LineName2 = txtWorkCenter.Text.ToUpper();
+                            // LineName2 = txtWorkCenter.Text.ToUpper();
+                            FormISO2 = "FM-PD-026_1";
+                            if (txtWorkCenter.Text.Equals("TW10-CB"))
+                            {
+                                LineName2 = "TW10-CB";
+                                FormISO2 = "FM-PD-001";
+                            }
+                            if (txtWorkCenter.Text.Equals("TW02-SC_PB"))
+                            {
+                               
+                                LineName2 = "TW02-SC_PB";
+                                FormISO2 = "FM-PD-109";
+                            }
                             txtWorkName.Text = rd.BUMOName.ToString();
 
                             txtLotNo.Text = rd.LotNo.ToString();
@@ -655,7 +701,8 @@ namespace StockControl
                                     a = 1;
                                 txtQtyofTAG.Text = Convert.ToInt32(Math.Floor((Convert.ToDouble(txtQuantity.Text) / Convert.ToDouble(txtSNP.Text)) + a)).ToString();//.ToString("###");
                             }
-
+                            dtStartTime.Value = DateTime.Now;
+                            txtEndTime.Text = "00:00";
                             tb_ProductionHD ph = db.tb_ProductionHDs.Where(p => p.OrderNo == WO).FirstOrDefault();
                             if (ph != null)
                             {
@@ -663,6 +710,15 @@ namespace StockControl
                                 chkPrinted.Checked = Convert.ToBoolean(ph.OrderPrint);
                                 chkClosed.Checked = Convert.ToBoolean(ph.Closed);
                                 chkClose.Checked = Convert.ToBoolean(ph.Closed);
+                                if (!ph.ScanBOM2.Equals(null))
+                                {
+                                    try
+                                    {
+                                        dtStartTime.Value = Convert.ToDateTime(ph.ScanBOM2);
+                                        txtEndTime.Text = Convert.ToDateTime(ph.ScanBOM2).ToString("HH:mm");
+                                    }
+                                    catch { }
+                                }
                             }
 
 
@@ -1111,7 +1167,21 @@ namespace StockControl
                 {
                     ADDID = "ADD";
                 }
-
+                else if (SCAN.ToUpper().Equals("MOLYBDENUM GREASE (S-GREASE)"))
+                {
+                    PartCheck = SCAN.ToUpper();
+                    ADDID = "ADD";
+                }
+                else if (SCAN.ToUpper().Equals("COSMO GREASE DYNAMAX NO.2"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
+                else if (PartCheck.Equals("LOCTITE 416"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
 
 
                 int c = 0;
@@ -1298,9 +1368,21 @@ namespace StockControl
         }
         private void QCCheckPD(string PTAGx1)
         {
-          
-            QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-035_1", PTAGx1, LineName2, "PD", PTAGx1);
-            qcop.ShowDialog();
+            if (LineName2.Equals("TW01-PB"))
+            {
+                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-035_1", PTAGx1, LineName2, "PD", PTAGx1);
+                qcop.ShowDialog();
+            }
+            else if (LineName2.Equals("TW10-CB"))
+            {
+                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-002", PTAGx1, LineName2, "PD", PTAGx1);
+                qcop.ShowDialog();
+            }
+            else if (LineName2.Equals("TW02-SC_PB"))
+            {
+                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-112", PTAGx1, LineName2, "PD", PTAGx1);
+                qcop.ShowDialog();
+            }
         }
         private void ReceivePD(string PKTAG)
         {
@@ -1826,7 +1908,13 @@ namespace StockControl
         {
             //QCSetMasterPD qc = new QCSetMasterPD(txtOrderNo.Text.ToUpper());
             // qc.ShowDialog();
+
+            CheckLineName();
+        }
+        private void CheckLineName()
+        {
             txtISO.Text = "";
+            
             QCSetMasterSelect ms = new QCSetMasterSelect(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text.ToUpper(), txtISO, "PD");
             ms.ShowDialog();
             if (!txtISO.Text.Equals(""))
@@ -1838,16 +1926,16 @@ namespace StockControl
                 }
                 CheckLoad(txtISO.Text);
             }
-
         }
         private void CheckLoad(string FISO)
         {
             // MessageBox.Show(FISO);
+           
             string TAG1 = txtTAG.Text;
             string TAG2 = "";
             if (!FISO.Equals(""))
             {
-               
+
                 if (FISO.Equals("FM-PD-026_1"))
                 {
                     txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",026_1";
@@ -1865,25 +1953,92 @@ namespace StockControl
                     }
                     TAG2 = "";
                     TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",No 1," + txtPartNo.Text.ToUpper() + ",033_1";
-                    TAG2 = TAG1;                  
+                    TAG2 = TAG1;
                     // txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of3," + txtPartNo.Text.ToUpper() + ",033_1";
 
                 }
                 else if (FISO.Equals("FM-PD-035_1"))
                 {
-                    if(txtTAG.Text.Equals(""))
+                    if (txtTAG.Text.Equals(""))
                     {
                         txtTAG.Text = "New";
                         TAG1 = "New";
-                       
+
                     }
                     TAG2 = TAG1;
                 }
+                else if (FISO.Equals("FM-PD-001"))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD001";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
+                else if (FISO.Equals("FM-PD-109"))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD109";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
+                else if (FISO.Equals("FM-PD-002"))
+                {
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        txtTAG.Text = "New";
+                        TAG1 = "New";
 
+                    }
+                    TAG2 = TAG1;
+                }
+                else if (FISO.Equals("FM-PD-112"))
+                {
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        txtTAG.Text = "New";
+                        TAG1 = "New";
 
+                    }
+                    TAG2 = TAG1;
+                }
+                else if (FISO.Equals("FM-PD-003"))
+                {
+
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+                    
+                        TAG2 = "";
+                        TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD003";
+                        TAG2 = TAG1; 
+                }
+                else if (FISO.Equals("FM-PD-003_S"))
+                {
+
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+
+                    TAG2 = "";
+                    TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD003_S";
+                    TAG2 = TAG1;
+                }
+                else //if (FISO.Equals("FM-PD-035_1"))
+                {
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        txtTAG.Text = "New";
+                        TAG1 = "New";
+
+                    }
+                    TAG2 = TAG1;
+                }
                 if (!txtTAG.Text.Equals(""))
                 {
                     //TAG1 = txtTAG.Text;
+                   
                     QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), FISO, TAG1, LineName2, "PD", TAG2);
                     qcop.ShowDialog();
                 }
@@ -1939,7 +2094,22 @@ namespace StockControl
             {
                 if (!txtScanMachine.Text.Equals("") && !txtOrderNo.Text.Equals(""))
                 {
-                    dbShowData.InsertScanMachine(txtOrderNo.Text.ToUpper(), txtScanMachine.Text.ToUpper(), "FM-PD-026_1",txtPartNo.Text.ToUpper());
+                    //GET Line//
+
+                    //using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    //{
+                    //    tb_QCFormMasterLine qf = db.tb_QCFormMasterLines.Where(p => p.LineName.Equals(LineName2)&& p.Dept.Equals("PD")).FirstOrDefault();
+                    //    if(qf!=null)
+                    //    {
+                    //        FormISO2 = "FM-PD-001";
+                    //    }
+                    //}
+                    // MessageBox.Show(FormISO2);
+                    //if (LineName2.Equals("TW10-CB"))
+                    //{
+                    //    FormISO2 = "FM-PD-001";
+                    //}
+                    dbShowData.InsertScanMachine(txtOrderNo.Text.ToUpper(), txtScanMachine.Text.ToUpper(), FormISO2, txtPartNo.Text.ToUpper());
                     QCLoadMC();
                     txtScanMachine.Text = "";
                     txtScanMachine.Focus();
@@ -2004,7 +2174,7 @@ namespace StockControl
 
         private void radButton7_Click(object sender, EventArgs e)
         {
-            QCUpdateLot qcl = new QCUpdateLot(txtOrderNo.Text);
+            QCUpdateLot qcl = new QCUpdateLot(txtOrderNo.Text,FormISO2,txtLotNo.Text,txtPartNo.Text);
             qcl.ShowDialog();
         }
 
@@ -2013,7 +2183,7 @@ namespace StockControl
            // TimeSpan ts = new TimeSpan(20, 0, 0);
            // MessageBox.Show(ts.TotalMinutes.ToString());
 
-             QCUpdateCount qcc = new QCUpdateCount(txtOrderNo.Text);
+             QCUpdateCount qcc = new QCUpdateCount(txtOrderNo.Text,txtWorkCenter.Text);
              qcc.ShowDialog();
         }
 
@@ -2077,6 +2247,30 @@ namespace StockControl
                     }
                 }
             }
+        }
+
+        private void radButton8_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    DateTime DTx = dtStartTime.Value;
+                    if (!txtEndTime.Text.Equals(""))
+                    {
+                        string Dtime = dtStartTime.Value.ToString("yyyy-MM-dd")+" "+txtEndTime.Text;
+                        if (DateTime.TryParse(Dtime, out DTx))
+                        {
+                            db.sp_61_UpdatePDScanBOM2(txtOrderNo.Text, DTx);
+                            MessageBox.Show("Completed Update.");
+                        }
+                    }
+
+                  
+                }
+                   
+            }
+            catch { }
         }
     }
 
