@@ -903,5 +903,19 @@ namespace StockControl
             }
             catch { }
         }
+
+        private void radButtonElement6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (row >= 0)
+                {
+                    string code = radGridView1.Rows[row].Cells["Code"].Value.ToString();
+                    QCSetupMaster2 qc = new QCSetupMaster2(code);
+                    qc.ShowDialog();
+                }
+            }
+            catch { }
+        }
     }
 }

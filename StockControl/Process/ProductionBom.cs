@@ -1182,6 +1182,21 @@ namespace StockControl
                     ADDID = "ADD";
                     PartCheck = SCAN.ToUpper();
                 }
+                else if (PartCheck.ToUpper().Contains("SILICON"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
+                else if (PartCheck.ToUpper().Contains("GREASE"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
+                else if (PartCheck.ToUpper().Contains("LOCTITE"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
 
 
                 int c = 0;
@@ -2269,6 +2284,28 @@ namespace StockControl
                   
                 }
                    
+            }
+            catch { }
+        }
+
+        private void radGridView4_CellEndEdit(object sender, GridViewCellEventArgs e)
+        {
+            try
+            {
+                if(e.RowIndex>=0)
+                {
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        radGridView4.EndEdit();
+                        int seq = 0;
+                        int.TryParse(radGridView4.Rows[e.RowIndex].Cells["Seq"].Value.ToString(), out seq);
+                        if(seq>0)
+                        {
+                            db.sp_46_QCUpdateLotCheckMC(txtOrderNo.Text, seq, (radGridView4.Rows[e.RowIndex].Cells["ValueX"].Value.ToString()));
+                          //  tb_QCCheckMachine qche=db.tb_QCCheckMachines.Where(p=>p.WONo.Equals("") && p.Seq.Equals(seq)).fir
+                        }
+                    }
+                }
             }
             catch { }
         }

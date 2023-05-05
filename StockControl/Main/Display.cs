@@ -197,6 +197,7 @@ namespace StockControl
                             || c.LinkNode.ToString().Equals("NCRReq")
                             || c.LinkNode.ToString().Equals("QCCheckReq")
                             || c.LinkNode.ToString().Equals("QCApproveQC")
+                            ||c.LinkNode.ToString().Equals("WarehouseCheckList")
 
 
 

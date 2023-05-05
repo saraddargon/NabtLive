@@ -201,6 +201,28 @@ namespace StockControl
                 TX = "ประกอบ Nut";
 
             }
+            ////P2
+            else if (aa.Equals(6))
+            {
+                TX = "เครื่องพ่นสี";
+
+            }
+            else if (aa.Equals(7))
+            {
+                TX = "เครื่อง Test";
+
+            }
+            else if (aa.Equals(8))
+            {
+                TX = "เครื่อง Stamp Lot";
+
+            }
+            else if (aa.Equals(9))
+            {
+                TX = "ประกอบ Elbow Joint";
+
+            }
+
             return TX;
         }
         //private int RowView = 50;
@@ -341,6 +363,9 @@ namespace StockControl
                             {
                                 // txtScan.Text = ValueText2(Gobal);
                                 nc.ProcessName = ValueText2(Gobal);
+                            }else if(txtLineName.Text.Equals("TW02-SC_PB"))
+                            {
+                                nc.ProcessName = ValueText3(Gobal);
                             }
                             else
                             {
@@ -399,6 +424,31 @@ namespace StockControl
         private void radPanel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void radButtonElement1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (MessageBox.Show("ต้องการล้างข้อมูลนี้ใหม่?", "ล้างข้อมูล", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        var tbQ = db.tb_QCCountPDs.Where(p => p.WONo.Equals(txtWoNo.Text)).ToList();
+                        foreach (var rd in tbQ)
+                        {
+                            tb_QCCountPD ps = db.tb_QCCountPDs.Where(p => p.id.Equals(rd.id)).FirstOrDefault();
+                            if (ps != null)
+                            {
+                                db.tb_QCCountPDs.DeleteOnSubmit(ps);
+                                db.SubmitChanges();
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            LoadData();
         }
     }
 }

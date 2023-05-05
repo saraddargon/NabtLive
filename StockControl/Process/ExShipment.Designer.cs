@@ -66,6 +66,8 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn29 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn30 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn31 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn32 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn33 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             Telerik.WinControls.UI.RadListDataItem radListDataItem1 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem2 = new Telerik.WinControls.UI.RadListDataItem();
@@ -95,6 +97,7 @@
             this.radRibbonBarGroup6 = new Telerik.WinControls.UI.RadRibbonBarGroup();
             this.radButtonElement1 = new Telerik.WinControls.UI.RadButtonElement();
             this.radButtonElement2 = new Telerik.WinControls.UI.RadButtonElement();
+            this.radButtonElement12 = new Telerik.WinControls.UI.RadButtonElement();
             this.radRibbonBarGroup7 = new Telerik.WinControls.UI.RadRibbonBarGroup();
             this.radButtonElement3 = new Telerik.WinControls.UI.RadButtonElement();
             this.radRibbonBarGroup8 = new Telerik.WinControls.UI.RadRibbonBarGroup();
@@ -402,7 +405,8 @@
             // 
             this.radRibbonBarGroup6.Items.AddRange(new Telerik.WinControls.RadItem[] {
             this.radButtonElement1,
-            this.radButtonElement2});
+            this.radButtonElement2,
+            this.radButtonElement12});
             this.radRibbonBarGroup6.Name = "radRibbonBarGroup6";
             this.radRibbonBarGroup6.Text = "Report TAG";
             // 
@@ -430,6 +434,15 @@
             ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement2.GetChildAt(1).GetChildAt(1))).LineLimit = false;
             ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement2.GetChildAt(1).GetChildAt(1))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
             ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement2.GetChildAt(1).GetChildAt(1))).Alignment = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // radButtonElement12
+            // 
+            this.radButtonElement12.Image = ((System.Drawing.Image)(resources.GetObject("radButtonElement12.Image")));
+            this.radButtonElement12.ImageAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.radButtonElement12.Name = "radButtonElement12";
+            this.radButtonElement12.Text = " Manual ";
+            this.radButtonElement12.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.radButtonElement12.Click += new System.EventHandler(this.radButtonElement12_Click);
             // 
             // radRibbonBarGroup7
             // 
@@ -767,6 +780,13 @@
             gridViewTextBoxColumn31.Name = "PartNo2";
             gridViewTextBoxColumn31.ReadOnly = true;
             gridViewTextBoxColumn31.Width = 120;
+            gridViewTextBoxColumn32.FieldName = "RemarkInv";
+            gridViewTextBoxColumn32.HeaderText = "Remark Inv.";
+            gridViewTextBoxColumn32.Name = "RemarkInv";
+            gridViewTextBoxColumn32.Width = 150;
+            gridViewTextBoxColumn33.HeaderText = "  ";
+            gridViewTextBoxColumn33.Name = "column1";
+            gridViewTextBoxColumn33.ReadOnly = true;
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewCheckBoxColumn1,
             gridViewTextBoxColumn1,
@@ -802,7 +822,9 @@
             gridViewTextBoxColumn28,
             gridViewTextBoxColumn29,
             gridViewTextBoxColumn30,
-            gridViewTextBoxColumn31});
+            gridViewTextBoxColumn31,
+            gridViewTextBoxColumn32,
+            gridViewTextBoxColumn33});
             this.radGridView1.MasterTemplate.EnableSorting = false;
             this.radGridView1.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
@@ -1108,5 +1130,6 @@
         private Telerik.WinControls.UI.RadButtonElement radButtonElement11;
         private Telerik.WinControls.UI.RadLabel radLabel4;
         private Telerik.WinControls.UI.RadTextBox txtPallet;
+        private Telerik.WinControls.UI.RadButtonElement radButtonElement12;
     }
 }

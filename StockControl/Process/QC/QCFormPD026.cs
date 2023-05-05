@@ -2931,7 +2931,7 @@ namespace StockControl
         {
             try
             {
-                if (!radGridView1.CurrentRow.Cells["BoxNo"].Value.ToString().Equals(""))
+                if (radGridView1.Columns["BoxNo"].Index==e.ColumnIndex && e.RowIndex>=0)
                 {
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
                     {

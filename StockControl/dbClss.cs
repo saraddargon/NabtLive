@@ -21,7 +21,7 @@ namespace StockControl
         /// <summary>
         /// ////
         /// </summary>
-        public static string versioin = "v 3.0.6 (Dynamics 365v1)";
+        public static string versioin = "last update 25-apr-23-1";
         public static string UserID = "";
         public static string UserName = "";
         public static bool UseQC = false;

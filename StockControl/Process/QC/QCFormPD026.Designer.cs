@@ -812,25 +812,24 @@
             gridViewTextBoxColumn6.ReadOnly = true;
             gridViewTextBoxColumn6.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             gridViewTextBoxColumn6.Width = 150;
-            gridViewTextBoxColumn7.FieldName = "id";
-            gridViewTextBoxColumn7.HeaderText = "id";
-            gridViewTextBoxColumn7.IsVisible = false;
-            gridViewTextBoxColumn7.Name = "id";
+            gridViewTextBoxColumn7.FieldName = "UDesc";
+            gridViewTextBoxColumn7.HeaderText = "Desc";
+            gridViewTextBoxColumn7.Name = "UDesc";
             gridViewTextBoxColumn7.ReadOnly = true;
-            gridViewTextBoxColumn8.FieldName = "UDesc";
-            gridViewTextBoxColumn8.HeaderText = "Desc";
-            gridViewTextBoxColumn8.Name = "UDesc";
+            gridViewTextBoxColumn7.Width = 180;
+            gridViewTextBoxColumn8.FieldName = "DayN";
+            gridViewTextBoxColumn8.HeaderText = "DayN";
+            gridViewTextBoxColumn8.Name = "DayN";
             gridViewTextBoxColumn8.ReadOnly = true;
-            gridViewTextBoxColumn8.Width = 180;
-            gridViewTextBoxColumn9.FieldName = "DayN";
-            gridViewTextBoxColumn9.HeaderText = "DayN";
-            gridViewTextBoxColumn9.Name = "DayN";
-            gridViewTextBoxColumn9.ReadOnly = true;
-            gridViewTextBoxColumn9.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn10.FieldName = "BoxNo";
-            gridViewTextBoxColumn10.HeaderText = "BoxNo/Time";
-            gridViewTextBoxColumn10.Name = "BoxNo";
-            gridViewTextBoxColumn10.Width = 100;
+            gridViewTextBoxColumn8.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            gridViewTextBoxColumn9.FieldName = "BoxNo";
+            gridViewTextBoxColumn9.HeaderText = "BoxNo/Time";
+            gridViewTextBoxColumn9.Name = "BoxNo";
+            gridViewTextBoxColumn9.Width = 100;
+            gridViewTextBoxColumn10.FieldName = "id";
+            gridViewTextBoxColumn10.HeaderText = "id";
+            gridViewTextBoxColumn10.Name = "id";
+            gridViewTextBoxColumn10.ReadOnly = true;
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewTextBoxColumn5,
             gridViewTextBoxColumn6,

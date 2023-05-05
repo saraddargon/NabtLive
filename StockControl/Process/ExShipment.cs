@@ -353,6 +353,22 @@ namespace StockControl
                         }
                     }
                 }
+                if (e.RowIndex >= 0 && radGridView1.Columns["RemarkInv"].Index == e.ColumnIndex)
+                {
+                    //RemarkInv
+                    int id = 0;
+                    int PalletNo = 0;
+                    int.TryParse(radGridView1.Rows[e.RowIndex].Cells["id"].Value.ToString(), out id);
+                    int.TryParse(radGridView1.Rows[e.RowIndex].Cells["PalletNo"].Value.ToString(), out PalletNo);
+                    if (id > 0 && PalletNo > 0)
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            db.sp_036_UpdateExportListRemark(id, radGridView1.Rows[e.RowIndex].Cells["RemarkInv"].Value.ToString());
+                           
+                        }
+                    }
+                }
                 if (e.RowIndex >= 0 && radGridView1.Columns["ListNo"].Index == e.ColumnIndex)
                 {
                     // MessageBox.Show(radGridView1.Rows[e.RowIndex].Cells["PalletNo"].Value.ToString()+","+radGridView1.Rows[e.RowIndex].Cells["id"].Value.ToString());
@@ -771,11 +787,25 @@ namespace StockControl
                                 {
                                     SH = Convert.ToDateTime(exx.LoadDate);
                                 }
+                                string getNewLot = ed.LotNo;
+                                if (getNewLot.Equals(""))
+                                {
+                                    //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo, ed.id)).Split(',');
+                                    if (GT.Length > 4)
+                                    {
+                                        getNewLot = GT[4];
+                                    }
+                                    if (!getNewLot.Equals(""))
+                                    {
+                                        db.sp_019_LocaDeliveryList_DynamicsUpdateLot(ed.id, getNewLot);
+                                    }
+                                }
 
                                 //Order,PalletNo,Invoice,PartCode,Qty,ofTAG,TotalTAG,LotNo
                                 QRCode = "";
                                 QRCode = ed.OrderNo + "," + ed.PalletNo + "," + ed.InvoiceNo + ",";
-                                QRCode = QRCode+ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + ed.LotNo.ToString();
+                                QRCode = QRCode+ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + getNewLot.ToString();
                                 byte[] barcode = dbClss.SaveQRCode2D(QRCode);
                                 
                                 tb_ExportPrintTAG ep = new tb_ExportPrintTAG();
@@ -791,20 +821,7 @@ namespace StockControl
                                     ep.CustomerAddress = "Plot no-191 sector-8 IMT  Manesar ,distt- Gurgaon- 122050 State Haryana.";
                                 }
                                 ep.InvoiceNo = txtExportNo.Text;
-                                string getNewLot = ed.LotNo;
-                                if (getNewLot.Equals(""))
-                                {
-                                    //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
-                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo,ed.id)).Split(',');
-                                    if(GT.Length>4)
-                                    {
-                                        getNewLot = GT[4];
-                                    }
-                                    if (!getNewLot.Equals(""))
-                                    {
-                                        db.sp_019_LocaDeliveryList_DynamicsUpdateLot(ed.id, getNewLot);
-                                    }
-                                }
+                                
 
                                 ep.LOTNo = getNewLot;
                                 ep.QRCode = barcode;
@@ -871,24 +888,11 @@ namespace StockControl
                             tb_ExportDetail ed = db.tb_ExportDetails.Where(ee => ee.id == Convert.ToInt32(rd.Cells["id"].Value) && ee.PrintType == "B").FirstOrDefault();
                             if (ed != null)
                             {
-                                //Order,PalletNo,Invoice,PartCode,Qty,ofTAG,TotalTAG,LotNo
-
-                                QRCode = "";
-                                QRCode = ed.OrderNo+"," + ed.PalletNo + "," + ed.InvoiceNo + "," + ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + ed.LotNo.ToString();
-                                byte[] barcode = dbClss.SaveQRCode2D(QRCode);
-                                tb_ExportPrintTAG ep = new tb_ExportPrintTAG();
-                                ep.CustomerAddress = "5-1 Kanaya, Murayama, Yamagata, 995-0004 Japan";
-                                //ep.CustomerAddress = ed.CustomerAddress;//"5-1 Kanaya,Murayama,Yamagata,995-0004 Japan.";
-                                ep.CustomerItemName = "";// ep.CustomerItemName;
-                                ep.CustomerItemNo = Convert.ToString(db.getItemCSTM_Dynamics(ed.PartNo, "")); // ed.CustItem;                             
-                               // ep.CustomerName = ed.CustomerName;// Convert.ToString(db.getItemCSTMName(ed.Customer));
-                                ep.CustomerName = "Nabtesco Autmotive Corporation";// Convert.ToString(db.getItemCSTMName(ed.Customer));
-                                ep.InvoiceNo = txtExportNo.Text;
                                 string getNewLot = ed.LotNo;
                                 if (getNewLot.Equals(""))
                                 {
                                     //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
-                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo,ed.id)).Split(',');
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo, ed.id)).Split(',');
                                     if (GT.Length > 4)
                                     {
                                         getNewLot = GT[4];
@@ -898,6 +902,19 @@ namespace StockControl
                                         db.sp_019_LocaDeliveryList_DynamicsUpdateLot(ed.id, getNewLot);
                                     }
                                 }
+                                //Order,PalletNo,Invoice,PartCode,Qty,ofTAG,TotalTAG,LotNo
+
+                                QRCode = "";
+                                QRCode = ed.OrderNo+"," + ed.PalletNo + "," + ed.InvoiceNo + "," + ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + getNewLot.ToString();
+                                byte[] barcode = dbClss.SaveQRCode2D(QRCode);
+                                tb_ExportPrintTAG ep = new tb_ExportPrintTAG();
+                                ep.CustomerAddress = "5-1 Kanaya, Murayama, Yamagata, 995-0004 Japan";
+                                //ep.CustomerAddress = ed.CustomerAddress;//"5-1 Kanaya,Murayama,Yamagata,995-0004 Japan.";
+                                ep.CustomerItemName = "";// ep.CustomerItemName;
+                                ep.CustomerItemNo = Convert.ToString(db.getItemCSTM_Dynamics(ed.PartNo, "")); // ed.CustItem;                             
+                               // ep.CustomerName = ed.CustomerName;// Convert.ToString(db.getItemCSTMName(ed.Customer));
+                                ep.CustomerName = "Nabtesco Autmotive Corporation";// Convert.ToString(db.getItemCSTMName(ed.Customer));
+                                ep.InvoiceNo = txtExportNo.Text;                             
 
                                 ep.LOTNo = getNewLot;                                
                                 ep.QRCode = barcode;
@@ -1045,7 +1062,11 @@ namespace StockControl
                         CASE += 1;
                     }
                 }
-                InvoiceEx_Update ivu = new InvoiceEx_Update(txtExportNo.Text,Convert.ToInt32(txtTotalPallet.Text),CASE);
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    db.sp_013_selectExportList_DetailUpdatecustItem(txtExportNo.Text);
+                }
+                InvoiceEx_Update ivu = new InvoiceEx_Update(txtExportNo.Text, Convert.ToInt32(txtTotalPallet.Text), CASE);
                 ivu.ShowDialog();
             }
             catch { }
@@ -1060,6 +1081,12 @@ namespace StockControl
         private void txtPallet_KeyPress(object sender, KeyPressEventArgs e)
         {
             dbClss.checkDigit(e);
+        }
+
+        private void radButtonElement12_Click(object sender, EventArgs e)
+        {
+            ExportManual exm = new ExportManual();
+            exm.ShowDialog();
         }
     }
 }

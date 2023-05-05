@@ -233,6 +233,36 @@
     <Compile Include="Process\ExDN_localdelivery.Designer.cs">
       <DependentUpon>ExDN_localdelivery.cs</DependentUpon>
     </Compile>
+    <Compile Include="Process\QCSetupMaster2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\QCSetupMaster2.Designer.cs">
+      <DependentUpon>QCSetupMaster2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Process\WarehousePartScan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\WarehousePartScan.Designer.cs">
+      <DependentUpon>WarehousePartScan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Process\WarehouseCheckPart.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\WarehouseCheckPart.Designer.cs">
+      <DependentUpon>WarehouseCheckPart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Process\WarehouseCheckList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\WarehouseCheckList.Designer.cs">
+      <DependentUpon>WarehouseCheckList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Process\ExportManual.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\ExportManual.Designer.cs">
+      <DependentUpon>ExportManual.cs</DependentUpon>
+    </Compile>
     <Compile Include="Process\ListNews.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -490,6 +520,12 @@
     </Compile>
     <Compile Include="Process\BOXReceive.Designer.cs">
       <DependentUpon>BOXReceive.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Process\UploadSetDataExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Process\UploadSetDataExport.Designer.cs">
+      <DependentUpon>UploadSetDataExport.cs</DependentUpon>
     </Compile>
     <Compile Include="Process\UploadMappingBOM.cs">
       <SubType>Form</SubType>
@@ -900,6 +936,21 @@
     <EmbeddedResource Include="Process\ExDN_localdelivery.resx">
       <DependentUpon>ExDN_localdelivery.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Process\QCSetupMaster2.resx">
+      <DependentUpon>QCSetupMaster2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\WarehousePartScan.resx">
+      <DependentUpon>WarehousePartScan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\WarehouseCheckPart.resx">
+      <DependentUpon>WarehouseCheckPart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\WarehouseCheckList.resx">
+      <DependentUpon>WarehouseCheckList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\ExportManual.resx">
+      <DependentUpon>ExportManual.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Process\ListNews.resx">
       <DependentUpon>ListNews.cs</DependentUpon>
     </EmbeddedResource>
@@ -1028,6 +1079,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Process\BOXReceive.resx">
       <DependentUpon>BOXReceive.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Process\UploadSetDataExport.resx">
+      <DependentUpon>UploadSetDataExport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Process\UploadMappingBOM.resx">
       <DependentUpon>UploadMappingBOM.cs</DependentUpon>

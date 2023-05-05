@@ -197,8 +197,8 @@ namespace StockControl
                                 FaxShip = Convert.ToString(ex.FaxShip);
                                 AttnShip = Convert.ToString(ex.AttnShip);
 
-                            
 
+                            txtPalletNoT1.Text = ex.PalletText;
                             txtCustomerSale.Text = CustomerSale;
                             txtAddressSale.Text = AddressSale;
                             txtAddressSales2.Text = AddressSale2;
@@ -349,6 +349,12 @@ namespace StockControl
             {
                 try
                 {
+                  
+                    int CountA = 0;
+                    int RS = 0;
+                    int pallN = 0;
+                    string FormP = "";
+                    string ToP = "";
                     CalculateAmount("");
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
                     {
@@ -366,6 +372,23 @@ namespace StockControl
                                     txtCRRNCY.Text = "USD.";
                                 }
                             }
+                            if(txtPalletNoT1.Text.Equals(""))
+                            {
+                                var exdetail = db.tb_ExportDetails.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).OrderBy(o=>o.ListNo).ToList();
+                                foreach(var rss in exdetail)
+                                {
+                                    RS += 1;
+                                    int.TryParse(rss.PalletNo, out pallN);
+                                    if (RS==1)
+                                    {
+                                        FormP = rss.PalletNo;
+                                    }
+
+
+                                    ToP = rss.PalletNo; 
+                                }
+                                txtPalletNoT1.Text = FormP + "-" + ToP;
+                            }
                             ev.LoadDate = dtLoadDate.Value;
                             ev.ETDDatex = dtETDDate.Value;
                             ev.ETADatex = dtETADate.Value;
@@ -381,6 +404,7 @@ namespace StockControl
                             ev.Country = txtCurrency.Text;
                             ev.paymentTerm = txtPaymentterm.Text;
                             ev.Attn = txtAttnShip.Text;
+                            ev.PalletText = txtPalletNoT1.Text;
                           
 
                             if(!Convert.ToBoolean(ev.InvoiceFlag))
@@ -551,6 +575,18 @@ namespace StockControl
                             decimal Grossw = 0;
                             decimal TotalQty = 0;
                             int SortR = 0;
+                            int Stdc = 0;
+                            var evs = db.tb_ExportDetails.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).ToList();
+                            if (evs!=null)
+                            {   
+                                foreach(var rs in evs)
+                                {
+                                    if (!Convert.ToString(rs.K).Equals(""))
+                                    {
+                                        Stdc += 1;
+                                    }
+                                }
+                            }
                             var Listdetail = db.sp_044_Inv_Export_ListDetail(txtInvNo.Text).ToList();
 
                             int CC = 0;
@@ -586,14 +622,19 @@ namespace StockControl
                                 em.InoviceNo = txtInvNo.Text.ToUpper();
                                 em.PalletNo = PLNo2;
                                 em.SteelCase = Grilled;
+                                em.RemarkInv = rd.RemarkInv;
                                 em.Description = rd.PartName;
                                 string PartNo = rd.CustItem.ToUpper().Trim();
                                 if (!Convert.ToString(rd.M).Equals(""))
                                 {
                                     PartNo = rd.PartNo.ToString().ToUpper();
                                 }
-                                em.ProductionCode = rd.CustItem.ToUpper().Trim();
-                                em.SteelCaseCount = Convert.ToInt32(txtSteelcase.Text);
+                                em.ProductionCode =rd.CustItem.ToUpper().Trim();
+                                if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
+                                {
+                                    em.ProductionCode = rd.CustomerItemDx.ToString();
+                                }
+                                em.SteelCaseCount = Stdc;// Convert.ToInt32(txtSteelcase.Text);
                                 em.Pallet = Convert.ToInt32(txtPallet.Text) ;
                                 em.Qty = Convert.ToDecimal(rd.Qty);
 
@@ -636,6 +677,7 @@ namespace StockControl
                                 em.TotalGrossWeight = 0;
                                 em.TotalNetWeigth = 0;
                                 em.CodeNo = rd.PartNo.ToString();
+                                
                                 
 
                                 db.tb_InvoiceExTemps.InsertOnSubmit(em);
@@ -695,6 +737,19 @@ namespace StockControl
                             string PartNo = "";
                             int SortR = 0;
                             int STC = 0;
+                            int Stdc = 0;
+
+                            var evs = db.tb_ExportDetails.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).ToList();
+                            if (evs != null)
+                            {
+                                foreach (var rs in evs)
+                                {
+                                    if (!Convert.ToString(rs.K).Equals(""))
+                                    {
+                                        Stdc += 1;
+                                    }
+                                }
+                            }
 
                             //For Gross,NetWeight//
                             var ListDetail01 = db.sp_044_Inv_Export_ListDetail(txtInvNo.Text).ToList();
@@ -773,6 +828,7 @@ namespace StockControl
                                     CQty += Convert.ToDecimal(rd.Qty);
                                     ckc.Qty = CQty;
                                     ckc.Amount = ckc.UnitCost * CQty;
+                                    ckc.RemarkInv = rd.RemarkInv;
                                     db.SubmitChanges();
                                 }
                                 else
@@ -785,10 +841,14 @@ namespace StockControl
                                     em.SteelCase = Grilled;
                                     em.Description = rd.PartName;
 
-                                    string PartNo1 = rd.CustItem.ToUpper().Trim();                                    
+                                    string PartNo1 = rd.CustItem.ToUpper().Trim();
+                                    if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
+                                    {
+                                        PartNo1 = rd.CustomerItemDx.ToString();
+                                    }
                                     em.ProductionCode = PartNo1;                                   
                                     em.CodeNo = rd.PartNo.ToString();
-                                    em.SteelCaseCount = Convert.ToInt32(txtSteelcase.Text);
+                                    em.SteelCaseCount = Stdc;// Convert.ToInt32(txtSteelcase.Text);
                                     em.Pallet = Convert.ToInt32(txtPallet.Text);
                                     em.Qty = Convert.ToDecimal(rd.Qty);
                                     em.UnitCost = Convert.ToDecimal(rd.UnitCost);
@@ -797,6 +857,7 @@ namespace StockControl
                                     em.TotalGrossWeight = 0;
                                     em.TotalNetWeigth = 0;
                                     em.Unit = "PCS";
+                                    em.RemarkInv = rd.RemarkInv;
                                     db.tb_InvoiceExTemps.InsertOnSubmit(em);
                                     db.SubmitChanges();
                                 }
@@ -824,7 +885,7 @@ namespace StockControl
                                     em.GroupA = "NoCommercial";
                                     em.TotalGrossWeight = 0;
                                     em.TotalNetWeigth = 0;
-                                    em.Unit = "CASE";
+                                    em.Unit = "CASE";                                    
                                     db.tb_InvoiceExTemps.InsertOnSubmit(em);
                                     db.SubmitChanges();
                                 }
@@ -932,6 +993,18 @@ namespace StockControl
                             int SortC = 0;
                             int countNo = 0;
                             int STC = 0;
+                            int Stdc = 0;
+                            var evs = db.tb_ExportDetails.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).ToList();
+                            if (evs != null)
+                            {
+                                foreach (var rs in evs)
+                                {
+                                    if (!Convert.ToString(rs.K).Equals(""))
+                                    {
+                                        Stdc += 1;
+                                    }
+                                }
+                            }
 
                             //For Gross,NetWeight//
                             var ListDetail01 = db.sp_044_Inv_Export_ListDetail(txtInvNo.Text).ToList();
@@ -1037,8 +1110,13 @@ namespace StockControl
                                     em.SteelCase = Grilled;
                                     em.Description = rd.PartName;
                                     em.ProductionCode = rd.CustItem.ToUpper().Trim();//rd.PartNo.ToString().ToUpper();
+                                    if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
+                                    {
+                                        em.ProductionCode = rd.CustomerItemDx.ToString();
+                                    }
+
                                     em.CodeNo = rd.PartNo.ToString();
-                                    em.SteelCaseCount = Convert.ToInt32(txtSteelcase.Text);
+                                    em.SteelCaseCount = Stdc;// Convert.ToInt32(txtSteelcase.Text);
                                     em.Pallet = Convert.ToInt32(txtPallet.Text);
                                     em.Qty = Convert.ToDecimal(rd.Qty);
                                     em.UnitCost = Convert.ToDecimal(rd.UnitCost);
@@ -1047,6 +1125,7 @@ namespace StockControl
                                     em.TotalGrossWeight = 0;
                                     em.TotalNetWeigth = 0;
                                     em.Unit = "PCS";
+                                    em.RemarkInv = rd.RemarkInv;
                                     db.tb_InvoiceExTemps.InsertOnSubmit(em);
                                     db.SubmitChanges();
                                 }
@@ -1485,6 +1564,19 @@ namespace StockControl
                             int SortC = 0;
                             int countNo = 0;
                             int STC = 0;
+                            int Stdc = 0;
+                            var evs = db.tb_ExportDetails.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).ToList();
+                            if (evs != null)
+                            {
+                                foreach (var rs in evs)
+                                {
+                                    if (!Convert.ToString(rs.K).Equals(""))
+                                    {
+                                        Stdc += 1;
+                                    }
+                                }
+                            }
+
 
                             //For Gross,NetWeight//
                             var ListDetail01 = db.sp_044_Inv_Export_ListDetail(txtInvNo.Text).ToList();
@@ -1590,8 +1682,12 @@ namespace StockControl
                                     em.SteelCase = Grilled;
                                     em.Description = rd.PartName;
                                     em.ProductionCode = rd.CustItem.ToUpper().Trim();//rd.PartNo.ToString().ToUpper();
+                                    if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
+                                    {
+                                        em.ProductionCode = rd.CustomerItemDx.ToString();
+                                    }
                                     em.CodeNo = rd.PartNo.ToString();
-                                    em.SteelCaseCount = Convert.ToInt32(txtSteelcase.Text);
+                                    em.SteelCaseCount = Stdc;// Convert.ToInt32(txtSteelcase.Text);
                                     em.Pallet = Convert.ToInt32(txtPallet.Text);
                                     em.Qty = Convert.ToDecimal(rd.Qty);
                                     em.UnitCost = Convert.ToDecimal(rd.UnitCost);
@@ -1600,6 +1696,7 @@ namespace StockControl
                                     em.TotalGrossWeight = 0;
                                     em.TotalNetWeigth = 0;
                                     em.Unit = "PCS";
+                                    em.RemarkInv = rd.RemarkInv;
                                     db.tb_InvoiceExTemps.InsertOnSubmit(em);
                                     db.SubmitChanges();
                                 }
