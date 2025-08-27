@@ -713,5 +713,10 @@ namespace StockControl
             Lmt.ShowDialog();
             DataLoad();
         }
+
+        private void radButton2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

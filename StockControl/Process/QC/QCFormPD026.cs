@@ -34,7 +34,7 @@ namespace StockControl
         string TypeP = "";
         string WOs = "";
         string FormISO = "";
-        string LineName = "";
+        string LineName = "TW01-PB";
         string PTAG = "";
         string PTAG2 = "";
         string SPG33_1 = "８２００～９７２０　N";
@@ -117,6 +117,7 @@ namespace StockControl
             txtValue.Text = "";
             txtNGQty.Text = "";
             txtRemark.Text = "";
+            txtRank.Text = "";
         }
         private void UpDownData(int Ac)
         {
@@ -129,10 +130,25 @@ namespace StockControl
                 int.TryParse(txtNGID.Text, out qid);
                 int orderby = 0;
                 int CCK = 0;
+                string TypeRP = "";
                 // decimal Value1 = 0;
                 // decimal Value2 = 0;
-                
-                if (txtValueCheck.Text.Equals("Yes") && txtDataBox.Text.Equals(""))
+                if(txtValueCheck.Text.Equals("Yes") && lblInvalidValue.Text.Equals("NG"))
+                {
+                    if (FormISO.Equals("FM-PD-156") || FormISO.Equals("FM-PD-157") || FormISO.Equals("FM-PD-033") || FormISO.Equals("FM-PD-033_1")
+                        || FormISO.Equals("FM-PD-003") || FormISO.Equals("FM-PD-163") || FormISO.Equals("FM-PD-011"))
+                    {
+                        //PD-156 , PD-157, PD-033 , PD-003 , PD-163 , PD-011 
+                        if(MessageBox.Show("ไม่สามารถไปข้อต่อไปได้ถ้าใส่ค่าไม่ถูกต้อง","Error",MessageBoxButtons.OK,MessageBoxIcon.Error)==DialogResult.OK)
+                        {
+
+                        }
+                        return;
+                    }
+                }
+
+
+                if (txtValueCheck.Text.Equals("Yes") && txtDataBox.Text.Equals("") && !txtToppic.Text.Equals(""))
                 {
                     if (FormISO.Equals("FM-PD-035_1"))
                     {
@@ -145,7 +161,142 @@ namespace StockControl
                                 MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                             }
-                            
+                            else
+                            {
+                                //MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
+                        }
+                    }
+                    else if (FormISO.Equals("FM-PD-157"))
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            //1 = 4567
+                            //2,3 =467
+                            //tb_QCGroupPart pds = db.tb_QCGroupParts.Where(p => p.FormISO.Equals(FormISO) && p.SetDate2.Equals("YES")).FirstOrDefault();
+                            //if (pds != null)
+                            //{
+                            tb_QCTAG pds = db.tb_QCTAGs.Where(p => p.BarcodeTag.Equals(txtScanTAG.Text)).FirstOrDefault();
+                            if (pds != null)
+                            {
+                                tb_QCGroupPart pds2 = db.tb_QCGroupParts.Where(p => p.FormISO.Equals(FormISO) && p.PartNo.Equals(txtPartNo.Text) &&
+                                (p.SetData.Equals("SPG") || p.SetData.Equals("TOHO"))).FirstOrDefault();
+                                if (pds2 != null)
+                                {
+                                    if (pds.GType.Equals("หัว"))
+                                    {
+                                        if (lblSeq.Text == "ลำดับ 4" || lblSeq.Text == "ลำดับ 6" || lblSeq.Text == "ลำดับ 7" || lblSeq.Text == "ลำดับ 5")
+                                        {
+                                            CCK = 1;
+                                            MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (lblSeq.Text == "ลำดับ 5")
+                                        {
+                                            CCK = 1;
+                                            MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    CCK = 1;
+                                    MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }   
+                                
+
+                            }
+                        }
+                        // MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else if (FormISO.Equals("FM-PD-163"))
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            if (txtOfTAG.Text.Equals("1of1") || txtOfTAG.Text.Contains("1of"))
+                            {
+                                CCK = 1;
+                                MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else
+                            {
+                                if (lblSeq.Text == "ลำดับ 1" || lblSeq.Text == "ลำดับ 2")
+                                {
+                                }
+                                else
+                                {
+                                    CCK = 1;
+                                    MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                    else if (FormISO.Equals("FM-PD-003"))
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            //var tkg = db.tb_QCTAGs.Where(q => q.QCNo.Equals(txtQCNo.Text)).ToList();
+                            if (txtOfTAG.Text.Equals("1of1") || txtOfTAG.Text.Contains("1of"))
+                            {
+                                CCK = 1;
+                                MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            }
+                            else
+                            {
+                                if (lblSeq.Text == "ลำดับ 6" || lblSeq.Text == "ลำดับ 7" || lblSeq.Text == "ลำดับ 8")
+                                {
+                                    string STEP1 = cboCheckGroupPart.Text;
+                                    tb_QCGroupPart ps = db.tb_QCGroupParts.Where(p => p.PartNo.Equals(txtPartNo.Text) && p.FormISO.Equals("FM-PD-003")
+                                    && p.StepPart.Equals(STEP1)
+                                    && p.SetDate2.Equals("Yes")
+                                    ).FirstOrDefault();
+                                    if (ps != null)
+                                    {
+                                        CCK = 1;
+                                        MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    else if (FormISO.Equals("FM-PD-033_1"))
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            //var tkg = db.tb_QCTAGs.Where(q => q.QCNo.Equals(txtQCNo.Text)).ToList();
+                            //if (tkg.Count <= 1)
+                            //{
+                            //  //  var rs = tkg.FirstOrDefault();
+                            //    CCK = 1;
+                            //    MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            //}
+                            //else
+                            //{
+                            //    if (lblSeq.Text == "ลำดับ 1")
+                            //    {
+                            //        CCK = 1;
+                            //        MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            //    }
+                            //}
+                            if (txtOfTAG.Text.Equals("No 1"))
+                            {
+                                MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else
+                            {
+                                if (lblSeq.Text == "ลำดับ 1")
+                                {
+                                    CCK = 1;
+                                    MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+
                         }
                     }
                     else
@@ -153,11 +304,12 @@ namespace StockControl
                         CCK = 1;
                         MessageBox.Show("โปรดใส่ค่าในช่องก่อน!", "Please. Insert Data.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+
                 }
 
                 if (CCK == 0)
                 {
-
+                    txtRank.Text = "";
                     txtValue.Text = "";
                     txtNGQty.Text = "";
                     txtToppic.Text = "";
@@ -271,10 +423,29 @@ namespace StockControl
                     txtScanTAG.Text = "";
                     txtScanTAG.Focus();
                 }
-                // ShowImg();
-               
+                ShowDefaultPage();
+
+
             }
             catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+        private void ShowDefaultPage()
+        {
+            if (FormISO.Equals("FM-PD-035_1")
+                || FormISO.Equals("FM-PD-002")
+                 || FormISO.Equals("FM-PD-112")
+                  || FormISO.Equals("FM-PD-113")
+                  || FormISO.Equals("FM-PD-123")
+                  || FormISO.Equals("FM-PD-153")
+                  || FormISO.Equals("FM-PD-010")
+                  || FormISO.Equals("FM-PD-164")
+                )
+            {
+                this.radPageView1.SelectedPage=radPageViewPage7;
+                Snew += 1;
+                OpenPage = 1;
+                txtDataBox.Focus();
+            }
         }
         private void SetValueFormISO()
         {
@@ -290,7 +461,7 @@ namespace StockControl
                 {
 
                     cboSelectCheckBy.Items.Clear();
-                   // cboSelectCheckBy.Items.Add("");
+                    // cboSelectCheckBy.Items.Add("");
                     cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
                     cboSelectCheckBy.Items.Add("พนักงานประกอบ SUB LINE");
@@ -312,15 +483,193 @@ namespace StockControl
                 else if (FormISO.Equals("FM-PD-035_1"))
                 {
                     cboSelectCheckBy.Items.Clear();
-                   // cboSelectCheckBy.Items.Add("");
+                    // cboSelectCheckBy.Items.Add("");
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ");
                     cboSelectCheckBy.Items.Add("พนักงานตรวจ ก่อนผลิต");
                     cboSelectCheckBy.Items.Add("พนักงานตรวจ หลังผลิต");
                     cboSelectCheckBy.Text = "ผู้ตรวจสอบ";
                 }
-                else
+                else if (FormISO.Equals("FM-PD-001"))
                 {
-                    
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+
+                    //cboSelectCheckBy.Items.Add("ขัน Plug");
+                    //cboSelectCheckBy.Items.Add("Sub Line");
+                    cboSelectCheckBy.Items.Add("Stamp Lot /ประกอบ");
+                    cboSelectCheckBy.Items.Add("Test Leak");
+                    cboSelectCheckBy.Items.Add("ตรวจสอบท้ายไลน์");
+               
+
+                    cboSelectCheckBy.Items.Add("พนักงานประกอบ SUB LINE");
+                    cboSelectCheckBy.Items.Add("พนักงานตรวจสอบ SUB LINE 1");
+                    cboSelectCheckBy.Items.Add("พนักงานตรวจสอบ SUB LINE 2");
+                    cboSelectCheckBy.Items.Add("พนักงานขัน Plug");
+
+                   // cboSelectCheckBy.Items.Add("สลับเบรค");
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+                }
+                else if (FormISO.Equals("FM-PD-002"))
+                {
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Text = "Check By";
+                    cboSelectCheckBy.Items.Add("Check By");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 1");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 2");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 3");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 4");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 5");
+                }
+                else if (FormISO.Equals("FM-PD-003"))
+                {
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Text = "ผู้ตรวจสอบ 1";
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 1");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 2");
+                }
+                else if (FormISO.Equals("FM-PD-003_S") || FormISO.Equals("FM-PD-156") || FormISO.Equals("FM-PD-011")
+                    || FormISO.Equals("FM-PD-157")
+                    || FormISO.Equals("FM-PD-163")
+                    || FormISO.Equals("FM-PD-077")
+                    || FormISO.Equals("FM-PD-139"))
+                {
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                  
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 1");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 2");
+
+
+                    if (FormISO.Equals("FM-PD-077"))
+                    {
+                        cboSelectCheckBy.Items.Add("อนุมัติการปล่อยงาน");
+                    }
+                    if (FormISO.Equals("FM-PD-139"))
+                    {
+                        cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 3");
+                    }
+
+
+                    cboSelectCheckBy.Text = "ผู้ตรวจสอบ 1";
+                }
+                else if (FormISO.Equals("FM-PD-109"))
+                {
+
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                    cboSelectCheckBy.Items.Add("Sub line");
+                    cboSelectCheckBy.Items.Add("Main line");
+                    cboSelectCheckBy.Items.Add("ตรวจสอบท้ายไลน์");
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+
+                }
+                else if (FormISO.Equals("FM-PD-110"))
+                {
+
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                    cboSelectCheckBy.Items.Add("ประกอบ");
+                    cboSelectCheckBy.Items.Add("Test Leak");
+                    cboSelectCheckBy.Items.Add("ตรวจสอบท้ายไลน์");
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+
+                }
+                else if (FormISO.Equals("FM-PD-112")||FormISO.Equals("FM-PD-113") || FormISO.Equals("FM-PD-123") || FormISO.Equals("FM-PD-153") || FormISO.Equals("FM-PD-010")
+                    || FormISO.Equals("FM-PD-164"))
+                {
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");                  
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ");
+                    cboSelectCheckBy.Items.Add("Check");
+                    cboSelectCheckBy.Text = "ผู้ตรวจสอบ";
+                }
+                else if (FormISO.Equals("FM-PD-096"))
+                {
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                   // cboSelectCheckBy.Items.Add("PS1-PS3"); 
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+                }
+                else if (FormISO.Equals("FM-PD-095"))
+                {
+
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                   // cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ");
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+
+                }
+                else if (FormISO.Equals("FM-PD-122"))
+                {
+
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                    cboSelectCheckBy.Items.Add("ประกอบ");
+                    cboSelectCheckBy.Items.Add("ท้ายไลน์");
+                    // cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ");
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+
+                }
+                else if (FormISO.Equals("FM-PD-013"))
+                {
+
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดเตรียม Part");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ประกอบ 1");
+                    cboSelectCheckBy.Items.Add("ประกอบ 2");
+                    cboSelectCheckBy.Items.Add("Test Leak");
+                    cboSelectCheckBy.Items.Add("ท้ายไลน์");
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+
+                }
+                else if (FormISO.Equals("FM-PD-014"))
+                {
+
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดเตรียม Part");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                    cboSelectCheckBy.Items.Add("ประกอบ");                   
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+
+                }
+                else if (FormISO.Equals("FM-PD-140"))
+                {
+
+                    cboSelectCheckBy.Items.Clear();
+                    // cboSelectCheckBy.Items.Add("");
+                    cboSelectCheckBy.Items.Add("ผู้จัดเตรียม Part");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
+                    cboSelectCheckBy.Items.Add("ประกอบ");
+                    cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
+
+
                 }
             }
             catch { }
@@ -336,7 +685,55 @@ namespace StockControl
                 {
                     TypeP = "PD";
                     string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",026_1";
-                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", txtLineNo.Text, "Machine", "None");
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                else if(FormISO.Equals("FM-PD-001"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD001";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                else if (FormISO.Equals("FM-PD-109"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD109";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                else if (FormISO.Equals("FM-PD-110"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD110";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                else if (FormISO.Equals("FM-PD-013"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD013";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                else if (FormISO.Equals("FM-PD-122"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD122";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                else if (FormISO.Equals("FM-PD-014"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD014";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                else if (FormISO.Equals("FM-PD-096") || FormISO.Equals("FM-PD-095"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD0956";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
+                }
+                if (FormISO.Equals("FM-PD-140"))
+                {
+                    TypeP = "PD";
+                    string TAG1 = "PQC," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD140";
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of1", "PD", LineName, "Machine", "None");
                 }
                 else if (FormISO.Equals("FM-PD-033_1"))
                 {
@@ -360,9 +757,9 @@ namespace StockControl
                     string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",No " + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",033_1";
                     string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",No " + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",033_1";
 
-                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", txtLineNo.Text, "หัว", PTAG2);
-                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", txtLineNo.Text, "กลาง", PTAG2);
-                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", txtLineNo.Text, "ท้าย", PTAG2);
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", PTAG2);
 
                 }
                 else if (FormISO.Equals("FM-PD-035_1"))
@@ -377,11 +774,12 @@ namespace StockControl
                         string[] DATAG = PTAG.Split(',');
                         if (DATAG.Length == 8)
                         {
-                            dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "PD", txtLineNo.Text, "PDTAG", PTAG2);
+                            if(!DATAG[0].Equals("PQC"))
+                                dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "PD", LineName, "PDTAG", PTAG2);
                         }
                     }
                 }
-                else if (FormISO.Equals("FM-QA-055_02_1"))
+                else if (FormISO.Equals("FM-QA-055_02_1") || FormISO.Equals("FM-QA-055"))
                 {
                     TypeP = "QC";
                     decimal QtyT = 0;
@@ -390,18 +788,297 @@ namespace StockControl
                         QtyT = 1;
                     if (!txtOfTAG.Text.Equals(""))
                     {
-                        dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "QC", txtLineNo.Text, "QCTAG", PTAG2);
+                        dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "QC", LineName, "QCTAG", PTAG2);
                     }
                 }
                 else if (FormISO.Equals("FM-QA-056_02_1"))
                 {
                     TypeP = "QC";
-                    string TAG1 = "First," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of2," + txtPartNo.Text.ToUpper() + ",056_1";
-                    string TAG2 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of2," + txtPartNo.Text.ToUpper() + ",056_1";
+                    string TAG1 = "No1," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of5," + txtPartNo.Text.ToUpper() + ",056_1";
+                    string TAG2 = "No2," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of5," + txtPartNo.Text.ToUpper() + ",056_1";
+                    string TAG3 = "No3," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of5," + txtPartNo.Text.ToUpper() + ",056_1";
+                    string TAG4 = "No4," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",4of5," + txtPartNo.Text.ToUpper() + ",056_1";
+                    string TAG5 = "No5," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",5of5," + txtPartNo.Text.ToUpper() + ",056_1";
 
-                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of2", "QC", txtLineNo.Text, "ตัวที่ 1", PTAG2);
-                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "2of2", "QC", txtLineNo.Text, "ตัวที่ 2", PTAG2);
-                   
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of5", "QC", LineName, "ตัวที่ 1", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "2of5", "QC", LineName, "ตัวที่ 2", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "3of5", "QC", LineName, "ตัวที่ 3", PTAG2);
+                    dbShowData.InsertTAG(TAG4, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "4of5", "QC", LineName, "ตัวที่ 4", PTAG2);
+                    dbShowData.InsertTAG(TAG5, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "5of5", "QC", LineName, "ตัวที่ 5", PTAG2);
+
+
+                }
+                else if (FormISO.Equals("FM-QA-091") 
+                    || FormISO.Equals("FM-QA-092")
+                    || FormISO.Equals("FM-QA-143")
+                    || FormISO.Equals("FM-QA-144")
+                    || FormISO.Equals("FM-QA-161")
+                    )
+                {
+                    TypeP = "QC";
+                    string TAG1 = "One," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of5," + txtPartNo.Text.ToUpper() + ",0QA_1";
+                    string TAG2 = "Two," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of5," + txtPartNo.Text.ToUpper() + ",0QA_2";
+                    string TAG3 = "Three," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of5," + txtPartNo.Text.ToUpper() + ",0QA_3";
+                    string TAG4 = "Four," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",4of5," + txtPartNo.Text.ToUpper() + ",0QA_4";
+                    string TAG5 = "Five," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",5of5," + txtPartNo.Text.ToUpper() + ",0QA_5";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "1of5", "QC", LineName, "ตัวที่ 1", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "2of5", "QC", LineName, "ตัวที่ 2", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "3of5", "QC", LineName, "ตัวที่ 3", PTAG2);
+                    dbShowData.InsertTAG(TAG4, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "4of5", "QC", LineName, "ตัวที่ 4", PTAG2);
+                    dbShowData.InsertTAG(TAG5, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, "5of5", "QC", LineName, "ตัวที่ 5", PTAG2);
+
+
+                }
+                else if (FormISO.Equals("FM-PD-003"))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD003";
+                    string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD003";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD003";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", PTAG2);
+
+                }
+                else if (FormISO.Equals("FM-PD-003_S"))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD003_S";
+                    string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD003_S";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD003_S";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", TAG1);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", TAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", TAG3);
+
+                }
+                else if  (FormISO.Equals("FM-PD-156"))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD156";
+                    string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD156";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD156";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", TAG1);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", TAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", TAG3);
+                }
+                else if (FormISO.Equals("FM-PD-139"))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD139";
+                    string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD139";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD139";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", TAG1);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", TAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", TAG3);
+                }
+                else if (FormISO.Equals("FM-PD-011"))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD011";
+                    string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD011";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD011";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", TAG1);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", TAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", TAG3);
+                }
+
+                else if ((FormISO.Equals("FM-PD-157")))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD157";
+                    string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD157";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD157";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", PTAG2);
+
+                }
+                else if ((FormISO.Equals("FM-PD-163")))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD163";
+                    string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD163";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",3of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD163";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", PTAG2);
+                    dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof3, "PD", LineName, "ท้าย", PTAG2);
+
+                }
+                else if ((FormISO.Equals("FM-PD-077")))
+                {
+                    double HQty = 0;
+                    int midle = 2;
+                    double LotSize = 0;
+                    double a = 0;
+                    double ap = 0;
+                    double.TryParse(txtQty.Text, out HQty);
+                    double.TryParse(txtLotSize.Text, out LotSize);
+                    a = 0;
+                    ap = (Convert.ToDouble(HQty) % 2);
+                    if (ap > 0)
+                        a = 1;
+                    midle = Convert.ToInt32(Math.Floor((Convert.ToDouble(HQty) / 2)) + a);//.ToString("###");
+                    string Tof1 = "No 1";
+                    string Tof2 = "No " + midle.ToString("###");
+                    string Tof3 = "No " + HQty.ToString("###");
+
+                    string TAG1 = "Head," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD077";
+                   // string TAG2 = "Middle," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + midle.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD157";
+                    string TAG3 = "End," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",2of" + HQty.ToString("###") + "," + txtPartNo.Text.ToUpper() + ",FMPD077";
+
+                    dbShowData.InsertTAG(TAG1, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof1, "PD", LineName, "หัว", PTAG2);
+                  //  dbShowData.InsertTAG(TAG2, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "กลาง", PTAG2);
+                    dbShowData.InsertTAG(TAG3, txtProdNo.Text.ToUpper(), txtQCNo.Text, 1, Tof2, "PD", LineName, "ท้าย", PTAG2);
+
+                }
+                else if (FormISO.Equals("FM-PD-002"))
+                {
+                    TypeP = "PD";
+                    decimal QtyT = 0;
+                    decimal.TryParse(txtQtyofTAG.Text, out QtyT);
+                    if (QtyT == 0)
+                        QtyT = 1;
+                    if (!txtOfTAG.Text.Equals(""))
+                    {
+                        string[] DATAG = PTAG.Split(',');
+                        if (DATAG.Length == 8)
+                        {
+                            if (!DATAG[0].Equals("PQC"))
+                                dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "PD", LineName, "PDTAG", PTAG2);
+                        }
+                    }
+                }
+                else if (FormISO.Equals("FM-PD-112")||FormISO.Equals("FM-PD-113") || FormISO.Equals("FM-PD-123") || FormISO.Equals("FM-PD-153") || FormISO.Equals("FM-PD-010")
+                    || FormISO.Equals("FM-PD-164")
+                    )
+                {
+                    TypeP = "PD";
+                    decimal QtyT = 0;
+                    decimal.TryParse(txtQtyofTAG.Text, out QtyT);
+                    if (QtyT == 0)
+                        QtyT = 1;
+                    if (!txtOfTAG.Text.Equals(""))
+                    {
+                        string[] DATAG = PTAG.Split(',');
+                        if (DATAG.Length == 8)
+                        {
+                            if (!DATAG[0].Equals("PQC"))
+                                dbShowData.InsertTAG(PTAG, txtProdNo.Text.ToUpper(), txtQCNo.Text, QtyT, txtOfTAG.Text, "PD", LineName, "PDTAG", PTAG2);
+                        }
+                    }
                 }
                 else
                 {
@@ -492,6 +1169,7 @@ namespace StockControl
                                 txtStatus.Text = rs1.Status;
                                 txtStatus.ForeColor = Color.Red;
                                 txtQCNo.Text = rs1.QCNo.ToString();
+                                db.sp_46_QCSelectWO_12_UpdateOKQty(txtQCNo.Text);
                                 //cboCheckBy1.Text = rs1.CheckBy1;
                                 //cboCheckBy2.Text = rs1.CheckBy2;
                                 //cboCheckBy3.Text = rs1.CheckBy3;
@@ -770,11 +1448,13 @@ namespace StockControl
                             qcN.OKQty = 0;
                             qcN.NGQty = 0;
                             qcN.LotNo = txtLotNo.Text;
-                            qcN.LineName = txtLineNo.Text;
+                            qcN.LineName = LineName;
                             qcN.CreateBy = dbClss.UserID;
                             qcN.CreateDate = DateTime.Now;
                             qcN.SS = 1;
                             qcN.Status = "Checking";
+                            qcN.PassValue = "";
+                            qcN.PDQty = 0;
                             qcN.SendApprove = false;
                             if (chkApprove.Checked)
                             {
@@ -903,36 +1583,35 @@ namespace StockControl
 
                             if (chkApprove.Checked)
                             {
-                                tb_QCApprove qa = db.tb_QCApproves.Where(w => w.WONo.Equals(Upd.WONo) && w.FormISO.Equals(Upd.FormISO)).FirstOrDefault();
-                                if (qa == null)
+                                if (CheckApprove())
                                 {
-                                    tb_QCApprove ap = new tb_QCApprove();
-                                    ap.FormISO = Upd.FormISO;
-                                    ap.WONo = Upd.WONo;
-                                    ap.PartName = "";
-                                    ap.PartNo = Upd.PartNo;
-                                    ap.Seq = 1;
-                                    ap.Remark = "";
-                                    ap.OKQty = 0;
-                                    ap.NGQty = 0;
-                                    ap.InsQty = 0;
-                                    ap.ApproveBy = "";
-                                    ap.ApproveDate = null;
-                                    ap.SS = 1;
-                                    ap.QCNo = txtQCNo.Text;
-                                    db.tb_QCApproves.InsertOnSubmit(ap);
-                                    db.SubmitChanges();
+                                    tb_QCApprove qa = db.tb_QCApproves.Where(w => w.WONo.Equals(Upd.WONo) && w.FormISO.Equals(Upd.FormISO)).FirstOrDefault();
+                                    if (qa == null)
+                                    {
+                                        tb_QCApprove ap = new tb_QCApprove();
+                                        ap.FormISO = Upd.FormISO;
+                                        ap.WONo = Upd.WONo;
+                                        ap.PartName = "";
+                                        ap.PartNo = Upd.PartNo;
+                                        ap.Seq = 1;
+                                        ap.Remark = "";
+                                        ap.OKQty = 0;
+                                        ap.NGQty = 0;
+                                        ap.InsQty = 0;
+                                        ap.ApproveBy = "";
+                                        ap.ApproveDate = null;
+                                        ap.SS = 1;
+                                        ap.QCNo = txtQCNo.Text;
+                                        db.tb_QCApproves.InsertOnSubmit(ap);
+                                        db.SubmitChanges();
 
-                                }
-                                else
-                                {
-                                    //if (qa.SS != 3)
-                                    //{
-                                    //    qa.OKQty = Upd.OKQty;
-                                    //    qa.NGQty = Upd.NGQty;
-                                    //    qa.InsQty = Upd.OrderQty;
-                                    //}
-                                   // db.SubmitChanges();
+
+
+                                    }
+                                    else
+                                    {
+
+                                    }
                                 }
                             }
 
@@ -953,6 +1632,47 @@ namespace StockControl
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+        private bool CheckApprove()
+        {
+            bool ck = true;
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                if (!rdSkipCheck.Checked)
+                {
+                    if (FormISO.Equals("FM-QA-055") || FormISO.Equals("FM-QA-055_02_1"))
+                    {
+                        var PDRC = db.tb_ProductionReceives.Where(p => p.OrderNo.Equals(txtProdNo.Text)).ToList();
+                        var QCTag = db.tb_QCTAGs.Where(p => p.QCNo.Equals(txtQCNo.Text)).ToList();
+                        if (PDRC.Count > QCTag.Count)
+                        {
+                            ck = false;
+                            MessageBox.Show("จำนวน TAG ที่ Scan เช็คยังไม่ครบตาม จาก PD");
+                            tb_QCHD qch = db.tb_QCHDs.Where(q => q.WONo.Equals(txtProdNo.Text) && q.FormISO.Equals(FormISO)).FirstOrDefault();
+                            if (qch != null)
+                            {
+                                if(!rdSkipCheck.Checked)
+                                {
+                                    qch.Status = "Checking";
+                                    db.SubmitChanges();
+                                }
+                                
+                            }
+                        }
+                    }
+                }else
+                {
+                   
+                    tb_QCHD qch = db.tb_QCHDs.Where(q => q.WONo.Equals(txtProdNo.Text) && q.FormISO.Equals(FormISO)).FirstOrDefault();
+                    if (qch != null)
+                    {
+                        qch.Status = "Waiting Approve";
+                        db.SubmitChanges();
+                    }
+                }
+            }
+            return ck;
+        }
+
         private void InsertNGPoint(int No1,string QCNo,string PointName,string PointRemark,string PointRemark2,string ofTAG,string TopCaseText,string NGQty)
         {
             try
@@ -1215,7 +1935,7 @@ namespace StockControl
                         txtLineNo.Text = woList.BUMO.ToString();
                         txtQty.Text = Convert.ToDecimal(woList.OrderQty).ToString("###,###.##");
                         txtLotNo.Text = woList.LotNo.ToString();
-                        var FormList = db.sp_46_QCSelectWO_02(txtProdNo.Text.ToUpper(),txtLineNo.Text,txtPartNo.Text,"PD").ToList();
+                        var FormList = db.sp_46_QCSelectWO_02(txtProdNo.Text.ToUpper(), LineName, txtPartNo.Text,"PD").ToList();
                       //  radGridView2.DataSource = FormList;
                        
                         ////Load Datagridview///
@@ -1236,27 +1956,97 @@ namespace StockControl
                 if (PrintC == 0)
                 {
                     PrintC = 1;
+                    dbShowData.CallReportQC(txtProdNo.Text.ToUpper(),
+                        txtPartNo.Text.ToUpper(),
+                        txtQCNo.Text,
+                       FormISO);
 
-                    if (FormISO.Equals("FM-PD-026_1"))
-                    {
-                        dbShowData.PrintData(txtProdNo.Text, txtPartNo.Text, txtQCNo.Text);
-                    }
-                    else if (FormISO.Equals("FM-PD-033_1"))
-                    {
-                        dbShowData.PrintData033(txtProdNo.Text, txtPartNo.Text, txtQCNo.Text);
-                    }
-                    else if (FormISO.Equals("FM-PD-035_1"))
-                    {
-                        dbShowData.PrintData035(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
-                    }
-                    else if (FormISO.Equals("FM-QA-055_02_1"))
-                    {
-                        dbShowData.PrintData5501(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
-                    }
-                    else if (FormISO.Equals("FM-QA-056_02_1"))
-                    {
-                        dbShowData.PrintData5601(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
-                    }
+
+                    //if (FormISO.Equals("FM-PD-026_1"))
+                    //{
+                    //    dbShowData.PrintData(txtProdNo.Text, txtPartNo.Text, txtQCNo.Text);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-033_1"))
+                    //{
+                    //    dbShowData.PrintData033(txtProdNo.Text, txtPartNo.Text, txtQCNo.Text);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-035_1"))
+                    //{
+                    //    dbShowData.PrintData035(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
+                    //}
+                    //else if (FormISO.Equals("FM-QA-055"))
+                    //{
+                    //    dbShowData.PrintData55CT(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
+                    //}
+                    //else if (FormISO.Equals("FM-QA-055_02_1"))
+                    //{
+                    //    dbShowData.PrintData5501(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
+                    //}
+                    //else if (FormISO.Equals("FM-QA-056_02_1"))
+                    //{
+                    //    dbShowData.PrintData5601(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
+                    //}else if(FormISO.Equals("FM-QA-091")
+                    //    ||FormISO.Equals("FM-QA-092")
+                    //    || FormISO.Equals("FM-QA-143")
+                    //    || FormISO.Equals("FM-QA-144")
+                    //    || FormISO.Equals("FM-QA-161")
+                    //    )
+                    //{
+                    //    dbShowData.PrintData56CT(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-001"))
+                    //{
+                    //    dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text,FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-002"))
+                    //{
+                    //    dbShowData.PrintFMPD002(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-003"))
+                    //{
+                    //    dbShowData.PrintFMPD003(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-109"))
+                    //{
+                    //    dbShowData.PrintFMPD109(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-095"))
+                    //{
+                    //    dbShowData.PrintFMPD095(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-096"))
+                    //{
+                    //    dbShowData.PrintFMPD096(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-003_S")||FormISO.Equals("FM-PD-156"))
+                    //{
+                    //    dbShowData.PrintFMPD003_S(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-112"))
+                    //{
+                    //    dbShowData.PrintFMPD112(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-110"))
+                    //{
+                    //    dbShowData.PrintPD110(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-157"))
+                    //{
+                    //    dbShowData.PrintPD157(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-077"))
+                    //{
+                    //    dbShowData.PrintPD077(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-113"))
+                    //{
+                    //    dbShowData.PrintPD113(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+                    //else if (FormISO.Equals("FM-PD-123"))
+                    //{
+                    //    dbShowData.PrintPD123(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //}
+
                 }
             }
             catch { PrintC = 0; }
@@ -1938,6 +2728,7 @@ namespace StockControl
                         if (qg != null)
                         {
                             txtToppic.Text = qg.TopPic;
+                            txtRank.Text = Convert.ToString(qg.Rank);
                             txtSetData.Text = qg.SetData;
                             if (FormISO.Equals("FM-PD-035_1"))
                             {
@@ -1952,7 +2743,7 @@ namespace StockControl
                             txtSeq.Text = Convert.ToString(qg.Seq);
                             txtNGQty.Text = "";
                             txtValue.Text = "";
-                            tb_QCNGPoint ngq = db.tb_QCNGPoints.Where(q => q.QCNo.Equals(txtQCNo.Text) && q.SeqNo.Equals(qg.Seq)).FirstOrDefault();
+                            tb_QCNGPoint ngq = db.tb_QCNGPoints.Where(q => q.QCNo.Equals(txtQCNo.Text) && q.SeqNo.Equals(qg.Seq) && q.PTAG.Equals(txtScanTAG.Text)).FirstOrDefault();
                             if (ngq != null)
                             {
                                 txtValue.Text = ngq.PointRemark.ToString();
@@ -2160,6 +2951,26 @@ namespace StockControl
                             {
 
                             }
+                            if (FormISO.Equals("FM-PD-001") && seqs > 99)
+                            {
+
+                            }
+                            if (FormISO.Equals("FM-PD-109") && seqs > 99)
+                            {
+
+                            }
+                            if (FormISO.Equals("FM-PD-110") && seqs > 99)
+                            {
+
+                            }
+                            if (FormISO.Equals("FM-PD-013") && seqs > 99)
+                            {
+
+                            }
+                            if (FormISO.Equals("FM-PD-014") && seqs > 99)
+                            {
+
+                            }
                             else
                             {
 
@@ -2243,6 +3054,9 @@ namespace StockControl
                                     SOK = "OK";
                                     decimal Value1 = 0;
                                     decimal Value2 = 0;
+                                    decimal AAA = 0;
+                                    decimal BBB = 0;
+                                    decimal CCC = 0;
 
                                     decimal.TryParse(txtValue1.Text, out Value1);
                                     decimal.TryParse(txtValue2.Text, out Value2);
@@ -2262,6 +3076,29 @@ namespace StockControl
                                         lblInvalidValue.ForeColor = Color.Red;
                                         SOK = "NG";
                                     }
+                                    if(Value1<0 || Value2<0)
+                                    {
+                                        AAA = 0;
+                                       if(Value3>=Value1)
+                                        {
+                                            AAA = 1;
+                                        }
+                                       if(Value3<=Value2)
+                                        {
+                                            BBB = 1;
+                                        }
+                                       if(AAA==1 && BBB==1)
+                                        {
+                                            SOK = "OK";
+                                        }else
+                                        {
+                                            lblInvalidValue.Visible = true;
+                                            lblInvalidValue.Text = "NG";
+                                            lblInvalidValue.ForeColor = Color.Red;
+                                            SOK = "NG";
+                                        }
+                                    }
+
                                     if (SOK.Equals("OK"))
                                     {
                                         lblInvalidValue.Visible = true;
@@ -2325,7 +3162,8 @@ namespace StockControl
         {
             ClearGobalNo();
             txtofTAGx.Text = "";
-            if (FormISO.Equals("FM-PD-035_1") || FormISO.Equals("FM-QA-055_02_1"))
+            if (FormISO.Equals("FM-PD-035_1") || FormISO.Equals("FM-QA-055_02_1") || FormISO.Equals("FM-QA-055")
+                || FormISO.Equals("FM-PD-113") || FormISO.Equals("FM-PD-112") || FormISO.Equals("FM-PD-123") || FormISO.Equals("FM-PD-153") || FormISO.Equals("FM-PD-010"))
             {
                 // PTAG = txtofTAGx.Text;
                 txtScanTAG.Text = "";
@@ -2398,7 +3236,7 @@ namespace StockControl
                         string[] DATA2 = txtScanTAG.Text.Split(',');
                         if (DATA2.Length == 8)
                         {
-                            if (DATA2[7].Length < 7)
+                            if (DATA2[7].Length >0)
                             {
                               
                                 if (DATA2[1].Equals(WOs))
@@ -2467,7 +3305,7 @@ namespace StockControl
             {
                 if(!txtInspector.Text.Equals(""))
                 {
-                    dbShowData.InsertQCChecker(txtInspector.Text, txtQCNo.Text, "Ins", cboSelectCheckBy.Text);
+                    dbShowData.InsertQCChecker(txtInspector.Text, txtQCNo.Text, "Ins", cboSelectCheckBy.Text,"");
                     txtInspector.Text = "";
                     LoadChecker();
                     txtInspector.Focus();
@@ -2497,7 +3335,7 @@ namespace StockControl
             {
                 if (!txtChecker.Text.Equals(""))
                 {
-                    dbShowData.InsertQCChecker(txtChecker.Text, txtQCNo.Text, "Chk",cboSelectCheckBy.Text);
+                    dbShowData.InsertQCChecker(txtChecker.Text, txtQCNo.Text, "Chk",cboSelectCheckBy.Text,"");
                     txtChecker.Text = "";
                     LoadChecker();
                     txtChecker.Focus();
@@ -2650,6 +3488,37 @@ namespace StockControl
                     catch { }
                 }
             }
+        }
+
+        private void radGridView1_CellEndEdit_1(object sender, GridViewCellEventArgs e)
+        {
+            try
+            {
+                if (radGridView1.Columns["BoxNo"].Index==e.ColumnIndex && e.RowIndex>=0)
+                {
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        tb_QCCheckUser qc = db.tb_QCCheckUsers.Where(p => p.id.Equals(Convert.ToInt32(radGridView1.CurrentRow.Cells["id"].Value.ToString()))).FirstOrDefault();
+                        if(qc!=null)
+                        {
+                            qc.BoxNo = radGridView1.CurrentRow.Cells["BoxNo"].Value.ToString();
+                            db.SubmitChanges();
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void radButtonElement4_Click(object sender, EventArgs e)
+        {
+            QCCheckUserPoint2 qp2 = new QCCheckUserPoint2(txtQCNo.Text);
+            qp2.ShowDialog();
+        }
+
+        private void radButtonElement5_Click(object sender, EventArgs e)
+        {
+            dbShowData.ExportScanTAG(txtProdNo.Text);
         }
     }
 }

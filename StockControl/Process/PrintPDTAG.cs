@@ -291,6 +291,8 @@ namespace StockControl
                     int C = 0;
                     string ImagePath = "";
                     string ImageName = "";
+                    string Shelf = "";
+                    string Shelf1 = "";
 
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
                     {
@@ -312,6 +314,11 @@ namespace StockControl
                             db.tb_ProductTAGs.DeleteAllOnSubmit(tm);
                             db.SubmitChanges();
                         }
+                        Shelf1 = db.g_getShelf_PD(txtPartNo.Text);
+                        if (Shelf1 != "")
+                        {
+                            Shelf = "$" + Shelf1;
+                        }
 
                         for (int i = 1; i <= TAG; i++)
                         {
@@ -329,7 +336,7 @@ namespace StockControl
                             }
                             OfTAG = i + "of" + TAG;
                             QrCode = "";
-                            QrCode = "PD," + txtBomNo.Text + "," + Qty + "," + OrderQty + "," + txtLotNo.Text + "," + OfTAG + "," + txtPartNo.Text + "," + dtDate1.Value.ToString("ddMMyy");
+                            QrCode = "PD," + txtBomNo.Text + "," + Qty + "," + OrderQty + "," + txtLotNo.Text + "," + OfTAG + "," + txtPartNo.Text + "," + dtDate1.Value.ToString("ddMMyy")+Shelf;
                             //MessageBox.Show(QrCode);
                             byte[] barcode = dbClss.SaveQRCode2D(QrCode);
 
@@ -355,7 +362,7 @@ namespace StockControl
                             ts.CustomerName = txtCustomerName.Text;
                             ts.CSTMItem = txtCustItemNo.Text;
                             ts.CustItem2 = txtCustItemName.Text;
-                            ts.SHIFT = "";// txtShift.Text;
+                            ts.SHIFT = Shelf1; //db.g_getShelf_PD(txtPartNo.Text);
 
                             //// ลูกค้า ISUSU  ///
                             if (txtCustomerShortName.Text.Trim().Equals("ISUZU"))

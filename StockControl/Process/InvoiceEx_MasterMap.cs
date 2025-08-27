@@ -362,76 +362,8 @@ namespace StockControl
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-            /*
-            OpenFileDialog op = new OpenFileDialog();
-            op.Filter = "Spread Sheet files (*.csv)|*.csv|All files (*.csv)|*.csv";
-            if (op.ShowDialog() == DialogResult.OK)
-            {
-
-
-                using (TextFieldParser parser = new TextFieldParser(op.FileName))
-                {
-                    dt.Rows.Clear();
-                    parser.TextFieldType = FieldType.Delimited;
-                    parser.SetDelimiters(",");
-                    int a = 0;
-                    int c = 0;
-                    while (!parser.EndOfData)
-                    {
-                        //Processing row
-                        a += 1;
-                        DataRow rd = dt.NewRow();
-                        // MessageBox.Show(a.ToString());
-                        string[] fields = parser.ReadFields();
-                        c = 0;
-                        foreach (string field in fields)
-                        {
-                            c += 1;
-                            //TODO: Process field
-                            //MessageBox.Show(field);
-                            if (a>1)
-                            {
-                                if(c==1)
-                                    rd["UnitCode"] = Convert.ToString(field);
-                                else if(c==2)
-                                    rd["UnitDetail"] = Convert.ToString(field);
-                                else if(c==3)
-                                    rd["UnitActive"] = Convert.ToBoolean(field);
-
-                            }
-                            else
-                            {
-                                if (c == 1)
-                                    rd["UnitCode"] = "";
-                                else if (c == 2)
-                                    rd["UnitDetail"] = "";
-                                else if (c == 3)
-                                    rd["UnitActive"] = false;
-
-
-
-
-                            }
-
-                            //
-                            //rd[""] = "";
-                            //rd[""]
-                        }
-                        dt.Rows.Add(rd);
-
-                    }
-                }
-                if(dt.Rows.Count>0)
-                {
-                    dbClss.AddHistory(this.Name, "Import", "Import file CSV in to System", "");
-                    ImportData();
-                    MessageBox.Show("Import Completed.");
-
-                    DataLoad();
-                }
-               
-            }
-            */
+            UploadSetDataExport up = new UploadSetDataExport();
+            up.ShowDialog();
         }
 
         private void ImportData()

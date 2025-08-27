@@ -22,6 +22,14 @@ namespace StockControl
             InitializeComponent();
             Stype = STypex;
         }
+        public ScanPDAList(string STypex,string SaleOrderNox,string ItemNox,string Invoice)
+        {
+            InitializeComponent();
+            Stype = STypex;
+            txtSalesOrder.Text = SaleOrderNox;
+            txtItemNo.Text = ItemNox;
+            txtInvoice.Text = Invoice;
+        }
         //private int RowView = 50;
         //private int ColView = 10;
         DataTable dt = new DataTable();
@@ -195,6 +203,7 @@ namespace StockControl
             bool ck = false;
 
             int C = 0;
+            int CountA = 0;
             try
             {
                 radGridView1.EndEdit();
@@ -203,10 +212,18 @@ namespace StockControl
                 {
                     int rid = 0;// Convert.ToInt32(radGridView1.Rows[row].Cells["id"].Value);
                     string Password = Interaction.InputBox("Check Password for Delete.", "Input Password", "");
-                    radGridView1.EndEdit();
+                    CountA = 0;
+                    foreach (var rd in radGridView1.Rows)
+                    {
+                        if (Convert.ToBoolean(rd.Cells["CK"].Value))
+                        {
+                            CountA += 1;
+                        }
+                    }
+                            radGridView1.EndEdit();
                     if (Password.Equals("123456789"))
                     {
-                        if (MessageBox.Show("ต้องการลบรายการ ( " + rid.ToString() + " ) หรือไม่ ?", "ลบรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        if (MessageBox.Show("ต้องการลบรายการ ( " + CountA.ToString() + " ) หรือไม่ ?", "ลบรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
                             using (DataClasses1DataContext db = new DataClasses1DataContext())
                             {
@@ -528,10 +545,11 @@ namespace StockControl
                 var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
-            dtDate1.Value = firstDayOfMonth;
-            dtDate2.Value = lastDayOfMonth;
-            txtSalesOrder.Text = "";
+            dtDate1.Value = DateTime.Now;
+            dtDate2.Value = DateTime.Now;
+            // txtSalesOrder.Text = "";
             // radCheckBox1.Checked = false;
+            ckAll.Checked = false;
             DataLoad2();
         }
 
@@ -540,14 +558,14 @@ namespace StockControl
             int ck = 0;
             using (DataClasses1DataContext db = new DataClasses1DataContext())
             {
-
-                if(Stype.Equals("Local"))
+                radGridView1.DataSource = null;
+                if (Stype.Equals("Local"))
                 {
-                    radGridView1.DataSource = db.sp_43_ListHistoryLogPDA1(txtSalesOrder.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value);
+                    radGridView1.DataSource = db.sp_43_ListHistoryLogPDA1(txtSalesOrder.Text,txtItemNo.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value,txtInvoice.Text,txtLotNo.Text);
                 }
                 else
                 {
-                    radGridView1.DataSource = db.sp_43_ListHistoryLogPDA2(txtSalesOrder.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value);
+                    radGridView1.DataSource = db.sp_43_ListHistoryLogPDA2(txtSalesOrder.Text,txtItemNo.Text, radCheckBox1.Checked, dtDate1.Value, dtDate2.Value, txtInvoice.Text, txtLotNo.Text);
                 }
 
                 
@@ -578,6 +596,59 @@ namespace StockControl
                 //ex.Show();
             }
             catch { }
+        }
+
+        private void radButtonElement1_Click(object sender, EventArgs e)
+        {
+            if(MessageBox.Show("ต้องการลบรายการที่เลือกหรือไม่?","Delete",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==DialogResult.Yes)
+            {
+                try
+                {
+                    int ck = 0;
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        foreach (var x in radGridView1.Rows)
+                        {
+                            if (Convert.ToBoolean(x.Cells["CK"].Value))
+                            {
+                                ck += 1;
+                                db.sp_43_ListHistoryLogPDA3_Delete(Convert.ToInt32(x.Cells["id"].Value), Stype);
+                            }
+                        }
+                    }
+                    if (ck > 0)
+                    {
+                        MessageBox.Show("ลบรายการแล้ว");
+                        DataLoad2();
+                    }
+                }
+                catch { }
+            }
+        }
+
+        private void ckAll_ToggleStateChanged(object sender, Telerik.WinControls.UI.StateChangedEventArgs args)
+        {
+            if (ckAll.Checked)
+            {
+                foreach (var x in radGridView1.Rows)
+                {
+                    if(x.IsVisible)
+                        x.Cells["CK"].Value = true;
+                }
+            }
+            else
+            {
+                foreach (var x in radGridView1.Rows)
+                {
+                    //if (x.IsVisible)
+                        x.Cells["CK"].Value = false;
+                }
+            }
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

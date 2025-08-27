@@ -31,7 +31,7 @@ namespace StockControl
             switch(sqlname1)
             {
                 case "Production": { ShowName = "Production"; pictureBox1.Image = imageList4.Images[2]; }break;
-                case "TPIC": { ShowName = "TPIC List"; pictureBox1.Image = imageList4.Images[1]; } break;
+                case "TPIC": { ShowName = "Dynamics NAV List"; pictureBox1.Image = imageList4.Images[1]; } break;
                 case "MasterList": { ShowName = "Master List"; pictureBox1.Image = imageList4.Images[0]; } break;
                 case "Receive": { ShowName = "Receive"; pictureBox1.Image = imageList4.Images[3]; } break;
                 case "Export": { ShowName = "Export"; pictureBox1.Image = imageList4.Images[4]; } break;
@@ -197,6 +197,7 @@ namespace StockControl
                             || c.LinkNode.ToString().Equals("NCRReq")
                             || c.LinkNode.ToString().Equals("QCCheckReq")
                             || c.LinkNode.ToString().Equals("QCApproveQC")
+                            ||c.LinkNode.ToString().Equals("WarehouseCheckList")
 
 
 

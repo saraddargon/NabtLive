@@ -969,11 +969,13 @@ namespace StockControl
                         }
                         else if (rdoD5Short.IsChecked)
                         {
-                            TWH = "Adjust";
+                            //Adjust
+                            TWH = "SP02";
                         }
                         else if (rdoD6Nam.IsChecked)
                         {
-                            TWH = "Adjust";
+                            //Adjust
+                            TWH = "SP03";
                         }
 
                     }
@@ -1002,11 +1004,13 @@ namespace StockControl
                         }
                         else if (rdoD5Short.IsChecked)
                         {
-                            FWH = "Adjust";
+                            //Adjust
+                            FWH = "SP02";
                         }
                         else if (rdoD6Nam.IsChecked)
                         {
-                            FWH = "Adjust";
+                            //Adjust
+                            FWH = "SP03";
                         }
 
                     }
@@ -1100,6 +1104,18 @@ namespace StockControl
                                 err += "Qty Return in Ref. Document Invalid!!\n";
                             }
                         }
+                    }
+                    if(!txtRefDoc.Text.Equals(""))
+                    {
+                        if(txtRefDoc.Text.Contains("MS2"))
+                        {
+                            var refCk = db.tb_RequisitionDTs.Where(p => p.ReqNo.Equals(txtRefDoc.Text)).FirstOrDefault();
+                            if (refCk == null)
+                            {
+                                err += "Ref. Document Invalid!! in MS2...\n";
+                            }
+                        }
+
                     }
 
 

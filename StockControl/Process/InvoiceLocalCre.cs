@@ -157,6 +157,56 @@ namespace StockControl
 
         }
 
+        private bool CheckDATA()
+        {
+            bool ck = false;
+            int CCA = 0;
+            //insert Line///
+            int AC = 0;
+            if (rdoG1.IsChecked)
+                AC = 0;
+            if (rdoG2.IsChecked)
+                AC = 1;
+            if (rdoG3.IsChecked)
+                AC = 2;
+            if (rdoG4.IsChecked)
+                AC = 3;
+            if (rdoG5.IsChecked)
+                AC = 4;
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                //   var ListInsert = db.sp_043_Inv_LocalLine_Insert(txtInvNo.Text, AC).ToList();
+                radGridView1.EndUpdate();
+                foreach (var rd in radGridView1.Rows)
+                {
+                    //tb_InvoiceLocalDT dtc = db.tb_InvoiceLocalDTs.Where(d=> d.PartNo.Equals(Convert.ToString(rd.Cells["CodeNo"].ToString()))
+                    //               && d.Plant.Equals(Convert.ToString(rd.Cells["Plant"].ToString()))
+                    //               && d.OrderNo.Equals(Convert.ToString(rd.Cells["OrderNo"].ToString()))).FirstOrDefault();
+
+                    //if (dtc == null)
+                    //{
+                    //    CCA += 1;
+                    //}
+                    var LCheck = db.sp_043_Inv_LocalLine_Check(Convert.ToString(rd.Cells["CodeNo"].ToString()), Convert.ToString(rd.Cells["OrderNo"].ToString())
+                        , Convert.ToString(rd.Cells["Plant"].ToString())).ToList();
+                    if(LCheck.Count>0)
+                    {
+                        CCA += 1;
+                    }
+                }
+            }
+            if (CCA <= 0)
+            {
+                ck = true;
+            }else
+            {
+                MessageBox.Show("Check Duplicate Order.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ck = false;
+            }
+
+            return ck;
+        }
+
         private void btn_PrintPR_Click(object sender, EventArgs e)
         {
             //Create Inv.
@@ -165,105 +215,127 @@ namespace StockControl
                 if (MessageBox.Show("ต้องการบันทึกเป็น Invoice.", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     string LastDate = dtDate1.Value.ToString("yyyy-MM-dd");
-                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    if (CheckDATA())
                     {
-                        tb_InvoiceLocalHD cks = db.tb_InvoiceLocalHDs.Where(hd => hd.InvoiceNo.Equals(txtInvNo.Text)).FirstOrDefault();
-                        if (cks == null)
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
                         {
-                            decimal Total = 0;
-                            decimal Vat = 0;
-                            decimal TotalAmount = 0;
-                            decimal.TryParse(txtTotal.Text, out Total);
-                            decimal.TryParse(txtVat.Text, out Vat);
-                            decimal.TryParse(txtAmount.Text, out TotalAmount);
-                            //Insert Hd//
-                            tb_InvoiceLocalHD hd = new tb_InvoiceLocalHD();
-                            hd.InvoiceNo = txtInvNo.Text;
-                            hd.InvoiceDate = dtDate1.Value;
-                            hd.CustomerNo = txtCustomerNo.Text;
-                            hd.CustomerName = txtCustomer.Text;
-                            hd.Address = txtAddress.Text;
-                            hd.Address2 = txtAddress2.Text;
-                            hd.Branch = txtBRANCH.Text;
-                            hd.CustomerRegisterVat = txtTAXID.Text;
-                            hd.Credit = txtCredit.Text;
-                            hd.RefNo = txtRefNo.Text;
-                            hd.Remark1 = txtRemark.Text;
-                            hd.Status = "Process";
-                            hd.Total = Total;
-                            hd.Vat = Vat;
-                            hd.TotalAmount = TotalAmount;
-                            hd.BathText = txtThaiBath.Text;
-                            hd.CreateBy = dbClss.UserID;
-                            hd.CreateDate = DateTime.Now;                           
-                            byte[] barcode = dbClss.SaveQRCode2D(txtInvNo.Text);
-                            hd.BarCode = barcode;
-                            hd.TypeVat = Type;
-                            if(chkNoVat.Checked)
-                            {
-                                hd.TypeVat = "B";
-                            }else
-                            {
-                                hd.TypeVat = "A";
-                            }
-                            db.tb_InvoiceLocalHDs.InsertOnSubmit(hd);
-                            db.SubmitChanges();
 
-                            //insert Line///
-                            int AC = 0;
-                            if (rdoG1.IsChecked)
-                                AC = 0;
-                            if (rdoG2.IsChecked)
-                                AC = 1;
-                            if (rdoG3.IsChecked)
-                                AC = 2;
-                            if (rdoG4.IsChecked)
-                                AC = 3;
-                            if (rdoG5.IsChecked)
-                                AC = 4;
-
-                            int CountAAA = 0;
-                            var ListInsert = db.sp_043_Inv_LocalLine_Insert(txtInvNo.Text, AC).ToList();
-                            foreach (var rd in ListInsert)
+                            tb_InvoiceLocalHD cks = db.tb_InvoiceLocalHDs.Where(hd => hd.InvoiceNo.Equals(txtInvNo.Text)).FirstOrDefault();
+                            if (cks == null)
                             {
-                                CountAAA += 1;
-                                tb_InvoiceLocalDT dt = new tb_InvoiceLocalDT();
-                                dt.InvoiceNo = txtInvNo.Text;
-                                dt.OrderNo = rd.OrderNo;
-                                dt.Plant = rd.Plant;
-                                dt.PartNo = rd.CodeNo;
-                                dt.PartName = rd.CodeName;
-                                dt.PastCustomer = rd.CodeCustomer;
-                                dt.Qty = Convert.ToDecimal(rd.Qty);
-                                dt.UnitPrice = Convert.ToDecimal(rd.UnitCost);
-                                dt.Amount = Convert.ToDecimal(rd.Amount);
-                                dt.Vat = Convert.ToDecimal(rd.Amount)*7/100;//  Convert.ToDecimal(rd.Vat);
-                                dt.SS = 1;
-                                dt.SortQ = CountAAA;
-                                dt.Discount = 0;
-                                dt.Unit = "PCS";
-                                db.tb_InvoiceLocalDTs.InsertOnSubmit(dt);
+                                decimal Total = 0;
+                                decimal Vat = 0;
+                                decimal TotalAmount = 0;
+                                decimal.TryParse(txtTotal.Text, out Total);
+                                decimal.TryParse(txtVat.Text, out Vat);
+                                decimal.TryParse(txtAmount.Text, out TotalAmount);
+                                //Insert Hd//
+                                tb_InvoiceLocalHD hd = new tb_InvoiceLocalHD();
+                                hd.InvoiceNo = txtInvNo.Text;
+                                hd.InvoiceDate = dtDate1.Value;
+                                hd.CustomerNo = txtCustomerNo.Text;
+                                hd.CustomerName = txtCustomer.Text;
+                                hd.Address = txtAddress.Text;
+                                hd.Address2 = txtAddress2.Text;
+                                hd.Branch = txtBRANCH.Text;
+                                hd.CustomerRegisterVat = txtTAXID.Text;
+                                hd.Credit = txtCredit.Text;
+                                hd.RefNo = txtRefNo.Text;
+                                hd.Remark1 = txtRemark.Text;
+                                hd.Status = "Process";
+                                hd.Total = Total;
+                                hd.Vat = Vat;
+                                hd.TotalAmount = TotalAmount;
+                                hd.BathText = txtThaiBath.Text;
+                                hd.CreateBy = dbClss.UserID;
+                                hd.CreateDate = DateTime.Now;
+                                byte[] barcode = dbClss.SaveQRCode2D(txtInvNo.Text);
+                                hd.BarCode = barcode;
+                                hd.TypeVat = Type;
+                                if (chkNoVat.Checked)
+                                {
+                                    hd.TypeVat = "B";
+                                }
+                                else
+                                {
+                                    hd.TypeVat = "A";
+                                }
+                                db.tb_InvoiceLocalHDs.InsertOnSubmit(hd);
                                 db.SubmitChanges();
 
+                                //insert Line///
+                                int AC = 0;
+                                if (rdoG1.IsChecked)
+                                    AC = 0;
+                                if (rdoG2.IsChecked)
+                                    AC = 1;
+                                if (rdoG3.IsChecked)
+                                    AC = 2;
+                                if (rdoG4.IsChecked)
+                                    AC = 3;
+                                if (rdoG5.IsChecked)
+                                    AC = 4;
+
+                                int CountAAA = 0;
+                                string Plant = "";
+                                var ListInsert = db.sp_043_Inv_LocalLine_Insert(txtInvNo.Text, AC).ToList();
+                                foreach (var rd in ListInsert)
+                                {
+                                    Plant = rd.Plant;
+                                    //if(rd.CodeCustomer.Equals("3030"))
+                                    //{
+                                    //    if(Plant.Contains("_"))
+                                    //    {
+                                    //        try
+                                    //        {
+                                    //            string[] DATA = Plant.Split('_');
+                                    //            if(DATA.Length>1)
+                                    //            {
+                                    //                Plant = DATA[0];
+                                    //            }
+                                    //        }
+                                    //        catch { }
+                                    //    }
+                                    //}
+                                    CountAAA += 1;
+                                    tb_InvoiceLocalDT dt = new tb_InvoiceLocalDT();
+                                    dt.InvoiceNo = txtInvNo.Text;
+                                    dt.OrderNo = rd.OrderNo;
+                                    dt.Plant = Plant;
+                                    dt.PartNo = rd.CodeNo;
+                                    dt.PartName = rd.CodeName;
+                                    dt.PastCustomer = rd.CodeCustomer;
+                                    dt.Qty = Convert.ToDecimal(rd.Qty);
+                                    dt.UnitPrice = Convert.ToDecimal(rd.UnitCost);
+                                    dt.Amount = Convert.ToDecimal(rd.Amount);
+                                    dt.Vat = Convert.ToDecimal(rd.Amount) * 7 / 100;//  Convert.ToDecimal(rd.Vat);
+                                    dt.SS = 1;
+                                    dt.SortQ = CountAAA;
+                                    dt.Discount = 0;
+                                    dt.Unit = "PCS";
+                                    db.tb_InvoiceLocalDTs.InsertOnSubmit(dt);
+                                    db.SubmitChanges();
+
+                                }
+                                //Update tb_LocalDelivery01//
+                                radGridView1.EndEdit();
+                                foreach (GridViewRowInfo rs in radGridView1.Rows)
+                                {
+                                    db.sp_043_Inv_LocalTemp_SelectUpdate_Dynamics(txtInvNo.Text, Convert.ToString(rs.Cells["OrderNo"].Value), Convert.ToString(rs.Cells["Plant"].Value), Convert.ToString(rs.Cells["CodeNo"].Value), txtCustomerNo.Text);
+                                }
+
+                                MessageBox.Show("บันทึกสำเร็จ!!");
+                                btnDelete.Enabled = false;
+                                btn_CreateInv.Enabled = false;
+
+
                             }
-                            //Update tb_LocalDelivery01//
-                            radGridView1.EndEdit();
-                            foreach (GridViewRowInfo rs in radGridView1.Rows)
+                            else
                             {
-                                db.sp_043_Inv_LocalTemp_SelectUpdate_Dynamics(txtInvNo.Text, Convert.ToString(rs.Cells["OrderNo"].Value), Convert.ToString(rs.Cells["Plant"].Value), Convert.ToString(rs.Cells["CodeNo"].Value), txtCustomerNo.Text);
+                                MessageBox.Show("เลขที่ Invoice นี้ถูกใช้ไปแล้ว!");
                             }
 
-                            MessageBox.Show("บันทึกสำเร็จ!!");
-                            btnDelete.Enabled = false;
-                            btn_CreateInv.Enabled = false;
-
-
                         }
-                        else
-                        {
-                            MessageBox.Show("เลขที่ Invoice นี้ถูกใช้ไปแล้ว!");
-                        }
-
                     }
                 }
             }
@@ -308,13 +380,20 @@ namespace StockControl
             //Print Inv.
             try
             {
+                if (dbClss.CheckPrintInvt(txtInvNo.Text))
+                {
 
-                Report.Reportx1.WReport = "InvoiceLocal";
-                Report.Reportx1.Value = new string[2];
-                Report.Reportx1.Value[0] = txtInvNo.Text;
-                // Report.Reportx1.Value[1] = dbClss.UserID;                 
-                Report.Reportx1 op = new Report.Reportx1("InvoiceDot.rpt");
-                op.Show();
+                    Report.Reportx1.WReport = "InvoiceLocal";
+                    Report.Reportx1.Value = new string[2];
+                    Report.Reportx1.Value[0] = txtInvNo.Text;
+                    // Report.Reportx1.Value[1] = dbClss.UserID;                 
+                    Report.Reportx1 op = new Report.Reportx1("InvoiceDot.rpt");
+                    op.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Vat on Sales Order Dynamics Not Match on This Invoice!!");
+                }
 
             }
             catch { }

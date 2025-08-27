@@ -118,6 +118,8 @@ namespace StockControl
                         txtProblemWhy.Text = qcp.ProblemWhy;
                         txtFixby.Text = qcp.FixBy;
                         txtCheckBy.Text = qcp.CheckBy;
+                        txtNGQty.Text = qcp.NGQty.ToString();
+                        txtRework.Text = qcp.Rework.ToString();
                         if (qcp.TypeProblem.Equals(rdo1.Text))
                         {
                             rdo1.IsChecked = true;
@@ -231,6 +233,15 @@ namespace StockControl
                     tb_QCProblem qp = db.tb_QCProblems.Where(w => w.QCNo.Equals(QCNo)).FirstOrDefault();
                     if (qp != null)
                     {
+                        decimal ngq = 0;
+                        decimal Rework = 0;
+                        decimal qcok, qcng = 0;
+                        decimal.TryParse(txtNGQty.Text, out ngq);
+                        decimal.TryParse(txtRework.Text, out Rework);
+
+                        decimal.TryParse(txtQCOK.Text, out qcok);
+                        decimal.TryParse(txtQCNG.Text, out qcng);
+
                         if (rdo1.IsChecked)
                             qp.TypeProblem = rdo1.Text;
                         else if (rdo2.IsChecked)
@@ -252,12 +263,25 @@ namespace StockControl
                         qp.ProblemFix = txtProblemFix.Text;
                         qp.FixBy = txtFixby.Text;
                         qp.CheckBy = txtCheckBy.Text;
+                        qp.Rework = Rework;
+                        qp.NGQty = ngq;
+                        qp.QCNG = qcok;
+                        qp.QCOK = qcng;
                         db.SubmitChanges();
 
 
                     }
                     else
                     {
+                        decimal ngq = 0;
+                        decimal Rework = 0;
+                        decimal qcok, qcng = 0;
+                        decimal.TryParse(txtNGQty.Text, out ngq);
+                        decimal.TryParse(txtRework.Text, out Rework);
+
+                        decimal.TryParse(txtQCOK.Text, out qcok);
+                        decimal.TryParse(txtQCNG.Text, out qcng);
+
                         tb_QCProblem qp2 = new tb_QCProblem();
                         if (rdo1.IsChecked)
                             qp2.TypeProblem = rdo1.Text;
@@ -282,10 +306,15 @@ namespace StockControl
                         qp2.CheckBy = txtCheckBy.Text;
                         qp2.CreateBy = dbClss.UserID;
                         qp2.CreateDate = DateTime.Now;
+                        qp2.NGQty = ngq;
+                        qp2.Rework = Rework;
+                        qp2.QCNG = qcok;
+                        qp2.QCOK = qcng;
                         db.tb_QCProblems.InsertOnSubmit(qp2);
                         db.SubmitChanges();
 
                     }
+                    db.sp_46_QCUpdateNGQty(QCNo);
                     MessageBox.Show("บันทึกสำเร็จ");
                     DataLoad();
                 }
@@ -426,6 +455,11 @@ namespace StockControl
         private void radGridView1_CellClick_1(object sender, GridViewCellEventArgs e)
         {
             row = e.RowIndex;
+        }
+
+        private void txtNGQty_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            dbClss.CheckDigitDecimal(e);
         }
     }
 }

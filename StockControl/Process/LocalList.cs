@@ -10,6 +10,8 @@ using Microsoft.VisualBasic.FileIO;
 using Telerik.WinControls.UI;
 using Telerik.WinControls;
 using Microsoft.VisualBasic;
+using System.Data.SqlClient;
+
 namespace StockControl
 {
     public partial class LocalList : Telerik.WinControls.UI.RadRibbonForm
@@ -22,6 +24,7 @@ namespace StockControl
         //private int RowView = 50;
         //private int ColView = 10;
         DataTable dt = new DataTable();
+        string DBLocal1 = dbClss.DbConn;// "Data Source=XTH-TOO;Initial Catalog=dbBarcodeNab;User ID=sa;Password=;";
         private void radMenuItem2_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
@@ -45,13 +48,26 @@ namespace StockControl
         }
         private void Unit_Load(object sender, EventArgs e)
         {
+            //DBLocal1 = "Data Source=XTH-TOO;Initial Catalog=dbBarcodeNab;User ID=sa;Password=;";
+            ////Report.CRRReport.ServerName = b[1];
+            ////Report.CRRReport.DbName = c[1];
+            ////Report.CRRReport.dbUser = d[1];
+            ////Report.CRRReport.dbPass = f[1];
+            //DBLocal1 = "";
+            //DBLocal1 = "Data Source="+Report.CRRReport.ServerName+";";
+            //DBLocal1 += "Initial Catalog=dbBarcodeNab;";
+            //DBLocal1 += "User ID=z1;";
+            //DBLocal1 += "Password=P@ssw0rd;";
+
+            DBLocal1 = dbClss.DbConn;
+
             radGridView1.AutoGenerateColumns = false;
            // chkShipDate.Checked = false;
             txtSaleOrderNo.Text = "";
             txtPartNo.Text = "";
             dtDate1.Value = DateTime.Now;
             dtDate2.Value = DateTime.Now;
-            LoadData();
+            //LoadData();
             LoadDefault1();
             // cboStatus.Text = "Waiting";
         }
@@ -74,8 +90,9 @@ namespace StockControl
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            CCRow = 0;
+          
             LoadData();
+           
         }
         int Row = 0;
         private void LoadData()
@@ -83,11 +100,14 @@ namespace StockControl
             this.Cursor = Cursors.WaitCursor;
             try
             {
-                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                using (DataClasses1DataContext db = new DataClasses1DataContext(DBLocal1))
                 {
-                    db.sp_019_LocaDeliveryList_DynamicsUPDate();
+                  //  db.sp_019_LocaDeliveryList_DynamicsUPDate();
+                  //  db.sp_019_LocaDeliveryList_DynamicsInsert(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text, txtCust.Text,dbClss.UserID);
                     radGridView1.DataSource = null;
+                    db.CommandTimeout = 120;
                     radGridView1.DataSource = db.sp_019_LocaDeliveryList_Dynamics(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text,txtCust.Text).ToList();
+                  
                     int CRow = 0;
                     foreach (GridViewRowInfo rd in radGridView1.Rows)
                     {
@@ -96,11 +116,304 @@ namespace StockControl
                     }
                 }
             }
-            catch { }
+            catch(Exception ex) { MessageBox.Show(ex.Message); }
             this.Cursor = Cursors.Default;
 
         }
+        private void LoadData2()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            radGridView1.DataSource = null;
+            string sqlQuery = "select top 1000 h.No_ as DocuNo";
+            sqlQuery += ",h.[External Document No_] as SORDER";
+            sqlQuery += ",d.Description as [NAME]";
+            sqlQuery += ",h.[Sell-to Customer Name] as CUSTNAME";
+            sqlQuery += ",d.No_ as CODE";
+            sqlQuery += ",dbo.get_CustDynamicsName(h.[Sell-to Customer No_],d.No_) as CCODE";
+            sqlQuery += ",d.[Line No_] as SEDA";
+            sqlQuery += ",d.Quantity as KVOL";
+            sqlQuery += ",h.[Salesperson Code] as EIGYOU";
+            sqlQuery += ",d.BR_PLANTD as NOTE";
+            sqlQuery += ",d.BR_PLANTD as PLANTID";
+            sqlQuery += ",CASE WHEN i.SNP=0 then 1 else i.SNP end as SNP";
+            sqlQuery += ",1 as Period";
+            sqlQuery += ",CONVERT(Date,d.[Shipment Date]) as ShippingDate";
+            sqlQuery += ",CONVERT(Date,d.[Customer Date]) as CDate";
+            sqlQuery += ",h.[Sell-to Customer No_] as CustomerNo";
+            sqlQuery += ",CASE WHEN i.SNP=0 then 1 else i.SNP end as LotSize";
+            sqlQuery += getString(1);
+            sqlQuery += getString(2);
+            sqlQuery += getString(3);
+            sqlQuery += getString(4);
+            sqlQuery += getString(5);
+            sqlQuery += getString(6);
+            sqlQuery += getString(7);
+            sqlQuery += getString(8);
+            sqlQuery += getString(9);
+            sqlQuery += getString(10);
+            sqlQuery += getString(11);
+            sqlQuery += getString(12);
+            sqlQuery += getString(13);
+            sqlQuery += getString(14);            
+            sqlQuery += ",dbo.getLocalInvoiceNo(d.No_,h.[External Document No_],d.BR_PLANTD) as InvoiceNo";
+            sqlQuery += getString(15);
+            sqlQuery += getString(16);
+            sqlQuery += getString(17);
+            sqlQuery += getString(18);
+            sqlQuery += getString(19);
+            sqlQuery += getString(20);
+            sqlQuery += getString(21);
+            sqlQuery += getStringR(22);
+            sqlQuery += getStringR(23);
+            sqlQuery += getStringR(24);
+            sqlQuery += getStringR(25);
+            sqlQuery += getStringR(26);
+            sqlQuery += getStringR(27);
+            sqlQuery += " order by d.[Shipment Date],h.[Sell-to Customer No_],h.[External Document No_],d.No_";
+            try
+            {
+                //textBox1.Text = sqlQuery;
+                using (var connection = new SqlConnection(DBLocal1))
+                {
+                    connection.Open();
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(sqlQuery, connection))
+                    {
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+                        radGridView1.DataSource = dataTable;
+                    }
+                    connection.Close();
+                }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            this.Cursor = Cursors.Default;
 
+        }
+        private string getString(int A)
+        {
+            string RT = "";
+            if(A==1)
+            {
+                RT = ",isnull((select top 1 PrintFlag from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])";
+                RT += " ),0) as PrintFlag";       
+            }
+            else if(A==2)
+            {
+                RT = ",isnull((select top 1 PrintBy from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),'') as PrintBy";
+            }
+            else if (A == 3)
+            {
+                RT = ",isnull((select top 1 PrintDate from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),null) as PrintDate";
+            }
+            else if (A == 4)
+            {
+                RT = ",isnull((select top 1 DocumentFlag from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as DocumentFlag";
+            }
+            else if (A == 5)
+            {
+                RT = ",isnull((select top 1 DocumentBy from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as DocumentBy";
+            }
+            else if (A == 6)
+            {
+                RT = ",isnull((select top 1 DocumentDate from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as DocumentDate";
+            }
+            else if (A == 7)
+            {
+                RT = ",isnull((select top 1 PackingFlag from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as PackingFlag";
+  
+            }
+            else if (A == 8)
+            {
+                RT = ",isnull((select top 1 PackingBy from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as PackingBy";
+            }
+            else if (A == 9)
+            {
+                RT = ",isnull((select top 1 PackingDate from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as PackingDate";
+            }
+            else if(A==10)
+            {
+                RT = ",isnull((select top 1 ShipFlag from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as ShipFlag";
+  
+            }
+            else if (A == 11)
+            {
+                RT = ",isnull((select top 1 ShipBy from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as ShipBy";
+            }
+            else if (A == 12)
+            {
+                RT = ",isnull((select top 1 ShipDate from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as ShipDate";
+            }
+            else if (A == 13)
+            {
+                RT = ",isnull((select top 1 CASE WHEN SS = 3 then 'Completed' WHEN ShipFlag = 1 then 'Shipped' WHEN PackingFlag = 1 then 'Packing' else 'Waiting' end from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),'Waiting') as [Status]"; 
+            }
+            else if (A == 14)
+            {
+                RT = ",isnull((select top 1 PL from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),'') as PL";
+            }
+            else if (A == 15)
+            {
+                RT = ",isnull((select top 1 ForDynamics from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),'') as ForDynamics";  
+            }
+            else if (A == 16)
+            {
+                RT = ",isnull((select top 1 CheckFlag from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as CheckFlag";
+            }
+            else if (A == 17)
+            {
+                RT = ",isnull((select top 1 CheckBy from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as CheckBy";
+            }
+            else if (A == 18)
+            {
+                RT = ",isnull((select top 1 CheckDate from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as CheckDate";
+            }
+            else if (A == 19)
+            {
+                RT = ",isnull((select top 1 PDACheckFlag from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as PDACheckFlag";
+            }
+            else if (A == 20)
+            {
+                RT = ",isnull((select top 1 PDAReturnFlag from tb_LocalListDeliverly01";
+                RT += " where SaleOrder = h.[External Document No_] COLLATE DATABASE_DEFAULT";
+                RT += " and PartNo = d.[No_] COLLATE DATABASE_DEFAULT";
+                RT += " and isnull(Plant, '') = d.BR_PLANTD COLLATE DATABASE_DEFAULT";
+                RT += " and Convert(Date, ShippingDate) = Convert(Date, d.[Shipment Date])),0) as PDAReturn";
+            }
+            else if (A == 21)
+            {
+                RT = " from [NTT Live].dbo.[NTT Live$Sales Header] h";
+                RT += " left join[NTT Live].dbo.[NTT Live$Sales Line] d on h.No_ = d.[Document No_]";
+                RT += " left join[NTT Live].dbo.[NTT Live$Item] i on i.[No_] = d.[No_]";
+                RT += " left join[NTT Live].dbo.[NTT Live$Customer] c on c.No_ = h.[Sell-to Customer No_]";
+                RT += " where(h.[External Document No_]  not like 'FC%')";
+                RT += " and(rtrim(ltrim(h.[Sell-to Customer No_])) <> '4001' and rtrim(ltrim(h.[Sell-to Customer No_])) <> '4003')";
+                RT += " and h.[External Document No_]<>''";
+                RT += " and h.[Document Type]= 1";
+            }
+            
+
+
+            return RT;
+        }
+        private string getStringR(int A)
+        {
+            string RT = "";
+            if (A == 22)
+            {
+                string Dt1 = dtDate1.Value.ToString("yyyy-MM-dd");
+                string Dt2 = dtDate2.Value.ToString("yyyy-MM-dd");
+                RT = " and (DATEADD(dd, DATEDIFF(dd,0,d.[Shipment Date]), 0) between DATEADD(dd, DATEDIFF(dd,0,'"+Dt1+"'), 0) and DATEADD(dd, DATEDIFF(dd,0,'"+ Dt2 + "'), 0))";
+            
+            }
+            else if (A == 23)
+            {
+                if(!txtPartNo.Text.Equals(""))
+                    RT = " and(d.No_ like '%"+ txtPartNo.Text + "%')";
+            }
+            else if (A == 24)
+            {
+                if(!txtSaleOrderNo.Text.Equals(""))
+                     RT = " and(h.[External Document No_] like '%"+ txtSaleOrderNo.Text + "%')";               
+            }
+            else if (A == 25)
+            {
+                if (!txtPlant.Text.Equals(""))
+                    RT = " and(d.BR_PLANTD like '%"+ txtPlant.Text + "%')";
+            }
+            else if (A == 26)
+            {
+               
+                //RT = " and(@Date1 is null or(Convert(Date, d.[Shipment Date]) between @Date1 and @Date2))";
+            }
+            else if (A == 27)
+            {
+                if(!txtCust.Text.Equals(""))
+                  RT = " and(h.[Sell-to Customer Name] like '%" + txtCust.Text + "%')";
+            }
+            
+
+
+
+
+
+            return RT;
+        }
         private void radButtonElement3_Click(object sender, EventArgs e)
         {
            
@@ -282,6 +595,19 @@ namespace StockControl
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+
+            //LoadDynamics();
+            LoadData();
+        }
+        private void LoadDynamics()
+        {
+            CCRow = 0;
+            DBLocal1 = dbClss.DbConn;
+            using (DataClasses1DataContext db = new DataClasses1DataContext(DBLocal1))
+            {
+                db.CommandTimeout = 3600;
+                db.sp_019_LocaDeliveryList_DynamicsInsert(dtDate1.Value, dtDate2.Value, txtSaleOrderNo.Text, txtPartNo.Text, txtPlant.Text, txtCust.Text,"admin");
+            }
             LoadData();
         }
 
@@ -303,98 +629,101 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     db.sp_018_LocalDeliveryShip();
-                    
-                    foreach (GridViewRowInfo rd in radGridView1.Rows)
+                    try
                     {
-                        //db.sp_016_GildLineLotDeleteLot();
-                        //foreach (GridViewRowInfo rd2 in radGridView1.Rows)
-                        //{
-                        //    id = 0;
-                        //    if (Convert.ToBoolean(rd2.Cells["S"].Value) &&
-                        //        Convert.ToBoolean(rd2.Cells["DocumentFlag"].Value) &&
-                        //        !Convert.ToBoolean(rd2.Cells["PackingFlag"].Value)
-                        //        )
-                        //    {
-
-                        //        //CountA += 1;
-                        //        db.sp_016_GildLineLot(rd2.Cells["SaleOrderNo"].Value.ToString(), rd2.Cells["PartNo"].Value.ToString());
-
-                        //    }
-                        //}
-
-                        QRCode = "";
-                        id = 0;
-                        Qty = 0;
-                        if (Convert.ToBoolean(rd.Cells["S"].Value) && Convert.ToBoolean(rd.Cells["DocumentFlag"].Value))
+                        foreach (GridViewRowInfo rd in radGridView1.Rows)
                         {
+                            //db.sp_016_GildLineLotDeleteLot();
+                            //foreach (GridViewRowInfo rd2 in radGridView1.Rows)
+                            //{
+                            //    id = 0;
+                            //    if (Convert.ToBoolean(rd2.Cells["S"].Value) &&
+                            //        Convert.ToBoolean(rd2.Cells["DocumentFlag"].Value) &&
+                            //        !Convert.ToBoolean(rd2.Cells["PackingFlag"].Value)
+                            //        )
+                            //    {
 
-                            CountA += 1;
-                            SaleOrderNo = Convert.ToString(rd.Cells["SaleOrderNo"].Value);
-                            PartNo = Convert.ToString(rd.Cells["PartNo"].Value);
-                            Qty= Convert.ToInt32(rd.Cells["OrderQty"].Value);
-                            tb_LocalDeliveryShip de = new tb_LocalDeliveryShip();
-                            de.idOrder = id;
-                            de.SaleOrder = Convert.ToString(rd.Cells["SaleOrderNo"].Value);
-                            de.Invoice = Convert.ToDateTime(rd.Cells["ShippingDate"].Value).ToString("yyyyMMdd") + "," + Convert.ToString(rd.Cells["CustomerNo"].Value) + "," +
-                                Convert.ToString(rd.Cells["SaleOrderNo"].Value) + ","+ Convert.ToString(rd.Cells["PartNo"].Value);
-                            de.PartName = Convert.ToString(rd.Cells["PartName"].Value);
-                            de.PartNo = Convert.ToString(rd.Cells["PartNo"].Value);
-                            de.CustItem = Convert.ToString(rd.Cells["CustomerItemNo"].Value);
-                            de.CustomerName = Convert.ToString(rd.Cells["CustomerNo"].Value)+" "+Convert.ToString(rd.Cells["CustomerName"].Value);
-                            de.Remark = "";
-                            de.PlantA2 = Convert.ToString(rd.Cells["Plant"].Value);
-                            de.ShippingDate = Convert.ToDateTime(rd.Cells["CDate"].Value);
-                            de.Qty = Qty;
-                            //id,OrderNo,PartNo,Qty
-                            //Order,PartNo,CustomerItemNo,Qty,OrderQty,ofTAG,CustomerTAG
-                            //TAG LIST=Order,PartNo,CustomerNo,OrderQty,Plant
-                            QRCode = Convert.ToString(rd.Cells["SaleOrderNo"].Value) + "," + Convert.ToString(rd.Cells["PartNo"].Value);
-                            QRCode += "," + Convert.ToString(rd.Cells["CustomerItemNo"].Value) + "," + Qty.ToString()+","+ Convert.ToString(rd.Cells["Plant"].Value);
+                            //        //CountA += 1;
+                            //        db.sp_016_GildLineLot(rd2.Cells["SaleOrderNo"].Value.ToString(), rd2.Cells["PartNo"].Value.ToString());
 
-                            byte[] barcode = dbClss.SaveQRCode2D(QRCode);
-                            de.QRCode = barcode;
-                            byte[] barcode2 = dbClss.SaveQRCode2D(Convert.ToString(rd.Cells["InvoiceNo"].Value));
-                            de.QRCode2 = barcode2;
+                            //    }
+                            //}
 
-                            db.tb_LocalDeliveryShips.InsertOnSubmit(de);
-                            db.SubmitChanges();
-
-                            ////Update Print Flag////
-                            try
+                            QRCode = "";
+                            id = 0;
+                            Qty = 0;
+                            if (Convert.ToBoolean(rd.Cells["S"].Value) && Convert.ToBoolean(rd.Cells["DocumentFlag"].Value))
                             {
-                                HNo = dbClss.GetSeriesNo(86, 2);
-                                db.sp_016_GildLineLot_DynamicsHistory(Convert.ToString(rd.Cells["SaleOrderNo"].Value), Convert.ToString(rd.Cells["PartNo"].Value), Convert.ToString(rd.Cells["Plant"].Value), HNo);
-                                ////Keep History////
-                            }
-                            catch { }
 
-                            tb_LocalListDeliverly01 up = db.tb_LocalListDeliverly01s.Where(rc => rc.SaleOrder == SaleOrderNo
-                            && rc.PartNo == PartNo && rc.PrintFlag == false
-                            ).FirstOrDefault();
-                            if(up!=null)
-                            {
-                                up.PrintFlag = true;
-                                up.PrintDate = DateTime.Now;
-                                up.PrintBy = dbClss.UserID;
+                                CountA += 1;
+                                SaleOrderNo = Convert.ToString(rd.Cells["SaleOrderNo"].Value);
+                                PartNo = Convert.ToString(rd.Cells["PartNo"].Value);
+                                Qty = Convert.ToInt32(rd.Cells["OrderQty"].Value);
+                                tb_LocalDeliveryShip de = new tb_LocalDeliveryShip();
+                                de.idOrder = id;
+                                de.SaleOrder = Convert.ToString(rd.Cells["SaleOrderNo"].Value);
+                                de.Invoice = Convert.ToDateTime(rd.Cells["ShippingDate"].Value).ToString("yyyyMMdd") + "," + Convert.ToString(rd.Cells["CustomerNo"].Value) + "," +
+                                    Convert.ToString(rd.Cells["SaleOrderNo"].Value) + "," + Convert.ToString(rd.Cells["PartNo"].Value);
+                                de.PartName = Convert.ToString(rd.Cells["PartName"].Value);
+                                de.PartNo = Convert.ToString(rd.Cells["PartNo"].Value);
+                                de.CustItem = Convert.ToString(rd.Cells["CustomerItemNo"].Value);
+                                de.CustomerName = Convert.ToString(rd.Cells["CustomerNo"].Value) + " " + Convert.ToString(rd.Cells["CustomerName"].Value);
+                                de.Remark = "";
+                                de.PlantA2 = Convert.ToString(rd.Cells["Plant"].Value);
+                                de.ShippingDate = Convert.ToDateTime(rd.Cells["CDate"].Value);
+                                de.Qty = Qty;
+                                //id,OrderNo,PartNo,Qty
+                                //Order,PartNo,CustomerItemNo,Qty,OrderQty,ofTAG,CustomerTAG
+                                //TAG LIST=Order,PartNo,CustomerNo,OrderQty,Plant
+                                QRCode = Convert.ToString(rd.Cells["SaleOrderNo"].Value) + "," + Convert.ToString(rd.Cells["PartNo"].Value);
+                                QRCode += "," + Convert.ToString(rd.Cells["CustomerItemNo"].Value) + "," + Qty.ToString() + "," + Convert.ToString(rd.Cells["Plant"].Value);
+
+                                byte[] barcode = dbClss.SaveQRCode2D(QRCode);
+                                de.QRCode = barcode;
+                                byte[] barcode2 = dbClss.SaveQRCode2D(Convert.ToString(rd.Cells["InvoiceNo"].Value));
+                                de.QRCode2 = barcode2;
+
+                                db.tb_LocalDeliveryShips.InsertOnSubmit(de);
                                 db.SubmitChanges();
+
+                                ////Update Print Flag////
+                                try
+                                {
+                                    HNo = dbClss.GetSeriesNo(86, 2);
+                                    db.sp_016_GildLineLot_DynamicsHistory(Convert.ToString(rd.Cells["SaleOrderNo"].Value), Convert.ToString(rd.Cells["PartNo"].Value), Convert.ToString(rd.Cells["Plant"].Value), HNo);
+                                    ////Keep History////
+                                }
+                                catch(Exception ex) { }
+
+                                tb_LocalListDeliverly01 up = db.tb_LocalListDeliverly01s.Where(rc => rc.SaleOrder == SaleOrderNo
+                                && rc.PartNo == PartNo && rc.PrintFlag == false
+                                ).FirstOrDefault();
+                                if (up != null)
+                                {
+                                    up.PrintFlag = true;
+                                    up.PrintDate = DateTime.Now;
+                                    up.PrintBy = dbClss.UserID;
+                                    db.SubmitChanges();
+                                }
                             }
+
                         }
-                        
-                    }
+                    }catch(Exception ex) { MessageBox.Show("List 1.=>"+ex.Message); }
+
                     if (CountA > 0)
                     {
-                        this.Cursor = Cursors.Default; 
+                        this.Cursor = Cursors.Default;
                         //Print//
                         Report.Reportx1.Value = new string[3];
                         Report.Reportx1.Value[0] = dtDate1.Value.ToString();
-                        Report.Reportx1.Value[1] = dtDate2.Value.ToString();                        
+                        Report.Reportx1.Value[1] = dtDate2.Value.ToString();
                         Report.Reportx1.WReport = "PackingList";
                         Report.Reportx1 op = new Report.Reportx1("LocalForConfirm.rpt");
                         op.Show();
                     }
                 }
             }
-            catch (Exception ex) { this.Cursor = Cursors.Default;  MessageBox.Show(ex.Message); }
+            catch (Exception ex) { this.Cursor = Cursors.Default;  MessageBox.Show("2 > "+ex.Message); }
             this.Cursor = Cursors.Default; 
         }
 
@@ -664,7 +993,6 @@ namespace StockControl
                                         db.SubmitChanges();
                                     }
 
-
                                 }
 
 
@@ -709,19 +1037,29 @@ namespace StockControl
                         {
                             if (Convert.ToBoolean(rd.Cells["S"].Value))
                             {
-                                SNP = Convert.ToInt32(rd.Cells["SNP"].Value);
+                               // SNP = Convert.ToInt32(db.getLOtSizeTPICS_DynamicsCross(Convert.ToString(rd.Cells["PartNo"].Value), Convert.ToString(rd.Cells["CustomerNo"].Value)));
+                                //if (SNP==0)
+                                     SNP = Convert.ToInt32(rd.Cells["SNP"].Value);
+
                                 Qty = Convert.ToInt32(rd.Cells["OrderQty"].Value);
                                 if (SNP==0)
                                 {
                                     SNP = 1;
                                 }
-
-                                a = 0;
-                                ap = (Qty % SNP);
-                                if (ap > 0)
-                                    a = 1;
-                                TAG = Convert.ToInt32(Math.Floor((Convert.ToDouble(Qty) / Convert.ToDouble(SNP)) + a));//.ToString("###");
-                                TAGA = Qty;
+                                if (SNP > Qty)
+                                {
+                                    TAG = 1;
+                                }
+                                else
+                                {
+                                    a = 0;
+                                    ap = (Qty % SNP);
+                                    if (ap > 0)
+                                        a = 1;
+                                    TAG = Convert.ToInt32(Math.Floor((Convert.ToDouble(Qty) / Convert.ToDouble(SNP)) + a));//.ToString("###");
+                                    TAGA = Qty;
+                                }
+                                //MessageBox.Show("TAG" + TAG.ToString() + ",SNP:" + SNP.ToString() + ",QTy:" + Qty.ToString());
                                 for (int i = 1; i <= TAG; i++)
                                 {
                                    
@@ -749,6 +1087,9 @@ namespace StockControl
                                     ms.ConfirmDate = Convert.ToDateTime(rd.Cells["ShippingDate"].Value);
                                     ms.CustomerItemName = Convert.ToString(rd.Cells["CustomerItemNo"].Value);
                                     ms.Remark2 = Barcode;
+                                    byte[] barcode = dbClss.SaveQRCode2D(Convert.ToString(rd.Cells["CustomerItemNo"].Value));
+                                    ms.QRCode = barcode;
+
                                     db.tb_LocalMITSUBISHIs.InsertOnSubmit(ms);
                                     TAGA = TAGA - SNP;
                                     //tb_LocalPrintN ls = new tb_LocalPrintN();
@@ -860,7 +1201,7 @@ namespace StockControl
                         int CC = 0;
                         
                         db.sp_031_DeleteLocalDeliveryListQC();
-                        db.sp_031_SelectLocalDeliveryUpdate_Dynamics(dtDate1.Value, dtDate2.Value);
+                      //  db.sp_031_SelectLocalDeliveryUpdate_Dynamics(dtDate1.Value, dtDate2.Value);
                         var rlist = db.sp_031_SelectLocalDeliveryListQC_Dynamics(dtDate1.Value, dtDate2.Value,cboCustomer.Text.Trim()).ToList();
                         foreach (var rd in rlist)
                         {
@@ -1155,7 +1496,8 @@ namespace StockControl
 
         private void radButtonElement11_Click(object sender, EventArgs e)
         {
-            ScanPDAList spl = new ScanPDAList("Local");
+            ScanPDAList spl = new ScanPDAList("Local", Convert.ToString(radGridView1.CurrentRow.Cells["SaleOrderNo"].Value)
+                , Convert.ToString(radGridView1.CurrentRow.Cells["PartNo"].Value),"");
             spl.Show();
         }
 
@@ -1653,6 +1995,69 @@ namespace StockControl
                 }
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void radButtonElement15_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    string Prefix = "";
+                    int SNP = 0;
+                    int OrderQty = 0;
+                    int TotalBox = 0;
+                    db.sp_045_DeleteTempCustList();
+                    foreach(var rd in radGridView1.Rows)
+                    {
+                        if(Convert.ToBoolean(rd.Cells["S"].Value))
+                        {
+                            TotalBox = 0;
+                            Prefix= Convert.ToString(rd.Cells["Plant"].Value);
+                            OrderQty = Convert.ToInt32(rd.Cells["OrderQty"].Value);
+                            SNP = Convert.ToInt32(rd.Cells["SNP"].Value);
+                            if(SNP>0)
+                            {
+                                TotalBox = Convert.ToInt32((OrderQty / SNP));
+                            }
+                            if(Prefix!="")
+                            {
+                                if (Prefix.IndexOf('_') > 0)
+                                {
+                                    Prefix = Prefix.Substring(Prefix.IndexOf('_') + 1);
+                                }     
+                                //MessageBox.Show(Prefix.IndexOf('_').ToString());                     
+                            }
+                            TempCustList tm = new TempCustList();
+                            tm.ModelNo = Prefix;
+                            tm.PackingDate = Convert.ToDateTime(rd.Cells["CDate"].Value);
+                            tm.PartNo = Convert.ToString(rd.Cells["CustomerItemNo"].Value);
+                            tm.Supplier = Convert.ToString(rd.Cells["CustomerName"].Value);
+                            tm.TotalBox = TotalBox;
+                            tm.TotlPerModel = OrderQty;
+                            tm.OrderNo = Convert.ToString(rd.Cells["SaleOrderNo"].Value);
+                            db.TempCustLists.InsertOnSubmit(tm);
+                            db.SubmitChanges();
+                            
+                        }
+                    }
+                    //Report//
+                    Report.Reportx1.WReport = "UserS";
+                    Report.Reportx1.Value = new string[1];
+                    Report.Reportx1.Value[0] = "";
+
+                    Report.Reportx1 op = new Report.Reportx1("DATT_TAG.rpt");
+                    op.Show();
+                }
+            }
+            catch { }
+            this.Cursor = Cursors.Default;
+        }
+
+        private void radButton1_Click(object sender, EventArgs e)
+        {
+            LoadData2();
         }
     }
 }

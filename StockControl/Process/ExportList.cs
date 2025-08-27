@@ -591,5 +591,11 @@ var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
+
+        private void radButtonElement3_Click(object sender, EventArgs e)
+        {
+            ExportManual exm = new ExportManual();
+            exm.ShowDialog();
+        }
     }
 }

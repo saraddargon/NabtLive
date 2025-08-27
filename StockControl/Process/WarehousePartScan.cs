@@ -1,0 +1,365 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using System.Linq;
+using Microsoft.VisualBasic.FileIO;
+using Telerik.WinControls.UI;
+namespace StockControl
+{
+    public partial class WarehousePartScan : Telerik.WinControls.UI.RadRibbonForm
+    {
+        public WarehousePartScan()
+        {
+            InitializeComponent();
+        }
+        public WarehousePartScan(string WONox,string PartNox)
+        {
+            InitializeComponent();
+            WONo = WONox;
+            PartNo = PartNox;
+        }
+     
+        TextBox LinkPage = new TextBox();
+        TextBox LinkPage2 = new TextBox();
+        string Link = "";
+        //private int RowView = 50;
+        //private int ColView = 10;
+        int AA = 0;
+        RadTextBox NGidList = new RadTextBox();
+        string WONo = "";
+        string PartNo = "";
+        DataTable dt = new DataTable();
+        private void radMenuItem2_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+            HistoryView hw = new HistoryView(this.Name);
+            this.Cursor = Cursors.Default;
+            hw.ShowDialog();
+        }
+
+        private void radRibbonBar1_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void GETDTRow()
+        {
+            dt.Columns.Add(new DataColumn("edit", typeof(bool)));
+            dt.Columns.Add(new DataColumn("code", typeof(string)));
+            dt.Columns.Add(new DataColumn("Name", typeof(string)));
+            dt.Columns.Add(new DataColumn("Active", typeof(bool)));
+            dt.Columns.Add(new DataColumn("CreateDate", typeof(DateTime)));
+            dt.Columns.Add(new DataColumn("CreateBy", typeof(string)));
+        }
+        private void Unit_Load(object sender, EventArgs e)
+        {
+          //  MessageBox.Show(WONo);
+            radGridView1.AutoGenerateColumns = false;
+            DataLoad();
+
+
+        }
+
+        private void RMenu6_Click(object sender, EventArgs e)
+        {
+           
+            DeleteUnit();
+            DataLoad();
+        }
+
+        private void RMenu5_Click(object sender, EventArgs e)
+        {
+            EditClick();
+        }
+
+        private void RMenu4_Click(object sender, EventArgs e)
+        {
+            ViewClick();
+        }
+
+        private void RMenu3_Click(object sender, EventArgs e)
+        {
+            NewClick();
+
+        }
+
+        private void DataLoad()
+        {
+            radGridView1.DataSource = null;
+            // int ck = 0;
+            try
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+
+                    var ListQ = db.sp_Z_3_pd_List_Scan_part(WONo, PartNo).ToList();
+                    radGridView1.DataSource = ListQ;
+                    //foreach (var x in radGridView1.Rows)
+                    //{
+                    //    ck += 1;
+                    //    x.Cells["No"].Value = ck;
+                    //}
+
+                }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+
+        }
+        private bool CheckDuplicate(string code)
+        {
+            bool ck = false;
+
+
+            return ck;
+        }
+
+        private bool AddUnit()
+        {
+            bool ck = false;
+           
+            return ck;
+        }
+        private bool DeleteUnit()
+        {
+            bool ck = false;
+         
+           
+
+           
+
+            return ck;
+        }
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            // DataLoad();
+            DataLoad();
+        }
+        private void NewClick()
+        {
+            //radGridView1.ReadOnly = false;
+            //radGridView1.AllowAddNewRow = false;
+            ////btnEdit.Enabled = false;
+            //btnView.Enabled = true;
+            //radGridView1.Rows.AddNew();
+        }
+        private void EditClick()
+        {
+            //radGridView1.ReadOnly = false;
+            ////btnEdit.Enabled = false;
+            //btnView.Enabled = true;
+            //radGridView1.AllowAddNewRow = false;
+        }
+        private void ViewClick()
+        {
+           //// radGridView1.ReadOnly = true;
+           // btnView.Enabled = false;
+           // //btnEdit.Enabled = true;
+            radGridView1.AllowAddNewRow = false;
+            DataLoad();
+        }
+
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            NewClick();
+        }
+
+        private void btnView_Click(object sender, EventArgs e)
+        {
+            //Select NCR List No."//
+            try
+            {
+              
+            }
+            catch { }
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+
+            EditClick();
+        }
+        private void Saveclick()
+        {
+            if (MessageBox.Show("ต้องการบันทึก ?", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+               // AddUnit();
+              //  DataLoad();
+            }
+        }
+        private void DeleteClick()
+        {
+
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            Saveclick();
+        }
+
+
+        private void radGridView1_CellEndEdit(object sender, Telerik.WinControls.UI.GridViewCellEventArgs e)
+        {
+
+        }
+
+        private void Unit_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+
+
+        }
+
+        private void radGridView1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+
+            //if (e.KeyData == (Keys.Control | Keys.S))
+            //{
+            //    if (MessageBox.Show("ต้องการบันทึก ?", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            //    {
+            //        AddUnit();
+            //        DataLoad();
+            //    }
+            //}
+            //else if (e.KeyData == (Keys.Control | Keys.N))
+            //{
+            //    if (MessageBox.Show("ต้องการสร้างใหม่ ?", "สร้างใหม่", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            //    {
+            //        NewClick();
+            //    }
+            //}
+
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            
+                //DeleteUnit();
+                //DataLoad();
+            
+        }
+
+        int row = -1;
+        private void radGridView1_CellClick(object sender, Telerik.WinControls.UI.GridViewCellEventArgs e)
+        {
+            row = e.RowIndex;
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            //dbClss.ExportGridCSV(radGridView1);
+           dbClss.ExportGridXlSX(radGridView1);
+        }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+          
+        }
+
+        private void ImportData()
+        {
+          
+        }
+
+        private void btnFilter1_Click(object sender, EventArgs e)
+        {
+            radGridView1.EnableFiltering = true;
+        }
+
+        private void btnUnfilter1_Click(object sender, EventArgs e)
+        {
+            radGridView1.EnableFiltering = false;
+        }
+
+        private void radMenuItem1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            DataLoad();
+        }
+
+        private void radGridView1_CellDoubleClick(object sender, Telerik.WinControls.UI.GridViewCellEventArgs e)
+        {
+            try
+            {
+                //string RC = radGridView1.Rows[e.RowIndex].Cells["RCNo"].Value.ToString();
+                //Receive rc = new Receive(RC);
+                //rc.ShowDialog();
+                // DataLoad();
+                row = e.RowIndex;
+            }
+            catch { }
+        }
+
+        private void radButtonElement1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+               
+
+            }
+            catch { }
+        }
+
+        private void radButtonElement2_Click(object sender, EventArgs e)
+        {
+       
+        }
+
+        private void radButtonElement3_Click(object sender, EventArgs e)
+        {
+          
+        }
+
+        private void radButtonElement4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radGridView1_CellClick_1(object sender, GridViewCellEventArgs e)
+        {
+            row = e.RowIndex;
+        }
+
+        private void radGridView1_CellEndEdit_1(object sender, GridViewCellEventArgs e)
+        {
+            try
+            {
+                if (MessageBox.Show("Update Qty this ID?", "Update Line", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    int id = 0;
+                    int.TryParse(radGridView1.CurrentRow.Cells["id"].Value.ToString(), out id);
+                    decimal qty = 0;
+                    decimal.TryParse(radGridView1.CurrentRow.Cells["Quantity"].Value.ToString(), out qty);
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        db.sp_Z_3_pd_List_Scan_partPDA_UpdateByid(WONo, id,qty);                        
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if(MessageBox.Show("Delete this ID?","Delete Line",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==DialogResult.Yes)
+                {
+                    int id = 0;
+                    int.TryParse(radGridView1.CurrentRow.Cells["id"].Value.ToString(), out id);
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        db.sp_Z_3_pd_List_Scan_partPDA_DeleteByid(WONo, id);
+                        DataLoad();
+                    }
+                }
+            }
+            catch { }
+        }
+    }
+}

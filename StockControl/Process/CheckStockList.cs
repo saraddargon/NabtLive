@@ -689,5 +689,15 @@ namespace StockControl
             }
             catch { }
         }
+
+        private void radButtonElement5_Click(object sender, EventArgs e)
+        {
+            if(row>=0)
+            {
+                string CKNo = dgvData.Rows[row].Cells["CheckNo"].Value.ToString();
+                PCCheck pcStock = new PCCheck(CKNo, 1);
+                pcStock.Show();
+            }
+        }
     }
 }

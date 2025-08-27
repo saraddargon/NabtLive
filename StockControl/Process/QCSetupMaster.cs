@@ -68,6 +68,11 @@ namespace StockControl
                 {
                     PathFile = ph.PathFile;
                 }
+                var qf = db.tb_QCFormMasters.ToList();
+                cboISO.DataSource = null;
+                cboISO.DataSource = qf;
+                cboISO.ValueMember = "FormISO";
+                cboISO.DisplayMember = "FormISO";
 
             }
 
@@ -279,12 +284,15 @@ namespace StockControl
                         int.TryParse(rd.Cells["id"].Value.ToString(), out id);
                         decimal.TryParse(Convert.ToString(rd.Cells["Value1"].Value), out Value1);
                         decimal.TryParse(Convert.ToString(rd.Cells["Value2"].Value), out Value2);
+
                         if (id > 0)
                         {
                             db.sp_46_QCMaster_Edit(id, Convert.ToString(rd.Cells["TopPic"].Value), Convert.ToString(rd.Cells["SetData"].Value));
                             //Update Value2
                             db.sp_46_QCMaster_Edit2(id, Value1, Value2);
                             db.sp_46_QCMaster_Edit3(id, Convert.ToString(rd.Cells["UseMachine"].Value));
+                            db.sp_46_QCMaster_Edit4(id, 1, Convert.ToString(rd.Cells["Inspection"].Value));
+                            db.sp_46_QCMaster_Edit4(id, 2, Convert.ToString(rd.Cells["Rank"].Value));
                             CC += 1;
                         }
                     }
@@ -331,7 +339,7 @@ namespace StockControl
                 //string TM= Convert.ToString(radGridView1.Rows[e.RowIndex].Cells["dgvCodeTemp"].Value);
                 //if (!check1.Trim().Equals("") && TM.Equals(""))
                 //{
-                    
+
                 //    if (!CheckDuplicate(check1.Trim()))
                 //    {
                 //        MessageBox.Show("ข้อมูล รหัสหน่วย ซ้ำ");
@@ -340,7 +348,40 @@ namespace StockControl
 
                 //    }
                 //}
-        
+                //if (e.ColumnIndex == radGridView1.Columns["Inspection"].Index)
+                //{
+                //    if(!radGridView1.CurrentRow.Cells["Inspection"].Value.ToString().Equals(""))
+                //    {
+
+                //        int id = 0;
+                //        int.TryParse(radGridView1.CurrentRow.Cells["id"].Value.ToString(), out id);
+                //        if(id>0)
+                //        {
+
+                //        }
+                //    }
+                //}
+
+                if(e.ColumnIndex == radGridView1.Columns["SetDate2"].Index)
+                {
+                    try
+                    {
+                        int id = Convert.ToInt32(radGridView1.CurrentRow.Cells["id"].Value);
+                        if(id>0)
+                        {
+                            using (DataClasses1DataContext db = new DataClasses1DataContext())
+                            {
+                                tb_QCGroupPart qcp = db.tb_QCGroupParts.Where(p => p.id.Equals(id)).FirstOrDefault();
+                                if(qcp!=null)
+                                {
+                                    qcp.SetDate2 = radGridView1.CurrentRow.Cells["SetDate2"].Value.ToString();
+                                    db.SubmitChanges();
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }        
 
             }
             catch(Exception ex) { }
@@ -519,24 +560,28 @@ namespace StockControl
                   0, true);
                 Excel.Sheets sheets = excelBook.Worksheets;
                 Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
-                progressBar1.Maximum = 61;
+                progressBar1.Maximum = 81;
                 progressBar1.Minimum = 1;
                 int row1 = 0;
                 int RNo = 0;
                 decimal Value1 = 0;
                 decimal Value2 = 0;
+                bool cck = false;
                 try
                 {
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
                     {
                         db.sp_46_QCDeleteMaster01(cboISO.Text, txtPartNo.Text);
-                        for (int ixi = 0; ixi <= 60; ixi++)
+                        for (int ixi = 0; ixi <= 80; ixi++)
                         {
+                            cck = false;
                             row1 += 1;
                             progressBar1.Value = row1;
                             progressBar1.PerformStep();
                             System.Array myvalues;
-                            Excel.Range range = worksheet.get_Range("A" + row1.ToString(), "J" + row1.ToString());
+                            //L = New for 055 =11
+                            //M = New for 055 =12
+                            Excel.Range range = worksheet.get_Range("A" + row1.ToString(), "M" + row1.ToString());
                             myvalues = (System.Array)range.Cells.Value;
 
                             string[] strArray = ConvertToStringArray(myvalues);
@@ -544,7 +589,11 @@ namespace StockControl
                             {
                                 Value2 = 0;
                                 Value1 = 0;
-                                decimal.TryParse(Convert.ToString(strArray[8]), out Value1);
+                               if(decimal.TryParse(Convert.ToString(strArray[8]), out Value1))
+                                {
+                                    cck = false;
+                                }
+
                                 decimal.TryParse(Convert.ToString(strArray[9]), out Value2);
 
                                 if (!Convert.ToString(strArray[0]).Equals("")
@@ -552,6 +601,7 @@ namespace StockControl
                                     && !Convert.ToString(strArray[2]).Equals("")
                                     && !Convert.ToString(strArray[3]).Equals(""))
                                 {
+
 
                                     tb_QCGroupPart qg = new tb_QCGroupPart();
                                     qg.FormISO = cboISO.Text.ToUpper();
@@ -565,8 +615,13 @@ namespace StockControl
                                     qg.TopPic = Convert.ToString(strArray[4]);
                                     qg.Value1 = Value1;
                                     qg.Value2 = Value2;
-                                    qg.UseMachine= Convert.ToString(strArray[8]);
+
+                                   if(Convert.ToString(strArray[7]).Equals(""))
+                                       qg.UseMachine= Convert.ToString(strArray[8]);
+
                                     qg.Stamp = "";
+                                    qg.Inspection = Convert.ToString(strArray[11]);
+                                    qg.Rank = Convert.ToString(strArray[12]);//M
                                     // qg.Stamp = dbClss.Right(txtPartNo.Text, 7);
 
                                     db.tb_QCGroupParts.InsertOnSubmit(qg);
@@ -578,7 +633,7 @@ namespace StockControl
 
                     }
                 }
-                catch { }
+                catch(Exception ex) { MessageBox.Show(ex.Message); }
                    
                 excelBook.Close(false);
                 excelApp.Quit();
@@ -854,6 +909,19 @@ namespace StockControl
                 }
             }          
             
+        }
+
+        private void radButtonElement4_Click(object sender, EventArgs e)
+        {
+            if (!txtPartNo.Text.Equals("") && !cboISO.Text.Equals(""))
+            {
+                QCSetupMaster3 oldv = new QCSetupMaster3(txtPartNo.Text, cboISO.Text);
+                oldv.Show();
+            }else
+            {
+                MessageBox.Show("ให้เลือก เลขเอกสาร ISO ก่อน!!!");
+            }
+               
         }
     }
 }

@@ -715,10 +715,15 @@ namespace StockControl
                 Report.Reportx1.Value[0] = PartNo;
                 Report.Reportx1.Value[1] = LotNo;
                 // Report.Reportx1.Value[2] = txtAC.Text;
-
                 Report.Reportx1 op = new Report.Reportx1("PartBomList.rpt");
                 op.Show();
             }
+        }
+
+        private void radButtonElement3_Click(object sender, EventArgs e)
+        {
+            PrintQC pq = new PrintQC(radGridView1.CurrentRow.Cells["PORDER"].Value.ToString());
+            pq.ShowDialog();
         }
     }
 }

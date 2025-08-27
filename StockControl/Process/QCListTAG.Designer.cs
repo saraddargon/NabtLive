@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QCListTAG));
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn1 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn2 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.ConditionalFormattingObject conditionalFormattingObject1 = new Telerik.WinControls.UI.ConditionalFormattingObject();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn3 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn4 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn5 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
@@ -43,6 +44,7 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn11 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn12 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn13 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn14 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             this.radRibbonBar1 = new Telerik.WinControls.UI.RadRibbonBar();
             this.ribbonTab1 = new Telerik.WinControls.UI.RibbonTab();
@@ -71,6 +73,8 @@
             this.radLabelElement1 = new Telerik.WinControls.UI.RadLabelElement();
             this.panel1 = new System.Windows.Forms.Panel();
             this.radGridView1 = new Telerik.WinControls.UI.RadGridView();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.office2010BlueTheme1 = new Telerik.WinControls.Themes.Office2010BlueTheme();
             this.radRibbonBarButtonGroup2 = new Telerik.WinControls.UI.RadRibbonBarButtonGroup();
             this.btnFilter = new Telerik.WinControls.UI.RadButtonElement();
@@ -83,8 +87,6 @@
             this.RMenu5 = new Telerik.WinControls.UI.RadMenuItem();
             this.RMenu6 = new Telerik.WinControls.UI.RadMenuItem();
             this.radContextMenuManager1 = new Telerik.WinControls.UI.RadContextMenuManager();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.deleteTagToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.radRibbonBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radStatusStrip1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -376,79 +378,92 @@
             gridViewTextBoxColumn1.HeaderText = "No.";
             gridViewTextBoxColumn1.Name = "No";
             gridViewTextBoxColumn1.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn2.FieldName = "GType";
-            gridViewTextBoxColumn2.HeaderText = "Doc. Type";
-            gridViewTextBoxColumn2.Name = "GType";
+            conditionalFormattingObject1.CellBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            conditionalFormattingObject1.CellForeColor = System.Drawing.Color.Red;
+            conditionalFormattingObject1.Name = "NewCondition";
+            conditionalFormattingObject1.RowBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            conditionalFormattingObject1.RowForeColor = System.Drawing.Color.Empty;
+            conditionalFormattingObject1.TValue1 = "NotCheck";
+            gridViewTextBoxColumn2.ConditionalFormattingObjectList.Add(conditionalFormattingObject1);
+            gridViewTextBoxColumn2.FieldName = "Status";
+            gridViewTextBoxColumn2.HeaderText = "Status";
+            gridViewTextBoxColumn2.Name = "Status";
             gridViewTextBoxColumn2.ReadOnly = true;
             gridViewTextBoxColumn2.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn2.Width = 100;
-            gridViewTextBoxColumn3.EnableExpressionEditor = false;
-            gridViewTextBoxColumn3.FieldName = "ofTag";
-            gridViewTextBoxColumn3.HeaderText = "of Tag";
-            gridViewTextBoxColumn3.Name = "ofTag";
+            gridViewTextBoxColumn2.Width = 70;
+            gridViewTextBoxColumn3.FieldName = "GType";
+            gridViewTextBoxColumn3.HeaderText = "Doc. Type";
+            gridViewTextBoxColumn3.Name = "GType";
+            gridViewTextBoxColumn3.ReadOnly = true;
             gridViewTextBoxColumn3.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn3.Width = 80;
+            gridViewTextBoxColumn3.Width = 100;
             gridViewTextBoxColumn4.EnableExpressionEditor = false;
-            gridViewTextBoxColumn4.FieldName = "QtyofTAG";
-            gridViewTextBoxColumn4.FormatString = "{0:N2}";
-            gridViewTextBoxColumn4.HeaderText = "TAG Qty";
-            gridViewTextBoxColumn4.Name = "QtyofTAG";
+            gridViewTextBoxColumn4.FieldName = "ofTag";
+            gridViewTextBoxColumn4.HeaderText = "of Tag";
+            gridViewTextBoxColumn4.Name = "ofTag";
             gridViewTextBoxColumn4.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn4.Width = 99;
+            gridViewTextBoxColumn4.Width = 80;
             gridViewTextBoxColumn5.EnableExpressionEditor = false;
-            gridViewTextBoxColumn5.FieldName = "OKQty";
-            gridViewTextBoxColumn5.FormatString = "{0:N0}";
-            gridViewTextBoxColumn5.HeaderText = "OKQty";
-            gridViewTextBoxColumn5.Name = "OKQty";
+            gridViewTextBoxColumn5.FieldName = "QtyofTAG";
+            gridViewTextBoxColumn5.FormatString = "{0:N2}";
+            gridViewTextBoxColumn5.HeaderText = "TAG Qty";
+            gridViewTextBoxColumn5.Name = "QtyofTAG";
             gridViewTextBoxColumn5.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn5.Width = 100;
+            gridViewTextBoxColumn5.Width = 99;
             gridViewTextBoxColumn6.EnableExpressionEditor = false;
-            gridViewTextBoxColumn6.FieldName = "NGQty";
-            gridViewTextBoxColumn6.HeaderText = "NG Point";
-            gridViewTextBoxColumn6.Name = "NGQty";
-            gridViewTextBoxColumn6.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
-            gridViewTextBoxColumn6.Width = 90;
+            gridViewTextBoxColumn6.FieldName = "OKQty";
+            gridViewTextBoxColumn6.FormatString = "{0:N0}";
+            gridViewTextBoxColumn6.HeaderText = "OKQty";
+            gridViewTextBoxColumn6.Name = "OKQty";
+            gridViewTextBoxColumn6.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            gridViewTextBoxColumn6.Width = 100;
             gridViewTextBoxColumn7.EnableExpressionEditor = false;
-            gridViewTextBoxColumn7.FieldName = "QCNo";
-            gridViewTextBoxColumn7.HeaderText = "QCNo";
-            gridViewTextBoxColumn7.Name = "QCNo";
-            gridViewTextBoxColumn7.Width = 186;
+            gridViewTextBoxColumn7.FieldName = "NGQty";
+            gridViewTextBoxColumn7.HeaderText = "NG Point";
+            gridViewTextBoxColumn7.Name = "NGQty";
+            gridViewTextBoxColumn7.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
+            gridViewTextBoxColumn7.Width = 90;
             gridViewTextBoxColumn8.EnableExpressionEditor = false;
-            gridViewTextBoxColumn8.FieldName = "NGofTAG";
-            gridViewTextBoxColumn8.HeaderText = "NGofTAG";
-            gridViewTextBoxColumn8.Name = "NGofTAG";
-            gridViewTextBoxColumn8.ReadOnly = true;
-            gridViewTextBoxColumn8.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
-            gridViewTextBoxColumn8.Width = 90;
-            gridViewTextBoxColumn9.FieldName = "GTAG";
-            gridViewTextBoxColumn9.HeaderText = "TAG";
-            gridViewTextBoxColumn9.Name = "GTAG";
+            gridViewTextBoxColumn8.FieldName = "QCNo";
+            gridViewTextBoxColumn8.HeaderText = "QCNo";
+            gridViewTextBoxColumn8.Name = "QCNo";
+            gridViewTextBoxColumn8.Width = 186;
+            gridViewTextBoxColumn9.EnableExpressionEditor = false;
+            gridViewTextBoxColumn9.FieldName = "NGofTAG";
+            gridViewTextBoxColumn9.HeaderText = "NGofTAG";
+            gridViewTextBoxColumn9.Name = "NGofTAG";
             gridViewTextBoxColumn9.ReadOnly = true;
-            gridViewTextBoxColumn9.Width = 250;
-            gridViewTextBoxColumn10.EnableExpressionEditor = false;
-            gridViewTextBoxColumn10.FieldName = "id";
-            gridViewTextBoxColumn10.HeaderText = "id";
-            gridViewTextBoxColumn10.IsVisible = false;
-            gridViewTextBoxColumn10.Name = "id";
-            gridViewTextBoxColumn11.FieldName = "CheckDate";
-            gridViewTextBoxColumn11.FormatString = "{0:dd/MM/yy HH:mm}";
-            gridViewTextBoxColumn11.HeaderText = "CheckDate";
-            gridViewTextBoxColumn11.Name = "CheckDate";
-            gridViewTextBoxColumn11.ReadOnly = true;
-            gridViewTextBoxColumn11.Width = 90;
-            gridViewTextBoxColumn12.FieldName = "CheckBy";
-            gridViewTextBoxColumn12.HeaderText = "CheckBy";
-            gridViewTextBoxColumn12.Name = "CheckBy";
+            gridViewTextBoxColumn9.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
+            gridViewTextBoxColumn9.Width = 90;
+            gridViewTextBoxColumn10.FieldName = "GTAG";
+            gridViewTextBoxColumn10.HeaderText = "TAG";
+            gridViewTextBoxColumn10.Name = "GTAG";
+            gridViewTextBoxColumn10.ReadOnly = true;
+            gridViewTextBoxColumn10.Width = 250;
+            gridViewTextBoxColumn11.EnableExpressionEditor = false;
+            gridViewTextBoxColumn11.FieldName = "id";
+            gridViewTextBoxColumn11.HeaderText = "id";
+            gridViewTextBoxColumn11.IsVisible = false;
+            gridViewTextBoxColumn11.Name = "id";
+            gridViewTextBoxColumn12.FieldName = "CheckDate";
+            gridViewTextBoxColumn12.FormatString = "{0:dd/MM/yy HH:mm}";
+            gridViewTextBoxColumn12.HeaderText = "CheckDate";
+            gridViewTextBoxColumn12.Name = "CheckDate";
             gridViewTextBoxColumn12.ReadOnly = true;
-            gridViewTextBoxColumn12.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             gridViewTextBoxColumn12.Width = 90;
-            gridViewTextBoxColumn13.EnableExpressionEditor = false;
-            gridViewTextBoxColumn13.FieldName = "BarcodeTag";
-            gridViewTextBoxColumn13.HeaderText = "PTAG";
-            gridViewTextBoxColumn13.Name = "PTAG";
+            gridViewTextBoxColumn13.FieldName = "CheckBy";
+            gridViewTextBoxColumn13.HeaderText = "CheckBy";
+            gridViewTextBoxColumn13.Name = "CheckBy";
             gridViewTextBoxColumn13.ReadOnly = true;
             gridViewTextBoxColumn13.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn13.Width = 385;
+            gridViewTextBoxColumn13.Width = 90;
+            gridViewTextBoxColumn14.EnableExpressionEditor = false;
+            gridViewTextBoxColumn14.FieldName = "BarcodeTag";
+            gridViewTextBoxColumn14.HeaderText = "PTAG";
+            gridViewTextBoxColumn14.Name = "PTAG";
+            gridViewTextBoxColumn14.ReadOnly = true;
+            gridViewTextBoxColumn14.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            gridViewTextBoxColumn14.Width = 385;
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewTextBoxColumn1,
             gridViewTextBoxColumn2,
@@ -462,7 +477,8 @@
             gridViewTextBoxColumn10,
             gridViewTextBoxColumn11,
             gridViewTextBoxColumn12,
-            gridViewTextBoxColumn13});
+            gridViewTextBoxColumn13,
+            gridViewTextBoxColumn14});
             this.radGridView1.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
             this.radGridView1.Name = "radGridView1";
@@ -475,6 +491,21 @@
             this.radGridView1.CellClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.radGridView1_CellClick_1);
             this.radGridView1.CellDoubleClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.radGridView1_CellDoubleClick);
             this.radGridView1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.radGridView1_PreviewKeyDown);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteTagToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(129, 26);
+            // 
+            // deleteTagToolStripMenuItem
+            // 
+            this.deleteTagToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
+            this.deleteTagToolStripMenuItem.Name = "deleteTagToolStripMenuItem";
+            this.deleteTagToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.deleteTagToolStripMenuItem.Text = "Delete Tag";
+            this.deleteTagToolStripMenuItem.Click += new System.EventHandler(this.deleteTagToolStripMenuItem_Click);
             // 
             // radRibbonBarButtonGroup2
             // 
@@ -553,21 +584,6 @@
             this.RMenu6.Image = ((System.Drawing.Image)(resources.GetObject("RMenu6.Image")));
             this.RMenu6.Name = "RMenu6";
             this.RMenu6.Text = "ลบรายการ";
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteTagToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(129, 26);
-            // 
-            // deleteTagToolStripMenuItem
-            // 
-            this.deleteTagToolStripMenuItem.ForeColor = System.Drawing.Color.Red;
-            this.deleteTagToolStripMenuItem.Name = "deleteTagToolStripMenuItem";
-            this.deleteTagToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
-            this.deleteTagToolStripMenuItem.Text = "Delete Tag";
-            this.deleteTagToolStripMenuItem.Click += new System.EventHandler(this.deleteTagToolStripMenuItem_Click);
             // 
             // QCListTAG
             // 

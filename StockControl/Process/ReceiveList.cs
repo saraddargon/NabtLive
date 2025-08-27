@@ -302,5 +302,16 @@ namespace StockControl
             }
             catch { }
         }
+
+        private void radButtonElement2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ScanPDAListRC spl = new ScanPDAListRC("REC", Convert.ToString(radGridView1.CurrentRow.Cells["RCNo"].Value)
+                , Convert.ToString(radGridView1.CurrentRow.Cells["Code"].Value), "");
+                spl.Show();
+            }
+            catch { }
+        }
     }
 }

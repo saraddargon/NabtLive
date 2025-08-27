@@ -81,7 +81,7 @@ namespace StockControl
                         db.sp_013_selectExportList_DetailUpdatecustItem(Inv);
                         radGridView1.DataSource = null;
                        
-                        var pl = (from ix in db.sp_013_selectExportList_Detail(Inv, cboStatus.Text) select ix).ToList();
+                        var pl = (from ix in db.sp_013_selectExportList_Detail(Inv, cboStatus.Text,txtPallet.Text) select ix).ToList();
                         if(pl.Count>0)
                         {
                             txtTotalPallet.Text = pl.FirstOrDefault().TotalPallet.ToString();
@@ -93,6 +93,7 @@ namespace StockControl
 
                         foreach(GridViewRowInfo rs in radGridView1.Rows)
                         {
+                           // rs.Cells["id"].Value;
                             if(!Convert.ToBoolean(rs.Cells["LConfirm"].Value))
                             {
                                 rs.Cells["S"].ReadOnly = true;
@@ -106,6 +107,21 @@ namespace StockControl
                             if(dbClss.UserID.Equals("0203")|| dbClss.UserID.Equals("0240"))
                             {
                                 rs.Cells["S"].ReadOnly = false;
+                            }
+
+                            string getNewLot =  Convert.ToString(rs.Cells["LotNo"].Value);// ed.LotNo;
+                            if (getNewLot.Equals(""))
+                            {
+                                //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
+                                string[] GT = Convert.ToString(db.getLOtExport(Convert.ToString(rs.Cells["PartNo"].Value), Convert.ToString(rs.Cells["OrderNo"].Value), txtExportNo.Text, Convert.ToInt32(rs.Cells["id"].Value))).Split(',');
+                                if (GT.Length > 4)
+                                {
+                                    getNewLot = GT[4];
+                                }
+                                if (!getNewLot.Equals(""))
+                                {
+                                    db.sp_019_LocaDeliveryList_DynamicsUpdateLot(Convert.ToInt32(rs.Cells["id"].Value), getNewLot);
+                                }
                             }
 
                         }
@@ -334,6 +350,22 @@ namespace StockControl
                         using (DataClasses1DataContext db = new DataClasses1DataContext())
                         {
                             db.sp_036_UpdateExportList(id, PalletNo.ToString(), 0,0, 0);
+                        }
+                    }
+                }
+                if (e.RowIndex >= 0 && radGridView1.Columns["RemarkInv"].Index == e.ColumnIndex)
+                {
+                    //RemarkInv
+                    int id = 0;
+                    int PalletNo = 0;
+                    int.TryParse(radGridView1.Rows[e.RowIndex].Cells["id"].Value.ToString(), out id);
+                    int.TryParse(radGridView1.Rows[e.RowIndex].Cells["PalletNo"].Value.ToString(), out PalletNo);
+                    if (id > 0 && PalletNo > 0)
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            db.sp_036_UpdateExportListRemark(id, radGridView1.Rows[e.RowIndex].Cells["RemarkInv"].Value.ToString());
+                           
                         }
                     }
                 }
@@ -721,6 +753,7 @@ namespace StockControl
 
         private void radButtonElement1_Click(object sender, EventArgs e)
         {
+            //Big TAG
             this.Cursor = Cursors.Default;
             try
             {
@@ -755,11 +788,25 @@ namespace StockControl
                                 {
                                     SH = Convert.ToDateTime(exx.LoadDate);
                                 }
+                                string getNewLot = ed.LotNo;
+                                if (getNewLot.Equals(""))
+                                {
+                                    //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo, ed.id)).Split(',');
+                                    if (GT.Length > 4)
+                                    {
+                                        getNewLot = GT[4];
+                                    }
+                                    if (!getNewLot.Equals(""))
+                                    {
+                                        db.sp_019_LocaDeliveryList_DynamicsUpdateLot(ed.id, getNewLot);
+                                    }
+                                }
 
-                                //Order,PalletNo,Invoice,PartCode,Qty,ofTAG,TotalTAG,LotNo
+                                //Order,PalletNo,Invoice,PartCode,Qty,ofTAG(ofPL),TotalTAG(PL),LotNo
                                 QRCode = "";
                                 QRCode = ed.OrderNo + "," + ed.PalletNo + "," + ed.InvoiceNo + ",";
-                                QRCode = QRCode+ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + ed.LotNo.ToString();
+                                QRCode = QRCode+ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + getNewLot.ToString();
                                 byte[] barcode = dbClss.SaveQRCode2D(QRCode);
                                 
                                 tb_ExportPrintTAG ep = new tb_ExportPrintTAG();
@@ -775,7 +822,9 @@ namespace StockControl
                                     ep.CustomerAddress = "Plot no-191 sector-8 IMT  Manesar ,distt- Gurgaon- 122050 State Haryana.";
                                 }
                                 ep.InvoiceNo = txtExportNo.Text;
-                                ep.LOTNo = ed.LotNo;
+                                
+
+                                ep.LOTNo = getNewLot;
                                 ep.QRCode = barcode;
                                 
                                 ep.Qty = ed.Qty;
@@ -840,10 +889,24 @@ namespace StockControl
                             tb_ExportDetail ed = db.tb_ExportDetails.Where(ee => ee.id == Convert.ToInt32(rd.Cells["id"].Value) && ee.PrintType == "B").FirstOrDefault();
                             if (ed != null)
                             {
+                                string getNewLot = ed.LotNo;
+                                if (getNewLot.Equals(""))
+                                {
+                                    //PD,WO22104844,4,375,23VT,51of94,44130036090,290322                                   
+                                    string[] GT = Convert.ToString(db.getLOtExport(ed.PartNo, ed.OrderNo, ed.InvoiceNo, ed.id)).Split(',');
+                                    if (GT.Length > 4)
+                                    {
+                                        getNewLot = GT[4];
+                                    }
+                                    if (!getNewLot.Equals(""))
+                                    {
+                                        db.sp_019_LocaDeliveryList_DynamicsUpdateLot(ed.id, getNewLot);
+                                    }
+                                }
                                 //Order,PalletNo,Invoice,PartCode,Qty,ofTAG,TotalTAG,LotNo
 
                                 QRCode = "";
-                                QRCode = ed.OrderNo+"," + ed.PalletNo + "," + ed.InvoiceNo + "," + ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + ed.LotNo.ToString();
+                                QRCode = ed.OrderNo+"," + ed.PalletNo + "," + ed.InvoiceNo + "," + ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + getNewLot.ToString();
                                 byte[] barcode = dbClss.SaveQRCode2D(QRCode);
                                 tb_ExportPrintTAG ep = new tb_ExportPrintTAG();
                                 ep.CustomerAddress = "5-1 Kanaya, Murayama, Yamagata, 995-0004 Japan";
@@ -852,8 +915,9 @@ namespace StockControl
                                 ep.CustomerItemNo = Convert.ToString(db.getItemCSTM_Dynamics(ed.PartNo, "")); // ed.CustItem;                             
                                // ep.CustomerName = ed.CustomerName;// Convert.ToString(db.getItemCSTMName(ed.Customer));
                                 ep.CustomerName = "Nabtesco Autmotive Corporation";// Convert.ToString(db.getItemCSTMName(ed.Customer));
-                                ep.InvoiceNo = txtExportNo.Text;
-                                ep.LOTNo = ed.LotNo;
+                                ep.InvoiceNo = txtExportNo.Text;                             
+
+                                ep.LOTNo = getNewLot;                                
                                 ep.QRCode = barcode;
                                 ep.Qty = ed.Qty;
                                 ep.GroupP = ed.GroupP;
@@ -939,6 +1003,7 @@ namespace StockControl
                         Tag.Status = Convert.ToString(rd.Cells["Status"].Value);
                         Tag.LotNo = Convert.ToString(rd.Cells["LotNo"].Value);
                         Tag.Packing = Convert.ToBoolean(rd.Cells["LConfirm"].Value);
+                        Tag.CheckCompare = Convert.ToString(rd.Cells["CheckCompare"].Value);
                         //Create QR//
                         //ListNo,ExportNo,OrderNo,PartNo,CustItem,Qty,id
                         QRCode = "0" + "," + txtExportNo.Text + ",";
@@ -982,7 +1047,8 @@ namespace StockControl
 
         private void radButtonElement8_Click(object sender, EventArgs e)
         {
-            ScanPDAList spl = new ScanPDAList("Export");
+
+            ScanPDAList spl = new ScanPDAList("Export",Convert.ToString(radGridView1.CurrentRow.Cells["OrderNo"].Value), Convert.ToString(radGridView1.CurrentRow.Cells["PartNo"].Value),txtExportNo.Text);
             spl.Show();
         }
 
@@ -998,7 +1064,11 @@ namespace StockControl
                         CASE += 1;
                     }
                 }
-                InvoiceEx_Update ivu = new InvoiceEx_Update(txtExportNo.Text,Convert.ToInt32(txtTotalPallet.Text),CASE);
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    db.sp_013_selectExportList_DetailUpdatecustItem(txtExportNo.Text);
+                }
+                InvoiceEx_Update ivu = new InvoiceEx_Update(txtExportNo.Text, Convert.ToInt32(txtTotalPallet.Text), CASE);
                 ivu.ShowDialog();
             }
             catch { }
@@ -1008,6 +1078,17 @@ namespace StockControl
         {
             ExDN_localdelivery dn = new ExDN_localdelivery();
             dn.Show();
+        }
+
+        private void txtPallet_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            dbClss.checkDigit(e);
+        }
+
+        private void radButtonElement12_Click(object sender, EventArgs e)
+        {
+            ExportManual exm = new ExportManual();
+            exm.ShowDialog();
         }
     }
 }

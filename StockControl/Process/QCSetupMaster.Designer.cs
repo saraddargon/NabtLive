@@ -42,13 +42,11 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn10 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn11 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn12 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn13 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn14 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn15 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition2 = new Telerik.WinControls.UI.TableViewDefinition();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem1 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem2 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem3 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem4 = new Telerik.WinControls.UI.RadListDataItem();
-            Telerik.WinControls.UI.RadListDataItem radListDataItem5 = new Telerik.WinControls.UI.RadListDataItem();
             this.radRibbonBar1 = new Telerik.WinControls.UI.RadRibbonBar();
             this.ribbonTab1 = new Telerik.WinControls.UI.RibbonTab();
             this.radRibbonBarGroup1 = new Telerik.WinControls.UI.RadRibbonBarGroup();
@@ -57,6 +55,7 @@
             this.btnView = new Telerik.WinControls.UI.RadButtonElement();
             this.btnEdit = new Telerik.WinControls.UI.RadButtonElement();
             this.btnDelete = new Telerik.WinControls.UI.RadButtonElement();
+            this.radButtonElement4 = new Telerik.WinControls.UI.RadButtonElement();
             this.radRibbonBarGroup4 = new Telerik.WinControls.UI.RadRibbonBarGroup();
             this.radButtonElement2 = new Telerik.WinControls.UI.RadButtonElement();
             this.btnImport = new Telerik.WinControls.UI.RadButtonElement();
@@ -193,7 +192,8 @@
             this.radRibbonBarGroup2.Items.AddRange(new Telerik.WinControls.RadItem[] {
             this.btnView,
             this.btnEdit,
-            this.btnDelete});
+            this.btnDelete,
+            this.radButtonElement4});
             this.radRibbonBarGroup2.Name = "radRibbonBarGroup2";
             this.radRibbonBarGroup2.Text = "Manage";
             // 
@@ -227,6 +227,15 @@
             this.btnDelete.Text = "ลบรายการ";
             this.btnDelete.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
+            // radButtonElement4
+            // 
+            this.radButtonElement4.Image = ((System.Drawing.Image)(resources.GetObject("radButtonElement4.Image")));
+            this.radButtonElement4.ImageAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.radButtonElement4.Name = "radButtonElement4";
+            this.radButtonElement4.Text = " Set Version  ";
+            this.radButtonElement4.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.radButtonElement4.Click += new System.EventHandler(this.radButtonElement4_Click);
             // 
             // radRibbonBarGroup4
             // 
@@ -485,27 +494,39 @@
             gridViewTextBoxColumn7.HeaderText = "Set Data";
             gridViewTextBoxColumn7.Name = "SetData";
             gridViewTextBoxColumn7.Width = 258;
-            gridViewTextBoxColumn8.EnableExpressionEditor = false;
-            gridViewTextBoxColumn8.FieldName = "id";
-            gridViewTextBoxColumn8.HeaderText = "id";
-            gridViewTextBoxColumn8.IsVisible = false;
-            gridViewTextBoxColumn8.Name = "id";
-            gridViewTextBoxColumn8.Width = 165;
-            gridViewTextBoxColumn9.FieldName = "Value1";
-            gridViewTextBoxColumn9.HeaderText = "Value1";
-            gridViewTextBoxColumn9.Name = "Value1";
-            gridViewTextBoxColumn10.FieldName = "Value2";
-            gridViewTextBoxColumn10.HeaderText = "Value2";
-            gridViewTextBoxColumn10.Name = "Value2";
-            gridViewTextBoxColumn11.FieldName = "Image1";
-            gridViewTextBoxColumn11.HeaderText = "Image1";
-            gridViewTextBoxColumn11.Name = "Image1";
-            gridViewTextBoxColumn11.ReadOnly = true;
-            gridViewTextBoxColumn11.Width = 250;
-            gridViewTextBoxColumn12.FieldName = "UseMachine";
-            gridViewTextBoxColumn12.HeaderText = "Use Machine";
-            gridViewTextBoxColumn12.Name = "UseMachine";
-            gridViewTextBoxColumn12.Width = 100;
+            gridViewTextBoxColumn8.FieldName = "Value1";
+            gridViewTextBoxColumn8.HeaderText = "Value1";
+            gridViewTextBoxColumn8.Name = "Value1";
+            gridViewTextBoxColumn9.FieldName = "Value2";
+            gridViewTextBoxColumn9.HeaderText = "Value2";
+            gridViewTextBoxColumn9.Name = "Value2";
+            gridViewTextBoxColumn10.FieldName = "Image1";
+            gridViewTextBoxColumn10.HeaderText = "Image1";
+            gridViewTextBoxColumn10.Name = "Image1";
+            gridViewTextBoxColumn10.ReadOnly = true;
+            gridViewTextBoxColumn10.Width = 250;
+            gridViewTextBoxColumn11.FieldName = "UseMachine";
+            gridViewTextBoxColumn11.HeaderText = "Use Machine";
+            gridViewTextBoxColumn11.Name = "UseMachine";
+            gridViewTextBoxColumn11.Width = 100;
+            gridViewTextBoxColumn12.FieldName = "SetDate2";
+            gridViewTextBoxColumn12.HeaderText = "SetKey";
+            gridViewTextBoxColumn12.Name = "SetDate2";
+            gridViewTextBoxColumn12.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            gridViewTextBoxColumn13.FieldName = "Inspection";
+            gridViewTextBoxColumn13.HeaderText = "Inspection";
+            gridViewTextBoxColumn13.Name = "Inspection";
+            gridViewTextBoxColumn13.Width = 150;
+            gridViewTextBoxColumn14.FieldName = "Rank";
+            gridViewTextBoxColumn14.HeaderText = "Rank";
+            gridViewTextBoxColumn14.Name = "Rank";
+            gridViewTextBoxColumn14.Width = 100;
+            gridViewTextBoxColumn15.EnableExpressionEditor = false;
+            gridViewTextBoxColumn15.FieldName = "id";
+            gridViewTextBoxColumn15.HeaderText = "id";
+            gridViewTextBoxColumn15.Name = "id";
+            gridViewTextBoxColumn15.ReadOnly = true;
+            gridViewTextBoxColumn15.Width = 165;
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewTextBoxColumn1,
             gridViewTextBoxColumn2,
@@ -518,7 +539,10 @@
             gridViewTextBoxColumn9,
             gridViewTextBoxColumn10,
             gridViewTextBoxColumn11,
-            gridViewTextBoxColumn12});
+            gridViewTextBoxColumn12,
+            gridViewTextBoxColumn13,
+            gridViewTextBoxColumn14,
+            gridViewTextBoxColumn15});
             this.radGridView1.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
             this.radGridView1.Name = "radGridView1";
@@ -629,16 +653,6 @@
             // 
             // cboISO
             // 
-            radListDataItem1.Text = "FM-PD-026_1";
-            radListDataItem2.Text = "FM-PD-033_1";
-            radListDataItem3.Text = "FM-PD-035_1";
-            radListDataItem4.Text = "FM-QA-055_02_1";
-            radListDataItem5.Text = "FM-QA-056_02_1";
-            this.cboISO.Items.Add(radListDataItem1);
-            this.cboISO.Items.Add(radListDataItem2);
-            this.cboISO.Items.Add(radListDataItem3);
-            this.cboISO.Items.Add(radListDataItem4);
-            this.cboISO.Items.Add(radListDataItem5);
             this.cboISO.Location = new System.Drawing.Point(97, 38);
             this.cboISO.Name = "cboISO";
             this.cboISO.Size = new System.Drawing.Size(221, 20);
@@ -851,5 +865,6 @@
         private Telerik.WinControls.UI.RadButtonElement radButtonElement2;
         private Telerik.WinControls.UI.RadButtonElement radButtonElement3;
         private Telerik.WinControls.UI.RadGridView radGridView2;
+        private Telerik.WinControls.UI.RadButtonElement radButtonElement4;
     }
 }

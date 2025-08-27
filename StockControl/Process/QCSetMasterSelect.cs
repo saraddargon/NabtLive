@@ -44,6 +44,10 @@ namespace StockControl
             {
                 radioButton5.Checked = true;
             }
+            else if ((keyData == Keys.NumPad6) || (keyData == Keys.D6))
+            {
+                radioButton6.Checked = true;
+            }
             else if (keyData == (Keys.F9))
             {
                 SelectLoad();
@@ -106,10 +110,14 @@ namespace StockControl
                 radioButton3.Visible = false;
                 radioButton4.Visible = false;
                 radioButton5.Visible = false;
+                radioButton6.Visible = false;
+                int ck = 0;
+                txtPartNo.Text = Code;
 
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
-                   var listQ= db.sp_46_QCSelectWO_02(WONo, LineName, Code, PType).ToList();
+                    //  var listQ= db.sp_46_QCSelectWO_02(WONo, LineName, Code, PType).ToList();
+                    var listQ = db.sp_46_QCSelectWO_02xV1(Code, PType).ToList();
                     int CountA = 0;
                     foreach(var rd in listQ)
                     {
@@ -119,31 +127,44 @@ namespace StockControl
                             radioButton1.Text = rd.FormISO + " " + rd.FormName;
                             radTextBox1.Text = rd.FormISO;
                             radioButton1.Visible = true;
+                            SetVisible(rd.FormISO,ref radioButton1);
                         }
                         else if (CountA == 2)
                         {
                             radioButton2.Text = rd.FormISO + " " + rd.FormName;
                             radTextBox2.Text = rd.FormISO;
                             radioButton2.Visible = true;
+                            SetVisible(rd.FormISO, ref radioButton2);
                         }
                         else if (CountA == 3)
                         {
                             radioButton3.Text = rd.FormISO + " " + rd.FormName;
                             radTextBox3.Text = rd.FormISO;
                             radioButton3.Visible = true;
+                            SetVisible(rd.FormISO, ref radioButton3);
                         }
                         else if (CountA == 4)
                         {
                             radioButton4.Text = rd.FormISO + " " + rd.FormName;
                             radTextBox4.Text = rd.FormISO;
                             radioButton4.Visible = true;
+                            SetVisible(rd.FormISO, ref radioButton4);
                         }
                         else if (CountA == 5)
                         {
                             radioButton5.Text = rd.FormISO + " " + rd.FormName;
                             radTextBox5.Text = rd.FormISO;
                             radioButton5.Visible = true;
+                            SetVisible(rd.FormISO, ref radioButton5);
                         }
+                        else if (CountA == 6)
+                        {
+                            radioButton6.Text = rd.FormISO + " " + rd.FormName;
+                            radTextBox6.Text = rd.FormISO;
+                            radioButton6.Visible = true;
+                            SetVisible(rd.FormISO, ref radioButton6);
+                        }
+                    
                     }
                 }
 
@@ -151,6 +172,106 @@ namespace StockControl
 
             }
             catch(Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+        private void SetVisible(string FormISO, ref RadioButton btn1)
+        {
+            ///////////
+
+            if (FormISO.ToString().Equals("FM-QA-091"))
+            {
+                btn1.Visible = false;
+                if (txtPartNo.Text.Equals("37116013410") || txtPartNo.Text.Equals("37116013780") || txtPartNo.Text.Equals("37116013230"))
+                {
+                    btn1.Visible = true;
+                    //ck += 1;
+                }
+            }
+            if (FormISO.ToString().Equals("FM-QA-092"))
+            {
+                btn1.Visible = false;
+                if (txtPartNo.Text.Equals("37100013410") || txtPartNo.Text.Equals("37100013420") || txtPartNo.Text.Equals("37100013780")
+                    || txtPartNo.Text.Equals("37100013431") || txtPartNo.Text.Equals("37100013680") || txtPartNo.Text.Equals("31AZ-032331M")
+                    || txtPartNo.Text.Equals("37100013780A5"))
+                {
+                    btn1.Visible = true;
+                    // ck += 1;
+                }
+                //New
+                if (txtPartNo.Text.Equals("37100013410S") || txtPartNo.Text.Equals("37100013420S") || txtPartNo.Text.Equals("37100013780S")
+                  || txtPartNo.Text.Equals("37100013431S") || txtPartNo.Text.Equals("37100013680S"))
+                {
+                    btn1.Visible = true;
+                    // ck += 1;
+                }
+            }
+            if (FormISO.ToString().Equals("FM-QA-143"))
+            {
+                btn1.Visible = false;
+                if (txtPartNo.Text.Equals("37116013690"))
+                {
+                    btn1.Visible = true;
+                    // ck += 1;
+                }
+            }
+            if (FormISO.ToString().Equals("FM-QA-144"))
+            {
+                btn1.Visible = false;
+                if (txtPartNo.Text.Equals("37100013690") || txtPartNo.Text.Equals("37100013690T") || txtPartNo.Text.Equals("37100013770")
+                    || txtPartNo.Text.Equals("37100013690S") || txtPartNo.Text.Equals("37100013770S"))
+                {
+                    btn1.Visible = true;
+                    // ck += 1;
+                }
+            }
+            if (FormISO.ToString().Equals("FM-QA-161"))
+            {
+                btn1.Visible = false;
+                if (txtPartNo.Text.Equals("37200014141") || txtPartNo.Text.Equals("37200014151") || txtPartNo.Text.Equals("37200014161"))
+                {
+                    btn1.Visible = true;
+                    // ck += 1;
+                }
+            }
+
+            ////new
+            if (FormISO.ToString().Equals("FM-QA-055") || FormISO.Equals("FM-QA-055_02_1"))
+            {
+                string FormS = "FM-QA-055";
+                
+                btn1.Visible = true;
+                //if (txtPartNo.Text.Equals("37116013690")
+                //    || txtPartNo.Text.Equals("37116013230")
+                //    || txtPartNo.Text.Equals("37116013410")
+                //    || txtPartNo.Text.Equals("37116013780"))
+                //{
+                //    btn1.Visible = false;
+                //    // ck += 1;
+                //}
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    if(Convert.ToInt32(db.get_QCSkip(FormS,txtPartNo.Text,0))>0)
+                    {
+                        btn1.Visible = false;
+                    }
+                }
+
+            }
+            if (FormISO.ToString().Equals("FM-PD-011") || (FormISO.ToString().Equals("FM-PD-010")))
+            {
+                btn1.Visible = true;
+                if (LineName.Equals("TD11-DR SUB 1")
+                    || LineName.Equals("TD12-DR SUB-2")
+                     || LineName.Equals("TD13-DR SUB-3")
+                      || LineName.Equals("TD14-DR SUB-4")
+                      || LineName.Equals("TD15-DR SUB-5")
+                      || LineName.Equals("TD16-DR SUB-6")
+                      || LineName.Equals("TD17-DR SUB-2")
+                    )
+                {
+                    btn1.Visible = false;
+                }
+
+            }
         }
         private void SetFocus()
         {
@@ -282,6 +403,11 @@ namespace StockControl
             {
                 ISO.Text = radTextBox5.Text;
             }
+            else if (radioButton6.Checked)
+            {
+                ISO.Text = radTextBox6.Text;
+            }
+
             this.Close();
         }
 

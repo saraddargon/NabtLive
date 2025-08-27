@@ -284,12 +284,19 @@ namespace StockControl
                 try
                 {
                     string INV = radGridView1.Rows[row].Cells["InvoiceNo"].Value.ToString();
-                    Report.Reportx1.WReport = "InvoiceLocal";
-                    Report.Reportx1.Value = new string[2];
-                    Report.Reportx1.Value[0] = INV;
-                   // Report.Reportx1.Value[1] = dbClss.UserID;                 
-                    Report.Reportx1 op = new Report.Reportx1("InvoiceDot.rpt");
-                    op.Show();
+                    if (dbClss.CheckPrintInvt(INV))
+                    {                        
+                        Report.Reportx1.WReport = "InvoiceLocal";
+                        Report.Reportx1.Value = new string[2];
+                        Report.Reportx1.Value[0] = INV;
+                        // Report.Reportx1.Value[1] = dbClss.UserID;                 
+                        Report.Reportx1 op = new Report.Reportx1("InvoiceDot.rpt");
+                        op.Show();
+
+                    }else
+                    {
+                        MessageBox.Show("Vat on Sales Order Dynamics Not Match on This Invoice!!");
+                    }
                    
                 }
                 catch { }
@@ -601,6 +608,18 @@ namespace StockControl
                 ex.Show();
             }
             catch { }
+        }
+
+        private void radButtonElement2_Click(object sender, EventArgs e)
+        {
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                if (MessageBox.Show("Fix Data Invoice Empty!!", "Fix Invoice", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    db.sp_92_FixInvoiceEmpty();
+                    MessageBox.Show("Fixed Already!");
+                }
+            }
         }
     }
 }

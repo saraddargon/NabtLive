@@ -426,6 +426,12 @@ namespace Report
                         rptDc.SetParameterValue("@Datex", DateTime.Now);
                     }
                     break;
+                case "WHPDA":
+                    {
+                        rptDc.SetParameterValue("@User", Convert.ToString(Value[0].ToString()));
+                        rptDc.SetParameterValue("@Datex", DateTime.Now);
+                    }
+                    break;
                 case "UserS":
                     {
                         rptDc.SetParameterValue("@Datex", DateTime.Now);

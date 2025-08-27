@@ -57,6 +57,7 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn19 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn20 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn21 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn22 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             Telerik.WinControls.UI.RadListDataItem radListDataItem1 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem2 = new Telerik.WinControls.UI.RadListDataItem();
@@ -587,6 +588,11 @@
             gridViewTextBoxColumn21.ReadOnly = true;
             gridViewTextBoxColumn21.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             gridViewTextBoxColumn21.Width = 90;
+            gridViewTextBoxColumn22.FieldName = "Dept";
+            gridViewTextBoxColumn22.HeaderText = "Dept";
+            gridViewTextBoxColumn22.Name = "Dept";
+            gridViewTextBoxColumn22.ReadOnly = true;
+            gridViewTextBoxColumn22.Width = 100;
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewTextBoxColumn1,
             gridViewTextBoxColumn2,
@@ -608,7 +614,8 @@
             gridViewTextBoxColumn18,
             gridViewTextBoxColumn19,
             gridViewTextBoxColumn20,
-            gridViewTextBoxColumn21});
+            gridViewTextBoxColumn21,
+            gridViewTextBoxColumn22});
             this.radGridView1.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
             this.radGridView1.Name = "radGridView1";
