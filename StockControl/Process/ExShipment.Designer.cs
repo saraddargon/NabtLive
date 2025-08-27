@@ -68,6 +68,7 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn31 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn32 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn33 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn34 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             Telerik.WinControls.UI.RadListDataItem radListDataItem1 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem2 = new Telerik.WinControls.UI.RadListDataItem();
@@ -784,9 +785,14 @@
             gridViewTextBoxColumn32.HeaderText = "Remark Inv.";
             gridViewTextBoxColumn32.Name = "RemarkInv";
             gridViewTextBoxColumn32.Width = 150;
-            gridViewTextBoxColumn33.HeaderText = "  ";
-            gridViewTextBoxColumn33.Name = "column1";
-            gridViewTextBoxColumn33.ReadOnly = true;
+            gridViewTextBoxColumn33.FieldName = "CheckCompare";
+            gridViewTextBoxColumn33.HeaderText = "Check Compare";
+            gridViewTextBoxColumn33.Name = "CheckCompare";
+            gridViewTextBoxColumn33.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            gridViewTextBoxColumn33.Width = 100;
+            gridViewTextBoxColumn34.HeaderText = "  ";
+            gridViewTextBoxColumn34.Name = "column1";
+            gridViewTextBoxColumn34.ReadOnly = true;
             this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
             gridViewCheckBoxColumn1,
             gridViewTextBoxColumn1,
@@ -824,7 +830,8 @@
             gridViewTextBoxColumn30,
             gridViewTextBoxColumn31,
             gridViewTextBoxColumn32,
-            gridViewTextBoxColumn33});
+            gridViewTextBoxColumn33,
+            gridViewTextBoxColumn34});
             this.radGridView1.MasterTemplate.EnableSorting = false;
             this.radGridView1.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;

@@ -114,16 +114,16 @@ namespace StockControl
                                 txtCountry.Text = "THAILAND";
                             }
                             CheckNum = 0;
-                            if(!Convert.ToString(ex.ETDDatex).Equals(""))
-                            {
-                                ETD = Convert.ToDateTime(ex.ETDDatex);
-                            }
-                            if (!Convert.ToString(ex.ETADatex).Equals(""))
-                            {
-                                ETA = Convert.ToDateTime(ex.ETADatex);
-                            }
-                            dtETADate.Value = ETA;
-                            dtETDDate.Value = ETD;
+                            //if(!Convert.ToString(ex.ETDDatex).Equals(""))
+                            //{
+                            //    ETD = Convert.ToDateTime(ex.ETDDatex);
+                            //}
+                            //if (!Convert.ToString(ex.ETADatex).Equals(""))
+                            //{
+                            //    ETA = Convert.ToDateTime(ex.ETADatex);
+                            //}
+                            dtETADate.Value = Convert.ToDateTime(ex.ETADatex);
+                            dtETDDate.Value = Convert.ToDateTime(ex.ETDDatex);
                             txtShippedVia.Text = Convert.ToString(ex.ShipVia);
                             txtShippingMark.Text = Convert.ToString(ex.ShippingMark);
                             txtAirType.Text = Convert.ToString(ex.AirType);
@@ -389,6 +389,9 @@ namespace StockControl
                                 }
                                 txtPalletNoT1.Text = FormP + "-" + ToP;
                             }
+                          //  dtETADate.Value = ev.ETADate;
+                           // dtETDDate.Value = null;
+
                             ev.LoadDate = dtLoadDate.Value;
                             ev.ETDDatex = dtETDDate.Value;
                             ev.ETADatex = dtETADate.Value;
@@ -565,6 +568,7 @@ namespace StockControl
                         using (DataClasses1DataContext db = new DataClasses1DataContext())
                         {
                             db.sp_044_Inv_Export_Delete();
+                            db.sp_044_Inv_Export_DE_UP(txtInvNo.Text);
                            
                             string PLNo = "";
                             string PLNo2 = "";
@@ -585,6 +589,7 @@ namespace StockControl
                                     {
                                         Stdc += 1;
                                     }
+
                                 }
                             }
                             var Listdetail = db.sp_044_Inv_Export_ListDetail(txtInvNo.Text).ToList();
@@ -629,7 +634,7 @@ namespace StockControl
                                 {
                                     PartNo = rd.PartNo.ToString().ToUpper();
                                 }
-                                em.ProductionCode =rd.CustItem.ToUpper().Trim();
+                                em.ProductionCode = Convert.ToString(rd.CustItem.ToUpper().Trim());
                                 if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
                                 {
                                     em.ProductionCode = rd.CustomerItemDx.ToString();
@@ -639,8 +644,8 @@ namespace StockControl
                                 em.Qty = Convert.ToDecimal(rd.Qty);
 
                                 //Net Weight//
-                                decimal.TryParse(db.getI_ShelfNetweight_Dynamics(rd.PartNo.ToString()), out CNetwet);
-                                if (CNetwet == 0)
+                                //decimal.TryParse(db.getI_ShelfNetweight_Dynamics(rd.PartNo.ToString()), out CNetwet);
+                               // if (CNetwet == 0)
                                     CNetwet = Convert.ToDecimal(rd.ForNetWet);
 
                                 em.NetWeight = Convert.ToDecimal(rd.Qty)*CNetwet;
@@ -686,8 +691,8 @@ namespace StockControl
 
 
                             }
-
-                            if(CC>0)
+                            UpdatePallet();
+                            if (CC>0)
                             {
                                // MessageBox.Show("=>"+TotalNet.ToString()+","+TotalGross.ToString());
                                 //Print//
@@ -707,6 +712,59 @@ namespace StockControl
             this.Cursor = Cursors.Default;
         }
 
+        private void UpdatePallet()
+        {
+            try
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    var Listdetail = db.sp_044_Inv_Export_Report(txtInvNo.Text,DateTime.Now).ToList();
+                    int C1 = 0;
+                    string SumA = "";
+                    string PLN = "";
+                    string PlN2 = "";
+                    string PlN3 = "";
+                    string PlN4 = "";
+                    foreach (var rd in Listdetail)
+                    {
+                        C1 += 1;
+                        if (C1 == 1)
+                        {
+                            PLN = rd.PalletNo.ToString();
+                            SumA = rd.PalletNo.ToString();
+                        }
+                        else
+                        {
+                            if (C1 == Convert.ToInt32(rd.PalletNo))
+                            {
+                                PlN2 = rd.PalletNo.ToString();
+                            }
+                            else
+                            {
+                               
+                                SumA = SumA + "-" + PlN2.ToString() + ","+ rd.PalletNo.ToString();
+                                PlN2 = rd.PalletNo.ToString();
+                                C1 = Convert.ToInt32(rd.PalletNo);
+                            }
+                        }
+
+
+                        PlN4 = rd.PalletNo.ToString();
+                    }
+                    if(SumA!="")
+                    {
+                        SumA = SumA + "-" + PlN4;
+                        tb_ExportList tbx = db.tb_ExportLists.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).FirstOrDefault();
+                        if(tbx!=null)
+                        {
+                            tbx.PalletText = SumA;
+                            db.SubmitChanges();
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
         private void radButtonElement1_Click(object sender, EventArgs e)
         {
             PrintFOB(0);
@@ -726,6 +784,7 @@ namespace StockControl
                         using (DataClasses1DataContext db = new DataClasses1DataContext())
                         {
                             db.sp_044_Inv_Export_Delete();
+                            db.sp_044_Inv_Export_DE_UP(txtInvNo.Text);
 
                             string PLNo = "";
                             string GroupA = "";
@@ -737,7 +796,7 @@ namespace StockControl
                             string PartNo = "";
                             int SortR = 0;
                             int STC = 0;
-                            int Stdc = 0;
+                            int Stdc = 0;                          
 
                             var evs = db.tb_ExportDetails.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).ToList();
                             if (evs != null)
@@ -751,7 +810,30 @@ namespace StockControl
                                 }
                             }
 
-                            //For Gross,NetWeight//
+                            decimal noComr = 0;
+                            var ListDetail = db.tb_ExportDetails.Where(s => s.InvoiceNo.Equals(txtInvNo.Text)).ToList();
+                            foreach (var rd in ListDetail)
+                            {
+                                if(!rd.K.Equals(""))
+                                {
+                                    noComr += 2800;
+                                }
+                                if (!rd.M.Equals(""))
+                                {
+                                    noComr += Convert.ToDecimal(rd.UnitCost) * Convert.ToDecimal(rd.Qty);
+                                }
+                            }
+                            if(noComr>0)
+                            {
+                                tb_InvoiceExFob invf = db.tb_InvoiceExFobs.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).FirstOrDefault();
+                                if(invf!=null)
+                                {
+                                    invf.NoComercial = noComr;
+                                    db.SubmitChanges();
+                                }
+                            }
+
+                                //For Gross,NetWeight//
                             var ListDetail01 = db.sp_044_Inv_Export_ListDetail(txtInvNo.Text).ToList();
                             foreach (var rd in ListDetail01)
                             {
@@ -799,6 +881,8 @@ namespace StockControl
                             var Listdetail = db.sp_044_Inv_Export_ListDetailFOB(txtInvNo.Text).ToList();
                             int CC = 0;
                             bool Grilled = false;
+                            string PartNo1 = "";
+                            string PartName = "";
                             foreach (var rd in Listdetail)
                             {
                                 /////////////////////////CLEAR
@@ -819,9 +903,15 @@ namespace StockControl
 
                                 if (!Convert.ToString(rd.K).Equals(""))
                                     Grilled = true;
-
-                                tb_InvoiceExTemp ckc = db.tb_InvoiceExTemps.Where(kc => kc.InoviceNo.Equals(txtInvNo.Text) && kc.ProductionCode.Equals(rd.CustItem)).FirstOrDefault();
-                                if (ckc != null && !Convert.ToString(rd.CustItem).Trim().Equals("-"))
+                                PartNo1 = "";
+                                PartNo1 = Convert.ToString(rd.CustItem.ToUpper().Trim());
+                                PartName = rd.PartName;
+                                if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
+                                {
+                                    PartNo1 = rd.CustomerItemDx.ToString().ToUpper().Trim();
+                                }
+                                tb_InvoiceExTemp ckc = db.tb_InvoiceExTemps.Where(kc => kc.InoviceNo.Equals(txtInvNo.Text) && kc.Description.ToUpper().Equals(PartName)).FirstOrDefault();
+                                if (ckc != null)
                                 {
                                     //if Dupclicate Update Qty
                                     decimal CQty = Convert.ToDecimal(ckc.Qty);
@@ -840,12 +930,7 @@ namespace StockControl
                                     em.PalletNo = PLNo;
                                     em.SteelCase = Grilled;
                                     em.Description = rd.PartName;
-
-                                    string PartNo1 = rd.CustItem.ToUpper().Trim();
-                                    if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
-                                    {
-                                        PartNo1 = rd.CustomerItemDx.ToString();
-                                    }
+                                   
                                     em.ProductionCode = PartNo1;                                   
                                     em.CodeNo = rd.PartNo.ToString();
                                     em.SteelCaseCount = Stdc;// Convert.ToInt32(txtSteelcase.Text);
@@ -860,6 +945,7 @@ namespace StockControl
                                     em.RemarkInv = rd.RemarkInv;
                                     db.tb_InvoiceExTemps.InsertOnSubmit(em);
                                     db.SubmitChanges();
+                                    //Commercial
                                 }
 
                             }
@@ -979,6 +1065,7 @@ namespace StockControl
                         using (DataClasses1DataContext db = new DataClasses1DataContext())
                         {
                             db.sp_044_Inv_Export_Delete();
+                            db.sp_044_Inv_Export_DE_UP(txtInvNo.Text);
 
                             string PLNo = "";
                             string PLNo2 = "";
@@ -1003,6 +1090,28 @@ namespace StockControl
                                     {
                                         Stdc += 1;
                                     }
+                                }
+                            }
+                            decimal noComr = 0;
+                            var ListDetail = db.tb_ExportDetails.Where(s => s.InvoiceNo.Equals(txtInvNo.Text)).ToList();
+                            foreach (var rd in ListDetail)
+                            {
+                                if (!rd.K.Equals(""))
+                                {
+                                 //   noComr += 2800;
+                                }
+                                if (!rd.M.Equals(""))
+                                {
+                                    noComr += Convert.ToDecimal(rd.UnitCost) * Convert.ToDecimal(rd.Qty);
+                                }
+                            }
+                            if (noComr > 0)
+                            {
+                                tb_InvoiceExFob invf = db.tb_InvoiceExFobs.Where(p => p.InvoiceNo.Equals(txtInvNo.Text)).FirstOrDefault();
+                                if (invf != null)
+                                {
+                                    invf.NoComercial = noComr;
+                                    db.SubmitChanges();
                                 }
                             }
 
@@ -1057,6 +1166,8 @@ namespace StockControl
                             var Listdetail = db.sp_044_Inv_Export_ListDetailFOB(txtInvNo.Text).ToList();
                             int CC = 0;
                             bool Grilled = false;
+                            string PartNo1 = "";
+                            string PartName = "";
                             foreach (var rd in Listdetail)
                             {
                                 /////////////////////////CLEAR
@@ -1089,9 +1200,19 @@ namespace StockControl
                                 //    SortC += 1;
                                 //    countNo = SortC;
                                 //}
+                                PartName = rd.PartName;
+                                PartNo1 = "";
+                                PartNo1 = Convert.ToString(rd.CustItem.ToUpper().Trim());
+                                if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
+                                {
+                                    PartNo1 = rd.CustomerItemDx.ToString();
+                                }
+                                if(PartNo1.Equals("-"))
+                                {
 
-                                tb_InvoiceExTemp ckc = db.tb_InvoiceExTemps.Where(kc => kc.InoviceNo.Equals(txtInvNo.Text) && kc.ProductionCode.Equals(rd.CustItem)).FirstOrDefault();
-                                if (ckc != null && !Convert.ToString(rd.CustItem).Trim().Equals("-"))
+                                }
+                                tb_InvoiceExTemp ckc = db.tb_InvoiceExTemps.Where(kc => kc.InoviceNo.Equals(txtInvNo.Text) && kc.Description.Equals(PartName)).FirstOrDefault();
+                                if (ckc != null)
                                 {
                                     //if Dupclicate Update Qty
                                     decimal CQty = Convert.ToDecimal(ckc.Qty);
@@ -1109,11 +1230,8 @@ namespace StockControl
                                     em.PalletNo = PLNo2;
                                     em.SteelCase = Grilled;
                                     em.Description = rd.PartName;
-                                    em.ProductionCode = rd.CustItem.ToUpper().Trim();//rd.PartNo.ToString().ToUpper();
-                                    if (!Convert.ToString(rd.CustomerItemDx).Equals(""))
-                                    {
-                                        em.ProductionCode = rd.CustomerItemDx.ToString();
-                                    }
+                                    em.ProductionCode = PartNo1;// rd.CustItem.ToUpper().Trim();//rd.PartNo.ToString().ToUpper();
+                                    
 
                                     em.CodeNo = rd.PartNo.ToString();
                                     em.SteelCaseCount = Stdc;// Convert.ToInt32(txtSteelcase.Text);
@@ -1348,18 +1466,25 @@ namespace StockControl
                         //Update Cost in ExList//
                         var ListDetail = db.tb_ExportDetails.Where(s => s.InvoiceNo.Equals(txtInvNo.Text)).ToList();
                         foreach (var rd in ListDetail)
-                        {
-                            
+                        {                           
                             
                             if (true)
                             {
+                                UnitCost = 0;
                                 // UnitCost = 0;
                                 UnitCost = Convert.ToDecimal(db.get_CustDynamicsSaleOrderPrice(rd.CustNo, rd.OrderNo, rd.PartNo, ""));
                                 tb_ExportDetail ed = db.tb_ExportDetails.Where(sd => sd.id == rd.id).FirstOrDefault();
                                 if (ed != null)
                                 {
                                     ed.UnitA = "PCS";
-                                    ed.UnitCost = UnitCost;
+                                    if (UnitCost > 0)
+                                    {
+                                        ed.UnitCost = UnitCost;
+                                    }
+                                    else
+                                    {
+
+                                    }                              
                                     db.SubmitChanges();
                                 }
                             }
@@ -1368,7 +1493,10 @@ namespace StockControl
                                
                                // UnitCost = Convert.ToDecimal(rd.UnitCost);
                             }
-
+                            if (UnitCost == 0)
+                            {
+                                UnitCost = Convert.ToDecimal(rd.UnitCost);
+                            }
 
 
                             TotalAmount += (UnitCost * Convert.ToDecimal(rd.Qty));
@@ -1391,7 +1519,7 @@ namespace StockControl
                                 //}
                             }
                         }
-                        // MessageBox.Show(""+ TotalAmount.ToString());
+                        // MessageBox.Show(""+ NoComer.ToString());
                         TotalAmount = Math.Round(TotalAmount, 2);
                         FobRate3 = Math.Round((((TotalAmount * FobRate1) / 100) * FobRate2), 2);
                         FobStam = Math.Ceiling((FobRate3 * Convert.ToDecimal(txtFobStameRate.Text))/100);

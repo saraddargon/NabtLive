@@ -380,13 +380,20 @@ namespace StockControl
             //Print Inv.
             try
             {
+                if (dbClss.CheckPrintInvt(txtInvNo.Text))
+                {
 
-                Report.Reportx1.WReport = "InvoiceLocal";
-                Report.Reportx1.Value = new string[2];
-                Report.Reportx1.Value[0] = txtInvNo.Text;
-                // Report.Reportx1.Value[1] = dbClss.UserID;                 
-                Report.Reportx1 op = new Report.Reportx1("InvoiceDot.rpt");
-                op.Show();
+                    Report.Reportx1.WReport = "InvoiceLocal";
+                    Report.Reportx1.Value = new string[2];
+                    Report.Reportx1.Value[0] = txtInvNo.Text;
+                    // Report.Reportx1.Value[1] = dbClss.UserID;                 
+                    Report.Reportx1 op = new Report.Reportx1("InvoiceDot.rpt");
+                    op.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Vat on Sales Order Dynamics Not Match on This Invoice!!");
+                }
 
             }
             catch { }

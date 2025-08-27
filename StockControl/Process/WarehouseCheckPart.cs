@@ -336,5 +336,18 @@ namespace StockControl
         {
           
         }
+
+        private void radButtonElement5_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Delete All Scan Part of " + WONo + "?", "Delete Scan", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    //  string wo=radGridView1.curr
+                    db.sp_Z_3_pd_List_Scan_partPDA_Delete(WONo);
+                    MessageBox.Show("Completed.");
+                }
+            }
+        }
     }
 }

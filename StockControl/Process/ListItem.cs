@@ -917,5 +917,12 @@ namespace StockControl
             }
             catch { }
         }
+
+        private void radButton3_Click(object sender, EventArgs e)
+        {
+            // dbShowData.TestCloseXML();
+            dbShowData.PrintData056New_CloseXML2x("xx", "xx", "xx");
+
+        }
     }
 }

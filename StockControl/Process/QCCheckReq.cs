@@ -540,13 +540,120 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     int RowS = 0;
+                    int ck = 0;
                     radGridView3.DataSource = null;
-                    radGridView3.DataSource = db.sp_46_QCSelectWO_02(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text, "QC").ToList();
-                    foreach(GridViewRowInfo rd in radGridView3.Rows)
+                    //radGridView3.DataSource = db.sp_46_QCSelectWO_02(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text, "QC").ToList();
+                    radGridView3.DataSource = db.sp_46_QCSelectWO_02xV1_QC(txtPartNo.Text, "QC").ToList();
+                    
+                     foreach (GridViewRowInfo rd in radGridView3.Rows)
                     {
-                        RowS += 1;
-                        rd.Cells["QNo"].Value = RowS;
+                        rd.Cells["QStatus"].Value = db.get_QC_WOFormISO_Status(txtOrderNo.Text.Trim(),rd.Cells["FormISO"].Value.ToString(),1);
                     }
+                     /*
+                     foreach (GridViewRowInfo rd in radGridView3.Rows)
+                     {
+                         RowS += 1;
+                         rd.Cells["QNo"].Value = RowS;
+                         /////////////////////Show/////////////
+                         if (rd.Cells["FormISO"].Value.Equals("FM-QA-091"))
+                         {
+                             rd.IsVisible = false;
+                             if (txtPartNo.Text.Equals("37116013410") || txtPartNo.Text.Equals("37116013780") || txtPartNo.Text.Equals("37116013230"))
+                             {
+                                 rd.IsVisible = true;
+                                 ck += 1;
+                             }
+                         }
+                         if (rd.Cells["FormISO"].Value.Equals("FM-QA-092"))
+                         {
+                             rd.IsVisible = false;
+                             if (txtPartNo.Text.Equals("37100013410") || txtPartNo.Text.Equals("37100013420") || txtPartNo.Text.Equals("37100013780")
+                                 || txtPartNo.Text.Equals("37100013431") || txtPartNo.Text.Equals("37100013680")
+                                 ||txtPartNo.Text.Equals("37100013780A5")|| txtPartNo.Text.Equals("31AZ-032331M"))
+                             {
+                                 rd.IsVisible = true;
+                                 ck += 1;
+                             }
+                             if (txtPartNo.Text.Equals("37100013410S") || txtPartNo.Text.Equals("37100013420S") || txtPartNo.Text.Equals("37100013780S")
+                                || txtPartNo.Text.Equals("37100013431S") || txtPartNo.Text.Equals("37100013680S"))
+                             {
+                                 rd.IsVisible = true;
+                                 ck += 1;
+                             }
+                         }
+                         if (rd.Cells["FormISO"].Value.Equals("FM-QA-143"))
+                         {
+                             rd.IsVisible = false;
+                             if (txtPartNo.Text.Equals("37116013690"))
+                             {
+                                 rd.IsVisible = true;
+                                 ck += 1;
+                             }
+                         }
+                         if (rd.Cells["FormISO"].Value.Equals("FM-QA-144"))
+                         {
+                             rd.IsVisible = false;
+                             if (txtPartNo.Text.Equals("37100013690") || txtPartNo.Text.Equals("37100013690T") || txtPartNo.Text.Equals("37100013770")
+                                 || txtPartNo.Text.Equals("37100013690S") || txtPartNo.Text.Equals("37100013770S"))
+                             {
+                                 rd.IsVisible = true;
+                                 ck += 1;
+                             }
+                         }
+                         if (rd.Cells["FormISO"].Value.Equals("FM-QA-161"))
+                         {
+                             rd.IsVisible = false;
+                             if (txtPartNo.Text.Equals("37200014141") || txtPartNo.Text.Equals("37200014151") || txtPartNo.Text.Equals("37200014161"))
+                             {
+                                 rd.IsVisible = true;
+                                 ck += 1;
+                             }
+                         }
+
+
+                         if (rd.Cells["FormISO"].Value.Equals("FM-QA-055") || rd.Cells["FormISO"].Value.Equals("FM-QA-055_02_1"))
+                         {
+                             rd.IsVisible = true;
+                             string FormS = "FM-QA-055";
+                             //if (txtPartNo.Text.Equals("37116013230") || txtPartNo.Text.Equals("37116013410")
+                             //    || txtPartNo.Text.Equals("37116013690")
+                             //    || txtPartNo.Text.Equals("37116013780"))
+                             //{
+                             //    rd.IsVisible = false;
+                             //    // ck += 1;
+                             //}
+
+                             if (Convert.ToInt32(db.get_QCSkip(FormS, txtPartNo.Text, 0)) > 0)
+                             {
+                                 rd.IsVisible = false;
+                             }
+
+
+                         }
+
+                         //FM - QA - 091  Push rod comp
+                         //37116013410
+                         //37116013780
+                         //37116013230
+                         //FM - QA - 092 Sampling
+                         //37100013410
+                         //37100013420
+                         //37100013780
+                         //37100013431
+                         //37100013680
+                         //FM - QA - 143 Push rod comp
+                         //37116013690
+                         //FM - QA - 144 Sampling
+                         //37100013690
+                         //37100013690T
+                         //37100013770
+                         //FM - QA - 161 Sampling
+                         //37200014141
+                         //37200014151
+                         //37200014161
+
+                     }
+                     */
                 }
             }
             catch { }
@@ -629,7 +736,7 @@ namespace StockControl
                                 txtSNP.Text= Convert.ToDecimal(rd.OrderQty).ToString("########0");
                             }
                             txtWorkCenter.Text = rd.BUMO.ToString();
-                            //LineName2 = txtWorkCenter.Text.ToUpper();
+                            LineName2 = txtWorkCenter.Text.ToUpper();
                             txtWorkName.Text = rd.BUMOName.ToString();
 
                             txtLotNo.Text = rd.LotNo.ToString();
@@ -1686,17 +1793,36 @@ namespace StockControl
             string TAG2 = "";
            if(!FISO.Equals(""))
             {
-                if (FISO.Equals("FM-QA-055_02_1") && !txtPDTAG.Text.Equals(""))
+                if ((FISO.Equals("FM-QA-055_02_1")||FISO.Equals("FM-QA-055")) && !txtPDTAG.Text.Equals(""))
                 {
                     TAG2 = txtPDTAG.Text;
                 }
                 else if (FISO.Equals("FM-QA-056_02_1") && !txtPDTAG.Text.Equals(""))
                 {
-                   
-                    TAG2= "First," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of2," + txtPartNo.Text.ToUpper() + ",056_1";
-                    
+
+                   // TAG2 = "First," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of5," + txtPartNo.Text.ToUpper() + ",056_1";
+                    TAG2 = "No1," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of5," + txtPartNo.Text.ToUpper() + ",056_1";
+
                 }
-                
+                else if (!txtPDTAG.Text.Equals("") && (
+                   FISO.Equals("FM-QA-055")) )
+                {
+                    TAG2 = txtPDTAG.Text;
+
+                }
+                else if (!txtPDTAG.Text.Equals("") && (                  
+                    FISO.Equals("FM-QA-091")
+                    || FISO.Equals("FM-QA-092")
+                    || FISO.Equals("FM-QA-143")
+                    || FISO.Equals("FM-QA-144")
+                    || FISO.Equals("FM-QA-161")
+                    )
+                    )
+                {
+                    //string TAG1 = "One," + txtProdNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of2," + txtPartNo.Text.ToUpper() + ",0QA_1";
+                    TAG2 = "One," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of5," + txtPartNo.Text.ToUpper() + ",0QA_1";
+                }
+
                 if (TAG2.Equals(""))
                 {
                     TAG2 = "New";

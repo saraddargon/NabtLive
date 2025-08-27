@@ -55,6 +55,10 @@
             Telerik.WinControls.UI.RadListDataItem radListDataItem2 = new Telerik.WinControls.UI.RadListDataItem();
             Telerik.WinControls.UI.RadListDataItem radListDataItem3 = new Telerik.WinControls.UI.RadListDataItem();
             this.radRibbonBar1 = new Telerik.WinControls.UI.RadRibbonBar();
+            this.ribbonTab2 = new Telerik.WinControls.UI.RibbonTab();
+            this.radRibbonBarGroup9 = new Telerik.WinControls.UI.RadRibbonBarGroup();
+            this.radButtonElement15 = new Telerik.WinControls.UI.RadButtonElement();
+            this.radButtonElement16 = new Telerik.WinControls.UI.RadButtonElement();
             this.ribbonTab1 = new Telerik.WinControls.UI.RibbonTab();
             this.radRibbonBarGroup1 = new Telerik.WinControls.UI.RadRibbonBarGroup();
             this.btnSave = new Telerik.WinControls.UI.RadButtonElement();
@@ -95,10 +99,10 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.radGridView1 = new Telerik.WinControls.UI.RadGridView();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.chkTool = new Telerik.WinControls.UI.RadCheckBox();
             this.radLabel5 = new Telerik.WinControls.UI.RadLabel();
             this.dtStartDate = new Telerik.WinControls.UI.RadDateTimePicker();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblCalculate = new Telerik.WinControls.UI.RadLabel();
             this.radLabel4 = new Telerik.WinControls.UI.RadLabel();
             this.dtSelectDate = new Telerik.WinControls.UI.RadCheckBox();
@@ -110,6 +114,7 @@
             this.radButton1 = new Telerik.WinControls.UI.RadButton();
             this.lblCount = new Telerik.WinControls.UI.RadLabel();
             this.radCheckBox1 = new Telerik.WinControls.UI.RadCheckBox();
+            this.radButton3 = new Telerik.WinControls.UI.RadButton();
             this.btnSearch = new Telerik.WinControls.UI.RadButton();
             this.txtPlant = new Telerik.WinControls.UI.RadTextBox();
             this.radLabel2 = new Telerik.WinControls.UI.RadLabel();
@@ -147,6 +152,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.radButton1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lblCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radCheckBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radButton3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnSearch)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPlant)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.radLabel2)).BeginInit();
@@ -158,6 +164,7 @@
             // radRibbonBar1
             // 
             this.radRibbonBar1.CommandTabs.AddRange(new Telerik.WinControls.RadItem[] {
+            this.ribbonTab2,
             this.ribbonTab1});
             // 
             // 
@@ -177,7 +184,7 @@
             // 
             // 
             this.radRibbonBar1.RootElement.AutoSizeMode = Telerik.WinControls.RadAutoSizeMode.WrapAroundChildren;
-            this.radRibbonBar1.Size = new System.Drawing.Size(1303, 161);
+            this.radRibbonBar1.Size = new System.Drawing.Size(1419, 161);
             this.radRibbonBar1.StartButtonImage = ((System.Drawing.Image)(resources.GetObject("radRibbonBar1.StartButtonImage")));
             this.radRibbonBar1.StartMenuItems.AddRange(new Telerik.WinControls.RadItem[] {
             this.radMenuItem1,
@@ -189,9 +196,44 @@
             this.radRibbonBar1.ThemeName = "Office2010Blue";
             this.radRibbonBar1.Click += new System.EventHandler(this.radRibbonBar1_Click);
             // 
+            // ribbonTab2
+            // 
+            this.ribbonTab2.IsSelected = true;
+            this.ribbonTab2.Items.AddRange(new Telerik.WinControls.RadItem[] {
+            this.radRibbonBarGroup9});
+            this.ribbonTab2.Name = "ribbonTab2";
+            this.ribbonTab2.Text = "Navigate";
+            this.ribbonTab2.UseMnemonic = false;
+            this.ribbonTab2.ZIndex = 1;
+            // 
+            // radRibbonBarGroup9
+            // 
+            this.radRibbonBarGroup9.Items.AddRange(new Telerik.WinControls.RadItem[] {
+            this.radButtonElement15,
+            this.radButtonElement16});
+            this.radRibbonBarGroup9.Name = "radRibbonBarGroup9";
+            this.radRibbonBarGroup9.Text = "Print Box";
+            // 
+            // radButtonElement15
+            // 
+            this.radButtonElement15.Image = ((System.Drawing.Image)(resources.GetObject("radButtonElement15.Image")));
+            this.radButtonElement15.Name = "radButtonElement15";
+            this.radButtonElement15.Text = "Print";
+            this.radButtonElement15.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.radButtonElement15.Click += new System.EventHandler(this.radButtonElement15_Click);
+            // 
+            // radButtonElement16
+            // 
+            this.radButtonElement16.Image = ((System.Drawing.Image)(resources.GetObject("radButtonElement16.Image")));
+            this.radButtonElement16.ImageAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.radButtonElement16.Name = "radButtonElement16";
+            this.radButtonElement16.Text = "Bank Box";
+            this.radButtonElement16.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.radButtonElement16.Click += new System.EventHandler(this.radButtonElement16_Click);
+            // 
             // ribbonTab1
             // 
-            this.ribbonTab1.IsSelected = true;
+            this.ribbonTab1.IsSelected = false;
             this.ribbonTab1.Items.AddRange(new Telerik.WinControls.RadItem[] {
             this.radRibbonBarGroup1,
             this.radRibbonBarGroup8,
@@ -535,7 +577,7 @@
             this.radLabelElement1});
             this.radStatusStrip1.Location = new System.Drawing.Point(0, 688);
             this.radStatusStrip1.Name = "radStatusStrip1";
-            this.radStatusStrip1.Size = new System.Drawing.Size(1303, 26);
+            this.radStatusStrip1.Size = new System.Drawing.Size(1419, 26);
             this.radStatusStrip1.SizingGrip = false;
             this.radStatusStrip1.TabIndex = 1;
             // 
@@ -554,7 +596,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 161);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1303, 527);
+            this.panel1.Size = new System.Drawing.Size(1419, 527);
             this.panel1.TabIndex = 2;
             // 
             // radGridView1
@@ -715,7 +757,7 @@
             this.radGridView1.Name = "radGridView1";
             this.radGridView1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.radGridView1.ShowGroupPanel = false;
-            this.radGridView1.Size = new System.Drawing.Size(1303, 497);
+            this.radGridView1.Size = new System.Drawing.Size(1419, 497);
             this.radGridView1.TabIndex = 1;
             this.radGridView1.ThemeName = "Office2010Blue";
             this.radGridView1.RowFormatting += new Telerik.WinControls.UI.RowFormattingEventHandler(this.radGridView1_RowFormatting);
@@ -727,10 +769,10 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel2.Controls.Add(this.progressBar1);
             this.panel2.Controls.Add(this.chkTool);
             this.panel2.Controls.Add(this.radLabel5);
             this.panel2.Controls.Add(this.dtStartDate);
-            this.panel2.Controls.Add(this.progressBar1);
             this.panel2.Controls.Add(this.lblCalculate);
             this.panel2.Controls.Add(this.radLabel4);
             this.panel2.Controls.Add(this.dtSelectDate);
@@ -742,6 +784,7 @@
             this.panel2.Controls.Add(this.radButton1);
             this.panel2.Controls.Add(this.lblCount);
             this.panel2.Controls.Add(this.radCheckBox1);
+            this.panel2.Controls.Add(this.radButton3);
             this.panel2.Controls.Add(this.btnSearch);
             this.panel2.Controls.Add(this.txtPlant);
             this.panel2.Controls.Add(this.radLabel2);
@@ -750,8 +793,16 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1303, 30);
+            this.panel2.Size = new System.Drawing.Size(1419, 30);
             this.panel2.TabIndex = 0;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(368, 5);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(30, 17);
+            this.progressBar1.TabIndex = 10;
+            this.progressBar1.Visible = false;
             // 
             // chkTool
             // 
@@ -781,22 +832,13 @@
             this.dtStartDate.Text = "04/03/2020";
             this.dtStartDate.Value = new System.DateTime(2020, 3, 4, 8, 50, 35, 538);
             // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(3, 3);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(301, 17);
-            this.progressBar1.TabIndex = 10;
-            this.progressBar1.Visible = false;
-            // 
             // lblCalculate
             // 
-            this.lblCalculate.Location = new System.Drawing.Point(23, 2);
+            this.lblCalculate.Location = new System.Drawing.Point(23, 6);
             this.lblCalculate.Name = "lblCalculate";
             this.lblCalculate.Size = new System.Drawing.Size(60, 18);
             this.lblCalculate.TabIndex = 1;
             this.lblCalculate.Text = "Calculate : ";
-            this.lblCalculate.Visible = false;
             // 
             // radLabel4
             // 
@@ -905,11 +947,23 @@
             this.radCheckBox1.Visible = false;
             this.radCheckBox1.ToggleStateChanged += new Telerik.WinControls.UI.StateChangedEventHandler(this.radCheckBox1_ToggleStateChanged);
             // 
+            // radButton3
+            // 
+            this.radButton3.Location = new System.Drawing.Point(1013, 1);
+            this.radButton3.Name = "radButton3";
+            this.radButton3.Size = new System.Drawing.Size(66, 27);
+            this.radButton3.TabIndex = 2;
+            this.radButton3.Text = "Stop";
+            this.radButton3.Click += new System.EventHandler(this.radButton3_Click);
+            ((Telerik.WinControls.UI.RadButtonElement)(this.radButton3.GetChildAt(0))).Text = "Stop";
+            ((Telerik.WinControls.UI.RadButtonElement)(this.radButton3.GetChildAt(0))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(0)))), ((int)(((byte)(133)))));
+            ((Telerik.WinControls.UI.RadButtonElement)(this.radButton3.GetChildAt(0))).Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            // 
             // btnSearch
             // 
-            this.btnSearch.Location = new System.Drawing.Point(959, 3);
+            this.btnSearch.Location = new System.Drawing.Point(924, 2);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(53, 23);
+            this.btnSearch.Size = new System.Drawing.Size(66, 27);
             this.btnSearch.TabIndex = 2;
             this.btnSearch.Text = "ค้นหา";
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
@@ -1026,7 +1080,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1303, 714);
+            this.ClientSize = new System.Drawing.Size(1419, 714);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.radStatusStrip1);
             this.Controls.Add(this.radRibbonBar1);
@@ -1063,6 +1117,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.radButton1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lblCount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.radCheckBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.radButton3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnSearch)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPlant)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.radLabel2)).EndInit();
@@ -1149,5 +1204,10 @@
         private Telerik.WinControls.UI.RadButtonElement radButtonElement13;
         private Telerik.WinControls.UI.RadCheckBox chkTool;
         private Telerik.WinControls.UI.RadButtonElement radButtonElement14;
+        private Telerik.WinControls.UI.RadButton radButton3;
+        private Telerik.WinControls.UI.RibbonTab ribbonTab2;
+        private Telerik.WinControls.UI.RadRibbonBarGroup radRibbonBarGroup9;
+        private Telerik.WinControls.UI.RadButtonElement radButtonElement15;
+        private Telerik.WinControls.UI.RadButtonElement radButtonElement16;
     }
 }

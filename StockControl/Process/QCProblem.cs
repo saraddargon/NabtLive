@@ -235,8 +235,13 @@ namespace StockControl
                     {
                         decimal ngq = 0;
                         decimal Rework = 0;
+                        decimal qcok, qcng = 0;
                         decimal.TryParse(txtNGQty.Text, out ngq);
                         decimal.TryParse(txtRework.Text, out Rework);
+
+                        decimal.TryParse(txtQCOK.Text, out qcok);
+                        decimal.TryParse(txtQCNG.Text, out qcng);
+
                         if (rdo1.IsChecked)
                             qp.TypeProblem = rdo1.Text;
                         else if (rdo2.IsChecked)
@@ -260,6 +265,8 @@ namespace StockControl
                         qp.CheckBy = txtCheckBy.Text;
                         qp.Rework = Rework;
                         qp.NGQty = ngq;
+                        qp.QCNG = qcok;
+                        qp.QCOK = qcng;
                         db.SubmitChanges();
 
 
@@ -268,8 +275,12 @@ namespace StockControl
                     {
                         decimal ngq = 0;
                         decimal Rework = 0;
+                        decimal qcok, qcng = 0;
                         decimal.TryParse(txtNGQty.Text, out ngq);
                         decimal.TryParse(txtRework.Text, out Rework);
+
+                        decimal.TryParse(txtQCOK.Text, out qcok);
+                        decimal.TryParse(txtQCNG.Text, out qcng);
 
                         tb_QCProblem qp2 = new tb_QCProblem();
                         if (rdo1.IsChecked)
@@ -297,6 +308,8 @@ namespace StockControl
                         qp2.CreateDate = DateTime.Now;
                         qp2.NGQty = ngq;
                         qp2.Rework = Rework;
+                        qp2.QCNG = qcok;
+                        qp2.QCOK = qcng;
                         db.tb_QCProblems.InsertOnSubmit(qp2);
                         db.SubmitChanges();
 

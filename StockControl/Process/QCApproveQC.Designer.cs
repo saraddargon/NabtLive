@@ -329,7 +329,6 @@
             this.radButtonElement3.Name = "radButtonElement3";
             this.radButtonElement3.Text = "Link Data";
             this.radButtonElement3.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.radButtonElement3.Visibility = Telerik.WinControls.ElementVisibility.Collapsed;
             this.radButtonElement3.Click += new System.EventHandler(this.radButtonElement3_Click);
             ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement3.GetChildAt(1).GetChildAt(1))).LineLimit = false;
             ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement3.GetChildAt(1).GetChildAt(1))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(5)))), ((int)(((byte)(194)))));

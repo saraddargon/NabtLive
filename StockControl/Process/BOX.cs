@@ -428,7 +428,10 @@ namespace StockControl
         private void btnSearch_Click(object sender, EventArgs e)
         {
             //DataLoad();
-            radButtonElement1_Click(sender,e);
+              radButtonElement1_Click(sender,e);
+            
+           
+           // RunReport();
         }
 
         private void radButtonElement2_Click_1(object sender, EventArgs e)
@@ -580,6 +583,8 @@ namespace StockControl
         }
         private void radButtonElement1_Click(object sender, EventArgs e)
         {
+            //RunReport();
+            //return;
             this.Cursor = Cursors.WaitCursor;
             
             
@@ -614,8 +619,7 @@ namespace StockControl
                             //MessageBox.Show(rd.ItemNo);
                             //db.sp_44_BOXJObQ_StartBoxRunFirst_Dynamics(rd.ItemNo);
                             db.sp_44_BOXJObQ_StartBoxRunFirst_Dynamics2(dtStartDate.Value,rd.ItemNo);
-                            db.sp_44_BOXJObQ_StartBoxRun(dtStartDate.Value,rd.ItemNo);
-                         
+                            db.sp_44_BOXJObQ_StartBoxRun(dtStartDate.Value,rd.ItemNo);                         
                             progressBar1.Value = ValueA;
                             progressBar1.PerformStep();
                            
@@ -644,7 +648,131 @@ namespace StockControl
             progressBar1.Visible = false;
             dtStartDate.Value.ToString();
         }
-        
+        BackgroundWorker bgWorker = new BackgroundWorker();
+        string BoxItem = "";
+        int CountA = 0;
+        DateTime dtDate = DateTime.Now;
+        private void RunReport()
+        {
+            if (MessageBox.Show("ต้องการ Run Report ?", "Box List", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {       
+                    db.sp_44_BOX_Calculate01();
+                    db.sp_44_BOXJObQ_StartBoxDelete();
+                }
+                    lblCalculate.Text = "";
+                dtDate = dtStartDate.Value;
+                lblCalculate.ForeColor = Color.Blue;
+                bgWorker.WorkerReportsProgress = true;
+                bgWorker.WorkerSupportsCancellation = true;
+                bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
+                bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
+                bgWorker.ProgressChanged += new ProgressChangedEventHandler(bgWorker_ProgressChanged);
+                bgWorker.RunWorkerAsync();
+            }
+        }
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            if (bgWorker.WorkerSupportsCancellation == true)
+            {
+                // Cancel the asynchronous operation.
+                bgWorker.CancelAsync();
+            }
+        }
+        private void bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            int value1 = 0;
+            BackgroundWorker worker = sender as BackgroundWorker;
+            try
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    var bl = db.tb_BOXes.Where(b => b.Status.Equals("Active")).ToList();
+                    if (!txtItemNo.Text.Equals(""))
+                    {
+                        bl = db.tb_BOXes.Where(b => b.Status.Equals("Active") && b.ItemNo.Contains(txtItemNo.Text)).ToList();
+
+                    }
+                    CountA = bl.Count;
+                    foreach (var rd in bl)
+                    {
+                        BoxItem = rd.ItemNo;
+                        ////////////////////////////
+                        if (worker.CancellationPending == true)
+                        {
+                            e.Cancel = true;
+                            break;
+                        }
+                        else
+                        {
+                            value1 += 1;
+                            // Perform a time consuming operation and report progress.
+                            System.Threading.Thread.Sleep(100);
+                            worker.ReportProgress(value1);                            
+                            db.sp_44_BOXJObQ_StartBoxRunFirst_Dynamics2(dtDate, BoxItem);
+                            db.sp_44_BOXJObQ_StartBoxRun(dtDate, BoxItem);
+                            /////////////////////////////  
+                        }
+                    }                  
+                }
+            }
+            catch { }
+
+            //for (int i = 1; i <= 10; i++)
+            //{
+            //    if (worker.CancellationPending == true)
+            //    {
+            //        e.Cancel = true;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        // Perform a time consuming operation and report progress.
+            //        System.Threading.Thread.Sleep(100);
+            //        worker.ReportProgress(i*10);
+
+            //    }
+            //}
+        }
+
+        // This event handler updates the progress.
+        private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            
+            // Update Progress Status to UI
+            this.lblCalculate.Text = "Process.. [ " + BoxItem + " ]  " + (e.ProgressPercentage.ToString() + " /" + CountA.ToString());
+        }
+
+        // This event handler deals with the results of the background operation.
+        private void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // Finish
+
+            if (e.Cancelled == true)
+            {
+                this.lblCalculate.Text = "Canceled!";
+            }
+            else if (e.Error != null)
+            {
+                this.lblCalculate.Text = "Error: " + e.Error.Message;
+            }
+            else
+            {
+                this.lblCalculate.Text = "Run : Completed!";
+                ////Run Report//
+                if (CountA > 0)
+                {
+                    Report.Reportx1.WReport = "BoxReport";
+                    Report.Reportx1.Value = new string[2];
+                    Report.Reportx1.Value[0] = "";
+                    Report.Reportx1.Value[1] = dbClss.UserID;
+                    Report.Reportx1 op = new Report.Reportx1("BoxReport.rpt");
+                    op.Show();
+                }
+            }          
+        }
+
         string Date1 = DateTime.Now.ToString("dd/MMM/yyyy");
         string Date2 = DateTime.Now.AddDays(1).ToString("dd/MMM/yyyy");
         string Date3 = DateTime.Now.AddDays(2).ToString("dd/MMM/yyyy");
@@ -1092,7 +1220,7 @@ namespace StockControl
 
         private void radButtonElement4_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("คุณต้องการ อัพเดตจาก TPICS หรือไม่ ?", "อัพเดตรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("คุณต้องการ อัพเดตจาก Dynamics หรือไม่ ?", "อัพเดตรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
@@ -1212,6 +1340,27 @@ namespace StockControl
         private void radButtonElement14_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void radButton3_Click(object sender, EventArgs e)
+        {
+            btnStop_Click(sender, e);
+        }
+
+        private void radButtonElement15_Click(object sender, EventArgs e)
+        {
+            Report.Reportx1.WReport = "BoxReport";
+            Report.Reportx1.Value = new string[2];
+            Report.Reportx1.Value[0] = "";
+            Report.Reportx1.Value[1] = dbClss.UserID;
+            Report.Reportx1 op = new Report.Reportx1("BoxReport.rpt");
+            op.Show();
+        }
+
+        private void radButtonElement16_Click(object sender, EventArgs e)
+        {
+            BOXStart bs = new BOXStart();
+            bs.Show();
         }
     }
 }

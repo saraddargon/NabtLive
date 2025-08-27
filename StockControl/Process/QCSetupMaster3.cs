@@ -14,9 +14,9 @@ using System.Data.OleDb;
 
 namespace StockControl
 {
-    public partial class QCSetupMaster : Telerik.WinControls.UI.RadRibbonForm
+    public partial class QCSetupMaster3 : Telerik.WinControls.UI.RadRibbonForm
     {
-        public QCSetupMaster(string Code)
+        public QCSetupMaster3(string Code,string FormISOx)
         {
             this.Name = "QCSetupMaster";
             //if (!dbClss.PermissionScreen(this.Name))
@@ -26,9 +26,12 @@ namespace StockControl
             //}
             InitializeComponent();
             PartNo = Code;
+            FormISOV = FormISOx;
+            cboISO.Text = FormISOx;
             txtPartNo.Text = Code.ToUpper();
         }
         string PartNo = "";
+        string FormISOV = "";
         //private int RowView = 50;
         //private int ColView = 10;
         DataTable dt = new DataTable();
@@ -54,29 +57,37 @@ namespace StockControl
         private void Unit_Load(object sender, EventArgs e)
         {
             RMenu3.Click += RMenu3_Click;
-            RMenu4.Click += RMenu4_Click;
-            RMenu5.Click += RMenu5_Click;
-            RMenu6.Click += RMenu6_Click;
-            radGridView2.AutoGenerateColumns = true;
-           // radGridView1.ReadOnly = true;
+           // RMenu4.Click += RMenu4_Click;
+          //  RMenu5.Click += RMenu5_Click;
+          //  RMenu6.Click += RMenu6_Click;
+            dtDateStart.Value = DateTime.Now;
+            radGridView2.AutoGenerateColumns = false;
+            radGridView1.ReadOnly = true;
             radGridView1.AutoGenerateColumns = false;
             GETDTRow();
             using (DataClasses1DataContext db = new DataClasses1DataContext())
             {
-                tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QCImage")).FirstOrDefault();
-                if(ph!=null)
-                {
-                    PathFile = ph.PathFile;
-                }
-                var qf = db.tb_QCFormMasters.ToList();
-                cboISO.DataSource = null;
-                cboISO.DataSource = qf;
-                cboISO.ValueMember = "FormISO";
-                cboISO.DisplayMember = "FormISO";
+                //tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QCImage")).FirstOrDefault();
+                //if (ph != null)
+                //{
+                //    PathFile = ph.PathFile;
+                //}
+                //var qf = db.tb_QCFormMasters.ToList();
+                //cboISO.DataSource = null;
+                //cboISO.DataSource = qf;
+                //cboISO.ValueMember = "FormISO";
+                //cboISO.DisplayMember = "FormISO";
+                rdoCboVersion.DataSource = null;
+                rdoCboVersion.DataSource = db.sp_49_QC_LoadVersion(txtPartNo.Text,cboISO.Text).ToList();
+                rdoCboVersion.ValueMember = "Version";
+                rdoCboVersion.DisplayMember = "Version";
+             
+
 
             }
 
-                DataLoad();
+             //DataLoad();
+            btnImport.Enabled = false;
         }
 
         private void RMenu6_Click(object sender, EventArgs e)
@@ -105,12 +116,15 @@ namespace StockControl
         private void DataLoad()
         {
 
-           
+         //   btnImport.Enabled = true;
             using (DataClasses1DataContext db = new DataClasses1DataContext())
             {
-              //  radGridView1.AutoGenerateColumns = true;
-                radGridView1.DataSource = db.sp_46_QCMaster(cboISO.Text, txtPartNo.Text).ToList();
-                    //db.tb_QCGroupParts.Where(p => p.FormISO.Equals(cboISO.Text) && p.PartNo.Equals(txtPartNo.Text)).ToList();
+                btnImport.Enabled = true;
+               radGridView1.AutoGenerateColumns = false;
+                radGridView1.DataSource = null;
+                var rdt= db.sp_46_QCMasterV2(cboISO.Text, txtPartNo.Text, rdoCboVersion.Text).ToList();
+                radGridView1.DataSource = rdt;
+                //db.tb_QCGroupParts.Where(p => p.FormISO.Equals(cboISO.Text) && p.PartNo.Equals(txtPartNo.Text)).ToList();
 
                 //int ck1 = 1;
                 //foreach (var x in radGridView1.Rows)
@@ -118,6 +132,7 @@ namespace StockControl
                 //    x.Cells["No"].Value = ck1;
                 //    ck1 += 1;
                 //}
+
             }
 
 
@@ -211,7 +226,7 @@ namespace StockControl
                       //  string UserID = radGridView1.Rows[row].Cells["dgvUserID"].Value.ToString();
                         using (DataClasses1DataContext db = new DataClasses1DataContext())
                         {
-                            db.sp_46_QCDeleteMaster01(cboISO.Text, txtPartNo.Text);
+                            db.sp_46_QCDeleteMaster01V2(cboISO.Text, txtPartNo.Text,rdoCboVersion.Text);
                             MessageBox.Show("ลบเรียบร้อย");
                         }
 
@@ -306,9 +321,71 @@ namespace StockControl
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            QCMasterCopy mc = new QCMasterCopy(txtPartNo.Text.ToUpper(), cboISO.Text.ToUpper());
-            mc.ShowDialog();
-            DataLoad(); 
+            //QCMasterCopy mc = new QCMasterCopy(txtPartNo.Text.ToUpper(), cboISO.Text.ToUpper());
+            //mc.ShowDialog();
+            //DataLoad(); 
+            CheckInsert();
+
+        }
+        private bool CheckInsert()
+        {
+            bool ck = false;
+            if (!txtPartNo.Text.Equals("") && !rdoCboVersion.Text.Equals("") && !cboISO.Text.Equals(""))
+            {
+                if (MessageBox.Show("จะต้อง [ลบข้อมูล] Version นี้ออกก่อนและทำการ Copy มาทับ?", "Check", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    if (MessageBox.Show("ทำการ Copy จากปัจจุบัน?", "Copy", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            tb_QCGroupPartV2 qv2 = db.tb_QCGroupPartV2s.Where(p => p.PartNo.Equals(txtPartNo.Text)
+                            && p.FormISO.Equals(cboISO.Text)
+                            && p.Version.Equals(rdoCboVersion.Text)).FirstOrDefault();
+                            if (qv2 != null)
+                            {
+                                MessageBox.Show("ไม่สามารถ Copy ได้เนื่องจาก ยังไม่ได้ลบ Version มันซ้ำกัน!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else
+                            {
+                                db.sp_49_QC_CopyToOldVersion(txtPartNo.Text.ToUpper(), cboISO.Text.ToUpper(), dtDateStart.Value, rdoCboVersion.Text.ToUpper());
+                                MessageBox.Show("Copy Completed.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return ck;
+
+        }
+        private bool CheckInsertImport()
+        {
+            bool ck = false;
+            if (!txtPartNo.Text.Equals("") && !rdoCboVersion.Text.Equals("") && !cboISO.Text.Equals(""))
+            {
+                if (MessageBox.Show("จะต้อง [ลบข้อมูล] Version นี้ออกก่อนและทำการ Copy มาทับ?", "Check", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        tb_QCGroupPartV2 qv2 = db.tb_QCGroupPartV2s.Where(p => p.PartNo.Equals(txtPartNo.Text)
+                        && p.FormISO.Equals(cboISO.Text)
+                        && p.Version.Equals(rdoCboVersion.Text)).FirstOrDefault();
+                        if (qv2 != null)
+                        {
+                            MessageBox.Show("ไม่สามารถ Import ได้เนื่องจาก ยังไม่ได้ลบ Version มันซ้ำกัน!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            ck = false;
+                        }
+                        else
+                        {
+                            ck = true;
+                        }
+                    }
+
+                }
+            }
+
+            return ck;
 
         }
         private void Saveclick()
@@ -361,27 +438,7 @@ namespace StockControl
                 //        }
                 //    }
                 //}
-
-                if(e.ColumnIndex == radGridView1.Columns["SetDate2"].Index)
-                {
-                    try
-                    {
-                        int id = Convert.ToInt32(radGridView1.CurrentRow.Cells["id"].Value);
-                        if(id>0)
-                        {
-                            using (DataClasses1DataContext db = new DataClasses1DataContext())
-                            {
-                                tb_QCGroupPart qcp = db.tb_QCGroupParts.Where(p => p.id.Equals(id)).FirstOrDefault();
-                                if(qcp!=null)
-                                {
-                                    qcp.SetDate2 = radGridView1.CurrentRow.Cells["SetDate2"].Value.ToString();
-                                    db.SubmitChanges();
-                                }
-                            }
-                        }
-                    }
-                    catch { }
-                }        
+        
 
             }
             catch(Exception ex) { }
@@ -536,14 +593,16 @@ namespace StockControl
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-            
-            OpenFileDialog op = new OpenFileDialog();
-            op.Filter = "Excel files (*.xlsx)|*.xlsx|All files (*.xlsx)|*.xlsx";
-            if (op.ShowDialog() == DialogResult.OK)
+            if (!rdoCboVersion.Text.Equals("") && CheckInsertImport())
             {
-                ImportData(op.FileName);
+                OpenFileDialog op = new OpenFileDialog();
+                op.Filter = "Excel files (*.xlsx)|*.xlsx|All files (*.xlsx)|*.xlsx";
+                if (op.ShowDialog() == DialogResult.OK)
+                {
+                    ImportData(op.FileName);
+                }
+                DataLoad();
             }
-            DataLoad();
             
         }
 
@@ -571,7 +630,7 @@ namespace StockControl
                 {
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
                     {
-                        db.sp_46_QCDeleteMaster01(cboISO.Text, txtPartNo.Text);
+                        db.sp_46_QCDeleteMaster01V2(cboISO.Text, txtPartNo.Text,"");
                         for (int ixi = 0; ixi <= 80; ixi++)
                         {
                             cck = false;
@@ -603,7 +662,7 @@ namespace StockControl
                                 {
 
 
-                                    tb_QCGroupPart qg = new tb_QCGroupPart();
+                                    tb_QCGroupPartV2 qg = new tb_QCGroupPartV2();
                                     qg.FormISO = cboISO.Text.ToUpper();
                                     qg.PartNo = txtPartNo.Text.ToUpper();
                                     qg.Seq = Convert.ToInt32(strArray[1]);
@@ -621,10 +680,12 @@ namespace StockControl
 
                                     qg.Stamp = "";
                                     qg.Inspection = Convert.ToString(strArray[11]);
-                                    qg.Rank = Convert.ToString(strArray[12]);//M
+                                    qg.Rank = Convert.ToString(strArray[12]);
+                                    qg.Version = rdoCboVersion.Text;
+                                    qg.VDate = dtDateStart.Value;
                                     // qg.Stamp = dbClss.Right(txtPartNo.Text, 7);
 
-                                    db.tb_QCGroupParts.InsertOnSubmit(qg);
+                                    db.tb_QCGroupPartV2s.InsertOnSubmit(qg);
                                     db.SubmitChanges();
 
                                 }
@@ -741,6 +802,7 @@ namespace StockControl
         private void radButton1_Click(object sender, EventArgs e)
         {
             DataLoad();
+          //  btnImport.Enabled = true;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -913,15 +975,7 @@ namespace StockControl
 
         private void radButtonElement4_Click(object sender, EventArgs e)
         {
-            if (!txtPartNo.Text.Equals("") && !cboISO.Text.Equals(""))
-            {
-                QCSetupMaster3 oldv = new QCSetupMaster3(txtPartNo.Text, cboISO.Text);
-                oldv.Show();
-            }else
-            {
-                MessageBox.Show("ให้เลือก เลขเอกสาร ISO ก่อน!!!");
-            }
-               
+
         }
     }
 }

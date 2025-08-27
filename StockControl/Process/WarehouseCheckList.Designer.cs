@@ -53,6 +53,7 @@
             this.radButtonElement5 = new Telerik.WinControls.UI.RadButtonElement();
             this.radRibbonBarGroup4 = new Telerik.WinControls.UI.RadRibbonBarGroup();
             this.btnExport = new Telerik.WinControls.UI.RadButtonElement();
+            this.radButtonElement7 = new Telerik.WinControls.UI.RadButtonElement();
             this.radRibbonBarGroup3 = new Telerik.WinControls.UI.RadRibbonBarGroup();
             this.btnRefresh = new Telerik.WinControls.UI.RadButtonElement();
             this.radRibbonBarGroup5 = new Telerik.WinControls.UI.RadRibbonBarGroup();
@@ -191,7 +192,8 @@
             // 
             this.radRibbonBarGroup4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(86)))), ((int)(((byte)(86)))), ((int)(((byte)(86)))));
             this.radRibbonBarGroup4.Items.AddRange(new Telerik.WinControls.RadItem[] {
-            this.btnExport});
+            this.btnExport,
+            this.radButtonElement7});
             this.radRibbonBarGroup4.Name = "radRibbonBarGroup4";
             this.radRibbonBarGroup4.Text = "Export";
             // 
@@ -203,6 +205,15 @@
             this.btnExport.Text = "ส่งข้อมูลออก";
             this.btnExport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
+            // radButtonElement7
+            // 
+            this.radButtonElement7.Image = ((System.Drawing.Image)(resources.GetObject("radButtonElement7.Image")));
+            this.radButtonElement7.ImageAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.radButtonElement7.Name = "radButtonElement7";
+            this.radButtonElement7.Text = "  Delete Scan PART";
+            this.radButtonElement7.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.radButtonElement7.Click += new System.EventHandler(this.radButtonElement7_Click);
             // 
             // radRibbonBarGroup3
             // 
@@ -796,5 +807,6 @@
         private Telerik.WinControls.UI.RadButtonElement radButtonElement6;
         private Telerik.WinControls.UI.RadLabel radLabel1;
         private Telerik.WinControls.UI.RadDropDownList txtItemcat;
+        private Telerik.WinControls.UI.RadButtonElement radButtonElement7;
     }
 }

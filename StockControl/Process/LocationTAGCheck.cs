@@ -285,7 +285,15 @@ namespace StockControl
             {
                 txtCustomerTAG.Text = "31420-BZ070";
             }
-            
+            if (CTag.Equals("31420BZ04000"))
+            {
+                txtCustomerTAG.Text = "31420-BZ040-00";
+            }
+            if (CTag.Equals("31420BZ07000"))
+            {
+                txtCustomerTAG.Text = "31420-BZ070-00";
+            }
+
         }
         private void txtCustomerTAG_KeyPress(object sender, KeyPressEventArgs e)
         {

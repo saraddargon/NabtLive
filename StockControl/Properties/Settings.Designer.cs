@@ -26,7 +26,8 @@ namespace StockControl.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=XTH-TOO;Initial Catalog=dbBarcodeNab;User ID=sa;Password=;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=XTH-TOO;Initial Catalog=dbBarcodeNab;Persist Security Info=True;User " +
+            "ID=sa;Password=P@ssw0rd")]
         public string dbBarcodeNabConnectionString {
             get {
                 return ((string)(this["dbBarcodeNabConnectionString"]));

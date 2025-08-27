@@ -9,6 +9,8 @@ using Telerik.WinControls;
 using ClassLib;
 using System.Security.Permissions;
 using System.Linq;
+using System.Threading;
+
 namespace StockControl
 {
     public partial class Mainfrom : Telerik.WinControls.UI.RadForm
@@ -29,6 +31,7 @@ namespace StockControl
         {
             try
             {
+                timer1.Stop();
                 Application.Exit();
             }
             catch { }
@@ -61,6 +64,11 @@ namespace StockControl
                 }
             }
             catch { }
+            if (Environment.MachineName.Equals("NTPC0073"))
+            {
+                timer1.Enabled = true;
+                timer1.Start();
+            }
         }
         private void CallDisplayHome()
         {
@@ -470,6 +478,73 @@ namespace StockControl
             //New Web
             ListNews ln = new ListNews("News");
             ln.Show();
+        }
+
+        private void radMenuItem33_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(@"Report\ManualQA02.pdf");
+            }
+            catch { }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            //Thread.Sleep(1000);
+            timer1.Stop();
+            try
+            {
+                if (!dbClss.PrintA)
+                {
+                    timer1.Stop();
+
+                    if (Environment.MachineName.Equals("NTPC0073"))
+                    {
+                        dbClss.PrintA = true;
+                        Thread backgroundThread = new Thread(DoWork);
+                        backgroundThread.IsBackground = true;
+                        backgroundThread.Start();
+                    }
+                    else
+                    {
+                        timer1.Stop();
+                    }
+
+                }
+            }
+            catch { }
+            // Thread.Sleep(10000);
+            try
+            {
+                timer1.Start();
+            }
+            catch { }
+        }
+        private void DoWork()
+        {
+            // โค้ดที่ต้องการให้ทำงานเบื้องหลัง
+            // ...
+            try
+            {
+                this.Invoke(new Action(() =>
+                {
+                    radLabelElement6.Text = "Print:Working..";
+                }));
+                //Call// Data
+                dbClss.PrintA = true;
+                
+                dbPrintAuto.PrintTAGA();
+                //End Call Print//
+                this.Invoke(new Action(() =>
+                {
+                    radLabelElement6.Text = "Print:None";
+                }));
+                //timer1.Start();
+                Thread.Sleep(1000);
+            }
+            catch { dbClss.PrintA = false; }
+            dbClss.PrintA = false;
         }
     }
 }

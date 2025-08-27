@@ -389,16 +389,17 @@
             gridViewTextBoxColumn4.FormatString = "{0:N0}";
             gridViewTextBoxColumn4.HeaderText = "ScanQty";
             gridViewTextBoxColumn4.Name = "Quantity";
-            gridViewTextBoxColumn4.ReadOnly = true;
             gridViewTextBoxColumn4.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
             gridViewTextBoxColumn4.Width = 120;
             gridViewTextBoxColumn5.FieldName = "ScanBy";
             gridViewTextBoxColumn5.HeaderText = "ScanBy";
             gridViewTextBoxColumn5.Name = "ScanBy";
+            gridViewTextBoxColumn5.ReadOnly = true;
             gridViewTextBoxColumn5.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             gridViewTextBoxColumn6.FieldName = "ScanDate";
             gridViewTextBoxColumn6.HeaderText = "ScanDate";
             gridViewTextBoxColumn6.Name = "ScanDate";
+            gridViewTextBoxColumn6.ReadOnly = true;
             gridViewTextBoxColumn6.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             gridViewTextBoxColumn6.Width = 120;
             gridViewTextBoxColumn7.FieldName = "PKTAG";
@@ -422,7 +423,6 @@
             this.radGridView1.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
             this.radGridView1.Name = "radGridView1";
-            this.radGridView1.ReadOnly = true;
             this.radGridView1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.radGridView1.ShowGroupPanel = false;
             this.radGridView1.Size = new System.Drawing.Size(970, 538);

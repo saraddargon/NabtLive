@@ -753,6 +753,7 @@ namespace StockControl
 
         private void radButtonElement1_Click(object sender, EventArgs e)
         {
+            //Big TAG
             this.Cursor = Cursors.Default;
             try
             {
@@ -802,7 +803,7 @@ namespace StockControl
                                     }
                                 }
 
-                                //Order,PalletNo,Invoice,PartCode,Qty,ofTAG,TotalTAG,LotNo
+                                //Order,PalletNo,Invoice,PartCode,Qty,ofTAG(ofPL),TotalTAG(PL),LotNo
                                 QRCode = "";
                                 QRCode = ed.OrderNo + "," + ed.PalletNo + "," + ed.InvoiceNo + ",";
                                 QRCode = QRCode+ed.PartNo + "," + ed.Qty + "," + ed.ofPL.ToString() + "of" + ed.TotalPL.ToString() + "," + getNewLot.ToString();
@@ -1002,6 +1003,7 @@ namespace StockControl
                         Tag.Status = Convert.ToString(rd.Cells["Status"].Value);
                         Tag.LotNo = Convert.ToString(rd.Cells["LotNo"].Value);
                         Tag.Packing = Convert.ToBoolean(rd.Cells["LConfirm"].Value);
+                        Tag.CheckCompare = Convert.ToString(rd.Cells["CheckCompare"].Value);
                         //Create QR//
                         //ListNo,ExportNo,OrderNo,PartNo,CustItem,Qty,id
                         QRCode = "0" + "," + txtExportNo.Text + ",";

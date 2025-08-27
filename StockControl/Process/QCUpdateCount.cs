@@ -15,12 +15,13 @@ namespace StockControl
    
         Telerik.WinControls.UI.RadTextBox CodeNo_tt = new Telerik.WinControls.UI.RadTextBox();
         int screen = 0;
-        public QCUpdateCount(string  CodeNox,string LineName)
+        public QCUpdateCount(string  CodeNox,string LineName,string PartNox)
         {
             InitializeComponent();            
             screen = 1;
             txtWoNo.Text = CodeNox;
             txtLineName.Text = LineName;
+            PartNo = PartNox;
         }
         public QCUpdateCount()
         {
@@ -40,7 +41,8 @@ namespace StockControl
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
-
+        string TempReport = "";
+        string PartNo = "";
         private void UpDownData(int a)
         {
             try
@@ -59,15 +61,48 @@ namespace StockControl
                     if(qp!=null)
                     {
                         QQ = Convert.ToInt32(qp.A1);
-                    }
+                    }                   
+
+                    
                 }//TW10-CB
-                if (txtLineName.Text.Equals("TW10-CB"))
+                if (txtLineName.Text.Equals("TW10-CB") || txtLineName.Text.Equals("TW20-CB"))
                 {
                     txtScan.Text = ValueText2(Gobal);
                 }
                 else if(txtLineName.Text.Equals("TW02-SC_PB"))
                 {
                     txtScan.Text = ValueText3(Gobal);
+                }
+                else if(txtLineName.Text.Equals("TS10-SC_CB"))                    
+                {                    
+                    txtScan.Text = ValueText4(Gobal);
+                }
+                else if(txtLineName.Text.Equals("TC10-CL-MT AAT")
+                    || txtLineName.Text.Equals("TC20-MAIN_M")
+                    || txtLineName.Text.Equals("TC30-MAIN_T"))
+                {
+                    if (TempReport.Equals("NISSAN"))
+                    {
+                        txtScan.Text = ValueText5B(Gobal);
+                    }
+                    else if (TempReport.Equals("DATT"))
+                    {
+                        txtScan.Text = ValueText5A(Gobal);
+                    }
+                    else
+                    {
+                        txtScan.Text = ValueText5(Gobal);
+                    }
+                }
+                else if(txtLineName.Text.Equals("TR10-RV-6"))
+                {
+                    txtScan.Text = ValueTextRV6(Gobal);
+                }
+                else if(txtLineName.Text.Equals("TP01-CL-OPE_SUB")
+                    || txtLineName.Text.Equals("TP10-CL-OPE_MAIN")
+                    )
+                {
+                    txtScan.Text = ValueText6A(Gobal);
                 }
                 else
                 {
@@ -116,20 +151,20 @@ namespace StockControl
                 TX = "เครื่องรัดขอบ";
                 
             }
+
             else if (aa.Equals(7))
             {
-                TX = "เครื่องพ่นสี";
-               
+                TX = "เครื่อง Test";                
+
             }
             else if (aa.Equals(8))
             {
-                TX = "เครื่อง Test";
-                
-
+                TX = "เครื่อง Stamp Lot";              
             }
             else if (aa.Equals(9))
             {
-                TX = "เครื่อง Stamp Lot";              
+                TX = "เครื่องพ่นสี";
+
             }
             else if (aa.Equals(10))
             {
@@ -225,6 +260,190 @@ namespace StockControl
 
             return TX;
         }
+        private string ValueText4(int aa)
+        {
+            string TX = "";
+            if (aa.Equals(1))
+            {
+                TX = "เครื่องStamp Clamp Ring";
+            }
+            else if (aa.Equals(2))
+            {
+                TX = "เครื่องประกอบ";
+
+            }
+            else if (aa.Equals(3))
+            {
+                TX = "เครื่อง Test 1";
+
+            }
+            else if (aa.Equals(4))
+            {
+                TX = "เครื่อง Test 2";
+
+            }           
+
+            return TX;
+        }
+        private string ValueText5(int aa)
+        {
+            string TX = "";
+            if (aa.Equals(1))
+            {
+                TX = "Body Leak Tester (A2)";
+            }
+            //else if (aa.Equals(2))
+            //{
+            //    TX = "Piston Comp Assembly(A3)";
+
+            //}
+            else if (aa.Equals(2))
+            {
+                TX = "Performance Test (A4)";
+
+            }
+            else if (aa.Equals(3))
+            {
+                TX = "NIPPLE&RESERVOIR ASSEMBLY (A5)";
+
+            }
+            else if (aa.Equals(4))
+            {
+                TX = "NIPPLE&RESERVOIR Leak Tester (A6)";
+
+            }
+            else if (aa.Equals(5))
+            {
+                TX = "เครื่องขัน Stud Bolt(A7)";
+
+            }
+            else if (aa.Equals(6))
+            {
+                TX = "Final Inspection (A8)";
+
+            }
+
+            return TX;
+        }
+        private string ValueText5A(int aa)
+        {
+            string TX = "";
+            if (aa.Equals(1))
+            {
+                TX = "Body Leak Tester (A2)";
+            }
+            //else if (aa.Equals(2))
+            //{
+            //    TX = "Piston Comp Assembly(A3)";
+
+            //}
+            else if (aa.Equals(2))
+            {
+                TX = "Performance Test (A4)";
+
+            }
+            else if (aa.Equals(3))
+            {
+                TX = "NIPPLE&RESERVOIR ASSEMBLY (A5)";
+
+            }
+            else if (aa.Equals(4))
+            {
+                TX = "NIPPLE&RESERVOIR Leak Tester (A6)";
+
+            }
+            else if (aa.Equals(5))
+            {
+                TX = "Final Inspection (A8)";
+
+            }
+
+            return TX;
+        }
+        private string ValueText5B(int aa)
+        {
+            string TX = "";
+             if (aa.Equals(1))
+            {
+                TX = "Dcp Tighening (A1)";
+            }
+            else if (aa.Equals(2))
+            {
+                TX = "Body Leak Tester (A2)";
+            }
+            //else if (aa.Equals(3))
+            //{
+            //    TX = "Piston Comp Assembly(A3)";
+
+            //}
+            else if (aa.Equals(3))
+            {
+                TX = "Performance Test (A4)";
+
+            }
+            else if (aa.Equals(4))
+            {
+                TX = "NIPPLE&RESERVOIR ASSEMBLY (A5)";
+
+            }
+            else if (aa.Equals(5))
+            {
+                TX = "NIPPLE&RESERVOIR Leak Tester (A6)";
+            }          
+            else if (aa.Equals(6))
+            {
+                TX = "Final Inspection (A8)";
+
+            }
+
+            return TX;
+        }
+        private string ValueText6A(int aa)
+        {
+            string TX = "";
+            if (aa.Equals(1))
+            {
+                TX = "Body Leak Tester (A2)";
+            }
+            else if (aa.Equals(2))
+            {
+                TX = "Assy Test (A5)";
+            }
+            else if (aa.Equals(3))
+            {
+                TX = "Lot Stamp (A8)";
+
+            }
+            else if (aa.Equals(4))
+            {
+                TX = "Final Inspection";
+
+            }
+          
+
+            return TX;
+        }
+        private string ValueTextRV6(int aa)
+        {
+            string TX = "";
+            if (aa.Equals(1))
+            {
+                TX = "Control Pressure &Leak Test  (A4)";
+            }
+            else if (aa.Equals(2))
+            {
+                TX = "Process  External Leak Test (A5)";
+            }
+            else if (aa.Equals(3))
+            {
+                TX = "Final Assembly Inspection (A6)";
+
+            }
+
+
+
+            return TX;
+        }
         //private int RowView = 50;
         //private int ColView = 10;
         //DataTable dt = new DataTable();
@@ -270,6 +489,11 @@ namespace StockControl
         }
         private void Unit_Load(object sender, EventArgs e)
         {
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                TempReport = db.get_QC_SetDataMaster(db.get_QC_SetDataMaster_Line(txtLineName.Text), PartNo, 110);
+            }
+
             lblseq.Text = Gobal.ToString();
             clearDb();
             LoadData();
@@ -354,28 +578,32 @@ namespace StockControl
                             db.SubmitChanges();
                         }else
                         {
-                            tb_QCCountPD nc = new tb_QCCountPD();
-                            nc.WONo = txtWoNo.Text.ToUpper();
-                            nc.DayN = DN;
-                            nc.A1 = qq;
+                            if (!txtScan.Text.Equals(""))
+                            {
+                                tb_QCCountPD nc = new tb_QCCountPD();
+                                nc.WONo = txtWoNo.Text.ToUpper();
+                                nc.DayN = DN;
+                                nc.A1 = qq;
 
-                            if (txtLineName.Text.Equals("TW10-CB"))
-                            {
-                                // txtScan.Text = ValueText2(Gobal);
-                                nc.ProcessName = ValueText2(Gobal);
-                            }else if(txtLineName.Text.Equals("TW02-SC_PB"))
-                            {
-                                nc.ProcessName = ValueText3(Gobal);
+                                if (txtLineName.Text.Equals("TW10-CB"))
+                                {
+                                    // txtScan.Text = ValueText2(Gobal);
+                                    nc.ProcessName = txtScan.Text;// ValueText2(Gobal);
+                                }
+                                else if (txtLineName.Text.Equals("TW02-SC_PB"))
+                                {
+                                    nc.ProcessName = txtScan.Text;// ValueText3(Gobal);
+                                }
+                                else
+                                {
+                                    // txtScan.Text = ValueText(Gobal);
+                                    nc.ProcessName = txtScan.Text;// ValueText(Gobal);
+                                }
+
+                                nc.Seq = Gobal;
+                                db.tb_QCCountPDs.InsertOnSubmit(nc);
+                                db.SubmitChanges();
                             }
-                            else
-                            {
-                                // txtScan.Text = ValueText(Gobal);
-                                nc.ProcessName = ValueText(Gobal);
-                            }
-                           
-                            nc.Seq = Gobal;
-                            db.tb_QCCountPDs.InsertOnSubmit(nc);
-                            db.SubmitChanges();
                         }
 
                     }
@@ -390,6 +618,14 @@ namespace StockControl
         private void radGridView4_CellClick(object sender, Telerik.WinControls.UI.GridViewCellEventArgs e)
         {
             rows = e.RowIndex;
+            try
+            {
+                if(e.RowIndex>0)
+                {
+
+                }
+            }
+            catch { }
         }
 
         private void deleteLineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -449,6 +685,35 @@ namespace StockControl
             }
             catch { }
             LoadData();
+        }
+
+        private void radGridView4_CellEndEdit(object sender, Telerik.WinControls.UI.GridViewCellEventArgs e)
+        {
+            if(e.RowIndex>=0)
+            {
+                try
+                {
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        string DN = radGridView4.CurrentRow.Cells["DayN"].Value.ToString();
+                        int Seq = 0;
+                        int.TryParse(radGridView4.CurrentRow.Cells["Seq"].Value.ToString(), out Seq);
+                        if (!DN.Equals(""))
+                        {
+                            if (DN.Equals("N") || DN.Equals("D"))
+                            {
+                                tb_QCCountPD ck = db.tb_QCCountPDs.Where(c => c.WONo.Equals(txtWoNo.Text) && c.Seq.Equals(Seq)).FirstOrDefault();
+                                if(ck!=null)
+                                {
+                                    ck.DayN = DN;
+                                    db.SubmitChanges();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
         }
     }
 }

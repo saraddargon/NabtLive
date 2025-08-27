@@ -558,7 +558,7 @@ namespace StockControl
         private void btnImage_Click(object sender, EventArgs e)
         {
             OpenFileDialog op = new OpenFileDialog();
-            op.Filter = "Image files (*.PNG)|*.PNG|JPEG files (*.JPEG)|*.JPEG";
+            op.Filter = "Image files (*.PNG)|*.PNG|JPEG files (*.JPEG)|*.JPEG|JPG files (*.JPG)|*.JPG";
             if (op.ShowDialog() == DialogResult.OK)
             {
                 txtPathImage.Text = op.FileName;

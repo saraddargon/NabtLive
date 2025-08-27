@@ -71,6 +71,8 @@ namespace StockControl
         DataTable dt = new DataTable();
         string LineName2 = "TW01-PB";
         string FormISO2 = "FM-PD-026_1";
+        string DBLocal1 =dbClss.DbConn;//"Data Source=NAAS02;Initial Catalog=dbBarcodeNab;User ID=sa;Password=napt-2012;";
+        string DBLocal2 =dbClss.DbConn;//@"Server=NAAS02\\pipe\sql\query;Database=dbBarcodeNab;User ID=sa;Password=napt-2012;";
         private void radMenuItem2_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
@@ -102,15 +104,16 @@ namespace StockControl
             // radGridView1.AutoGenerateColumns = false;
             //  GETDTRow();   
             // DataLoad();
+            dbClss.getPath("QC1", 1);
+            dbClss.getPath("QC2", 2);
+            dbClss.getPath("QC3", 3);
+            dbClss.getPath("QC4", 4);
             DefaultLoad();
-            if (LineName2.Equals("TW10-CB"))
-            {
-                FormISO2 = "FM-PD-001";
-            }
-            if (LineName2.Equals("TW02-SC_PB"))
-            {
-                FormISO2 = "FM-PD-109";
-            }
+            setFormISO(LineName2);
+           
+            
+
+
 
 
 
@@ -122,23 +125,17 @@ namespace StockControl
             {
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
-                    tb_QCUserFlag quf = db.tb_QCUserFlags.Where(c => c.UserID.Equals(Environment.MachineName)).FirstOrDefault();
-                    if (quf != null)
-                    {
-                        chkCheckQC.Checked = Convert.ToBoolean(quf.QCFlag);
-                    }
+                    //tb_QCUserFlag quf = db.tb_QCUserFlags.Where(c => c.UserID.Equals(Environment.MachineName)).FirstOrDefault();
+                    //if (quf != null)
+                    //{
+                    //    chkCheckQC.Checked = Convert.ToBoolean(quf.QCFlag);
+                    //}
+                    chkCheckQC.Checked = Convert.ToBoolean(db.QC_QCUserFlag(Environment.MachineName));
                 }
             }
             catch { }
+            setFormISO(txtWorkCenter.Text);
 
-            if (txtWorkCenter.Text.Equals("TW10-CB"))
-            {
-                FormISO2 = "FM-PD-001";
-            }
-            if (txtWorkCenter.Equals("TW02-SC_PB"))
-            {
-                FormISO2 = "FM-PD-109";
-            }
         }
         private void QCTAB()
         {
@@ -281,7 +278,10 @@ namespace StockControl
             //txtStartTime.Text = "";
             dtStartTime.Value = DateTime.Now;
             txtEndTime.Text = "";
-           
+            txtISOCheck100.Text = "";
+            txtISOCheckMC.Text = "";
+            txtCheckHME.Text = "";
+
 
         }
 
@@ -373,6 +373,7 @@ namespace StockControl
         {
             //dbClss.ExportGridCSV(radGridView1);
             // dbClss.ExportGridXlSX(radGridView1);
+            CheckPrint();
             if (chkCheckPart.Checked)
             {
                 PrintRW pr = new PrintRW(txtOrderNo.Text);
@@ -467,14 +468,8 @@ namespace StockControl
                     */
 
                 }
-                if (LineName2.Equals("TW10-CB"))
-                {
-                    FormISO2 = "FM-PD-001";
-                }
-                if (LineName2.Equals("TW02-SC_PB"))
-                {
-                    FormISO2 = "FM-PD-109";
-                }
+                setFormISO(LineName2);
+              
             }
             catch { }
         }
@@ -572,14 +567,32 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     int RowS = 0;
-                    
+                    //CheckLoadMC//
                     radGridView3.DataSource = null;
-                    radGridView3.DataSource = db.sp_46_QCSelectWO_02(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text, "PD").ToList();
-                    foreach (GridViewRowInfo rd in radGridView3.Rows)
-                    {
-                        RowS += 1;
-                        rd.Cells["QNo"].Value = RowS;
-                    }
+                    //radGridView3.DataSource = db.sp_46_QCSelectWO_02(txtOrderNo.Text.ToUpper(), txtWorkCenter.Text, txtPartNo.Text, "PD").ToList();
+                    //radGridView3.DataSource = db.sp_46_QCSelectWO_02xV1(txtPartNo.Text, "PD").ToList();
+                    radGridView3.DataSource = db.sp_46_QCSelectWO_02xV1_PD(txtPartNo.Text, "PD").ToList();
+                    //foreach (GridViewRowInfo rd in radGridView3.Rows)
+                    //{
+                    //    RowS += 1;
+                    //    rd.Cells["QNo"].Value = RowS;
+                    //    if(rd.Cells["FormISO"].Value.ToString().Equals("FM-PD-011") || rd.Cells["FormISO"].Value.ToString().Equals("FM-PD-010"))
+                    //    {                          
+                               
+                    //        if (txtWorkCenter.Text.Equals("TD11-DR SUB 1")
+                    //           || txtWorkCenter.Text.Equals("TD12-DR SUB-2")
+                    //           || txtWorkCenter.Text.Equals("TD13-DR SUB-3")
+                    //           || txtWorkCenter.Text.Equals("TD14-DR SUB-4")
+                    //           || txtWorkCenter.Text.Equals("TD15-DR SUB-5")
+                    //           || txtWorkCenter.Text.Equals("TD16-DR SUB-6")
+                    //           || txtWorkCenter.Text.Equals("TD17-DR SUB-2")
+                    //           )
+                    //        {
+                    //            rd.IsVisible = false;
+                    //        }
+                    //    }
+                        
+                    //}
                 }
             }
             catch { }
@@ -588,20 +601,39 @@ namespace StockControl
         {
             try
             {
-                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                string ConnectA = DBLocal1;
+                if (chkRealTime.Checked)
                 {
-                    int RowS = 0;
+                    //ConnectA = DBLocal2;
+                }
+                using (DataClasses1DataContext db = new DataClasses1DataContext(ConnectA))
+                {
+                    //check Machine//
+                    //CheckLoadMC
+                    //txtISOCheckMC.Text = FormISO2;
                     radGridView4.DataSource = null;
-                    if (txtWorkCenter.Text.Equals("TW02-SC_PB"))
+                    radGridView4.DataSource = db.sp_49_QC_CheckLoadMC4(txtOrderNo.Text.ToUpper(), txtISOCheckMC.Text).ToList();
+                    string D1 = "";
+                    string N1 = "";
+                    string sk = "";
+                    foreach(var rd in radGridView4.Rows)
                     {
-                        //FM-PD-109
-                        radGridView4.DataSource = db.sp_49_QC_CheckLoadMC3(txtOrderNo.Text.ToUpper(), FormISO2).ToList();
-                    }
-                    else
-                    {
-                        radGridView4.DataSource = db.sp_49_QC_CheckLoadMC2(txtOrderNo.Text.ToUpper(), FormISO2).ToList();
-                    }
-                    
+                        D1 = "";
+                        N1 = "";
+                        D1= db.QC_GetDayNight(txtOrderNo.Text, txtPartNo.Text, Convert.ToInt32(rd.Cells["Seq"].Value), "D", 0);
+                        N1= db.QC_GetDayNight(txtOrderNo.Text, txtPartNo.Text, Convert.ToInt32(rd.Cells["Seq"].Value), "N", 0);
+                        rd.Cells["DayN"].Value = D1;
+                        rd.Cells["Night"].Value = N1;
+                        if (!Convert.ToString(D1).Equals("") || !Convert.ToString(N1).Equals(""))
+                        {
+                            sk = "OK";
+                            rd.Cells["SC"].Value = "OK";
+                            rd.Cells["ValueX"].Value = db.QC_GetDayNight(txtOrderNo.Text, txtPartNo.Text, Convert.ToInt32(rd.Cells["Seq"].Value), "", 1);
+
+                           
+                        }                   
+
+                    }//Fore
                 }
             }
             catch { }
@@ -614,8 +646,68 @@ namespace StockControl
                 getWO(txtOrderNo.Text);
                 radButton1_Click_2(sender, e);
                 DefaultLoad();
-                QCLoadMC();
+              //  QCLoadMC();
             }
+        }
+        private void setFormISO(string LineNamex)
+        {
+            //CheckLoadMC
+            FormISO2 = txtISOCheckMC.Text;
+            //return;
+            //if (LineNamex.Equals("TW10-CB"))
+            //{
+            //    LineName2 = "TW10-CB";
+            //    FormISO2 = "FM-PD-001";
+            //}
+            //if (LineNamex.Equals("TW02-SC_PB"))
+            //{
+
+            //    LineName2 = "TW02-SC_PB";
+            //    FormISO2 = "FM-PD-109";
+            //}
+            //if (LineNamex.Equals("TS10-SC_CB"))
+            //{
+
+            //    LineName2 = "TS10-SC_CB";
+            //    FormISO2 = "FM-PD-110";
+            //}
+            //if (LineNamex.Equals("TC10-CL-MT AAT")
+            //     || LineNamex.Equals("TC20-MAIN_M")
+            //     || LineNamex.Equals("TC30-MAIN_T")
+            //     || LineNamex.Equals("TP10-CL-OPE_MAIN")
+            //     )
+            //{
+            //    FormISO2 = "FM-PD-095";
+            //}
+            //if (LineNamex.Equals("TC01-SUB PISTON")
+            //   || LineNamex.Equals("TC02-SUB PUSH ROD")
+            //   || LineNamex.Equals("TC03-SUB RESERVOIR")
+            //   || LineNamex.Equals("TP01-CL-OPE_SUB")
+            //   )
+            //{
+            //    FormISO2 = "FM-PD-096";
+            //}
+            //if (LineNamex.Equals("TD10-DR MAIN")
+            //   || LineNamex.Equals("TD20-KIT& SERVICE")             
+            //   )
+            //{
+            //    FormISO2 = "FM-PD-013";
+            //}
+            //if(LineNamex.Equals("TR10-RV-6"))
+            //{
+            //    FormISO2 = "FM-PD-122";
+            //}
+            //if (LineNamex.Equals("TD11-DR SUB 1")
+            //  || LineNamex.Equals("TD12-DR SUB-2")
+            //   || LineNamex.Equals("TD13-DR SUB-3")
+            //    || LineNamex.Equals("TD14-DR SUB-4")
+            //     || LineNamex.Equals("TD15-DR SUB-5")
+            //      || LineNamex.Equals("TD16-DR SUB-6")
+            //       || LineNamex.Equals("TD17-DR SUB-2")
+            //  )
+            //{
+            //    FormISO2 = "FM-PD-014";
+            //}
         }
 
         private void getWO(string WO)
@@ -623,6 +715,9 @@ namespace StockControl
             this.Cursor = Cursors.WaitCursor;
             try
             {
+                txtISOCheck100.Text = "";
+                txtISOCheckMC.Text = "";
+                txtCheckHME.Text = "";
                 WO = txtOrderNo.Text.ToUpper();
                 txtScanMachine.Enabled = false;
                 string Type1x = "";
@@ -674,20 +769,15 @@ namespace StockControl
                             }
                             txtWorkCenter.Text = rd.BUMO.ToString();
                             // LineName2 = txtWorkCenter.Text.ToUpper();
-                            FormISO2 = "FM-PD-026_1";
-                            if (txtWorkCenter.Text.Equals("TW10-CB"))
-                            {
-                                LineName2 = "TW10-CB";
-                                FormISO2 = "FM-PD-001";
-                            }
-                            if (txtWorkCenter.Text.Equals("TW02-SC_PB"))
-                            {
-                               
-                                LineName2 = "TW02-SC_PB";
-                                FormISO2 = "FM-PD-109";
-                            }
-                            txtWorkName.Text = rd.BUMOName.ToString();
+                         
+                            setFormISO(txtWorkCenter.Text);
+                            txtISOCheck100.Text = rd.CheckPD100;
+                            txtISOCheckMC.Text = rd.CheckMachine;
+                            txtCheckHME.Text = rd.CheckHME;
+                            FormISO2 = txtISOCheckMC.Text;
+                            //CheckLoadMC
 
+                            txtWorkName.Text = rd.BUMOName.ToString();
                             txtLotNo.Text = rd.LotNo.ToString();
                             chkPrinted.Checked = false;
                             chkCheckPart.Checked = false;
@@ -728,114 +818,100 @@ namespace StockControl
                             var getbom = (from ix in db.sp_TPICS_BOMList_Dynamics(WO) select ix).ToList();
                             if (getbom.Count > 0)
                             {
-                                tb_ProductionHD pha = db.tb_ProductionHDs.Where(p => p.OrderNo.ToUpper().Equals(WO)).FirstOrDefault();
-                                if (pha != null)
-                                {
+                                //tb_ProductionHD pha = db.tb_ProductionHDs.Where(p => p.OrderNo.ToUpper().Equals(WO)).FirstOrDefault();
+                                //if (pha != null)
+                                //{
 
-                                }
-                                else
-                                {
-                                    tb_ProductionHD ph1 = new tb_ProductionHD();
-                                    ph1.OrderNo = WO;
-                                    ph1.OrderPrint = false;
-                                    ph1.CheckOK = false;
-                                    ph1.PartFG = txtPartNo.Text;
-                                    ph1.Qty = Convert.ToDecimal(rd.OrderQty);
-                                    ph1.Status = "Process";
-                                    ph1.CreateBy = dbClss.UserID;
-                                    ph1.Createdate = DateTime.Now;
-                                    ph1.LineName2 = txtWorkCenter.Text;
-                                    ph1.Closed = false;
-                                    ph1.HDate = rd.ScheduleDate;
-                                    // ph1.HDate=
-                                    db.tb_ProductionHDs.InsertOnSubmit(ph1);
-                                    db.SubmitChanges();
-                                }
-
+                                //}
+                                //else
+                                //{
+                                //    tb_ProductionHD ph1 = new tb_ProductionHD();
+                                //    ph1.OrderNo = WO;
+                                //    ph1.OrderPrint = false;
+                                //    ph1.CheckOK = false;
+                                //    ph1.PartFG = txtPartNo.Text;
+                                //    ph1.Qty = Convert.ToDecimal(rd.OrderQty);
+                                //    ph1.Status = "Process";
+                                //    ph1.CreateBy = dbClss.UserID;
+                                //    ph1.Createdate = DateTime.Now;
+                                //    ph1.LineName2 = txtWorkCenter.Text;
+                                //    ph1.Closed = false;
+                                //    ph1.HDate = rd.ScheduleDate;
+                                //    // ph1.HDate=
+                                //    db.tb_ProductionHDs.InsertOnSubmit(ph1);
+                                //    db.SubmitChanges();
+                                //}
+                                db.sp_45_tb_ProductionHD_ADD(WO, txtPartNo.Text, Convert.ToDecimal(rd.OrderQty), rd.ScheduleDate, txtWorkCenter.Text, dbClss.UserID);
                                 foreach (var rdx in getbom)
                                 {
-                                    tb_ProductionRM pr = db.tb_ProductionRMs.Where(p => p.OrderNo.ToUpper().Equals(WO) && p.PartNoRM.ToUpper().Equals(rdx.CODE.ToUpper())).FirstOrDefault();
-                                    if (pr != null)
-                                    {
-                                        //แก้ไขหลังจากยิง BOM ไปแล้ว
-                                        if (!rdx.Shelf.ToUpper().Equals("PACKING"))
-                                        {
-                                            if (rdx.Shelf.ToUpper().Equals("PACKING"))
-                                            {
-                                                pr.CheckOK = "OK";
-                                                pr.CheckSkip = true;
-                                            }
-                                            if (rdx.Shelf.ToUpper().Contains("SK"))
-                                            {
-                                                pr.CheckOK = "OK";
-                                                pr.CheckSkip = true;
-                                            }
+                                  //  decimal Qty = 0;
+                                 //   decimal.TryParse(txtQuantity.Text, out Qty);
+                                    //Replace
+                                    db.sp_45_tb_ProductionRMs(WO, rdx.CODE.ToUpper(), rdx.BUMO, rdx.NAME, rdx.SHELVES
+                                        , Convert.ToDecimal(rdx.QtyPer), Convert.ToDecimal(rdx.ExpQty), "", rdx.VendorName.ToString());
 
-                                            if (Type1x.Contains("TD"))
-                                            {
-                                                if (WorkCenterK.Equals("WIP"))
-                                                {
-                                                    pr.CheckOK = "OK";
-                                                    pr.CheckSkip = true;
-                                                }
-                                            }
-                                            db.SubmitChanges();
-                                        }
-                                        else
-                                        {
-                                            db.tb_ProductionRMs.DeleteOnSubmit(pr);
-                                            db.SubmitChanges();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        decimal Qty = 0;
-                                        decimal.TryParse(txtQuantity.Text, out Qty);
-                                        if (Qty > 0)
-                                        {
-                                            if (!rdx.Shelf.ToUpper().Equals("PACKING"))
-                                            {
-                                                tb_ProductionRM rm = new tb_ProductionRM();
-                                                rm.OrderNo = txtOrderNo.Text.ToUpper();
-                                                rm.PartNoRM = rdx.CODE;
-                                                rm.Supplier = rdx.VendorName.ToString();
-                                                rm.PartType = rdx.BUMO;
-                                                rm.UseQty = Convert.ToDecimal(rdx.QtyPer);//Convert.ToDecimal(rdx.KVOL) / Qty;
-                                                rm.TotalUse = Convert.ToDecimal(rdx.ExpQty);
-                                                rm.Shelf = rdx.SHELVES;
-                                                rm.PartName = rdx.NAME;
-                                                rm.CheckOK = "";
-                                                rm.CheckSkip = false;
-                                                if (rdx.Shelf.ToUpper().Equals("PACKING"))
-                                                {
-                                                    rm.CheckOK = "OK";
-                                                    rm.CheckSkip = true;
-                                                }
-                                                if (rdx.Shelf.ToUpper().Contains("SK"))
-                                                {
-                                                    rm.CheckOK = "OK";
-                                                    rm.CheckSkip = true;
-                                                }
+                                    //tb_ProductionRM pr = db.tb_ProductionRMs.Where(p => p.OrderNo.ToUpper().Equals(WO) && p.PartNoRM.ToUpper().Equals(rdx.CODE.ToUpper())).FirstOrDefault();
+                                    //if (pr != null)
+                                    //{
+                                    //    //แก้ไขหลังจากยิง BOM ไปแล้ว
+                                    //    if (!rdx.Shelf.ToUpper().Equals("PACKING"))
+                                    //    {
+                                    //        if (rdx.Shelf.ToUpper().Equals("PACKING"))
+                                    //        {
+                                    //            pr.CheckOK = "OK";
+                                    //            pr.CheckSkip = true;
+                                    //        }
+                                    //        if (rdx.Shelf.ToUpper().Contains("SK"))
+                                    //        {
+                                    //            pr.CheckOK = "OK";
+                                    //            pr.CheckSkip = true;
+                                    //        }
 
-                                                if (Type1x.Contains("TD"))
-                                                {
-                                                    if (WorkCenterK.Equals("WIP"))
-                                                    {
-                                                        rm.CheckOK = "OK";
-                                                        rm.CheckSkip = true;
-                                                    }
-                                                }
-
-                                                db.tb_ProductionRMs.InsertOnSubmit(rm);
-                                                db.SubmitChanges();
-                                            }
-                                        }
-                                    }
+                                    //        db.SubmitChanges();
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        db.tb_ProductionRMs.DeleteOnSubmit(pr);
+                                    //        db.SubmitChanges();
+                                    //    }
+                                    //}
+                                    //else
+                                    //{
+                                    //    //decimal Qty = 0;
+                                    //    //decimal.TryParse(txtQuantity.Text, out Qty);
+                                    //    if (Qty > 0)
+                                    //    {
+                                    //        if (!rdx.Shelf.ToUpper().Equals("PACKING"))
+                                    //        {
+                                    //            tb_ProductionRM rm = new tb_ProductionRM();
+                                    //            rm.OrderNo = txtOrderNo.Text.ToUpper();
+                                    //            rm.PartNoRM = rdx.CODE;
+                                    //            rm.Supplier = rdx.VendorName.ToString();
+                                    //            rm.PartType = rdx.BUMO;
+                                    //            rm.UseQty = Convert.ToDecimal(rdx.QtyPer);//Convert.ToDecimal(rdx.KVOL) / Qty;
+                                    //            rm.TotalUse = Convert.ToDecimal(rdx.ExpQty);
+                                    //            rm.Shelf = rdx.SHELVES;
+                                    //            rm.PartName = rdx.NAME;
+                                    //            rm.CheckOK = "";
+                                    //            rm.CheckSkip = false;
+                                    //            if (rdx.Shelf.ToUpper().Equals("PACKING"))
+                                    //            {
+                                    //                rm.CheckOK = "OK";
+                                    //                rm.CheckSkip = true;
+                                    //            }
+                                    //            if (rdx.Shelf.ToUpper().Contains("SK"))
+                                    //            {
+                                    //                rm.CheckOK = "OK";
+                                    //                rm.CheckSkip = true;
+                                    //            }                                                
+                                    //            db.tb_ProductionRMs.InsertOnSubmit(rm);
+                                    //            db.SubmitChanges();
+                                    //        }
+                                    //    }
+                                    //}
                                 }
                             }
-                            //Create Machine
-                           // if(!txtPartNo.Text.Equals(""))
-                            //    db.sp_46_QCMachine_Copy("FM-PD-026_1", txtPartNo.Text, txtOrderNo.Text.ToUpper());
+                            
                         }
                     }
                     LoadBOMList();
@@ -853,41 +929,118 @@ namespace StockControl
             {
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
+                    var RMList = db.tb_ProductionRMs.Where(p => p.OrderNo.Equals(txtOrderNo.Text)).ToList();
                     radGridView2.AutoGenerateColumns = false;
-                    radGridView2.DataSource = db.sp_004_TPIC_SelectWO_RM_Dynamics(txtOrderNo.Text).ToList(); //db.tb_ProductionRMs.Where(r => r.OrderNo == txtOrderNo.Text).ToList();
-                    if (radGridView2.Rows.Count > 0)
+                    //New+
+                    radGridView2.DataSource = RMList;
+                    int ck = 0;
+                    int ck2 = 1;
+                    string checkOK = "";
+                    bool Skp = false;
+                    string STA = "";
+                    string LotNo = "";
+                    int AA = 0;
+                    int AA2 = 0;
+                    int AA3 = 0;
+                    foreach (GridViewRowInfo rd in radGridView2.Rows)
                     {
-                        int ck = 0;
-                        int ck2 = 1;
-                        foreach (GridViewRowInfo rd in radGridView2.Rows)
+                        ck += 1;
+                        checkOK = Convert.ToString(rd.Cells["CheckOK"].Value);
+                        Skp= Convert.ToBoolean(rd.Cells["SKIP"].Value);
+                        rd.Cells["No"].Value = ck;
+                        if (checkOK.Equals("NG"))
+                            STA = "E";
+                        if (checkOK.Equals("OK"))
+                            STA = "A";
+                        if (Skp)
                         {
-                            ck += 1;
-                            rd.Cells["No"].Value = ck;
-                            if (rd.Cells["CheckOK"].Value.Equals(""))
-                            {
-                                ck2 = 0;
-                            }
+                            STA = "A";
+                            checkOK = "OK";
                         }
+                        AA = 0;
+                        AA2 = 0;
+                        AA3 = 0;
 
-                        if (ck2 == 1)
+                        var pQC = db.tb_QCCheckParts.Where(p => p.OrderNo.Equals(txtOrderNo.Text) && p.PartNo.Equals(Convert.ToString(rd.Cells["PartNoRM"].Value))).ToList();
+                        foreach(var rdx in pQC)
                         {
-                            chkCheckPart.Checked = true;
-                            tb_ProductionHD ph = db.tb_ProductionHDs.Where(w => w.OrderNo == txtOrderNo.Text).FirstOrDefault();
-                            if (ph != null)
+                            if (rdx.DayN == "D")
                             {
-                                ph.CheckOK = true;
-                                db.SubmitChanges();
+                                rd.Cells["DayN"].Value = "D";
+                                AA2 += 1;
+                                if (Convert.ToString(rd.Cells["LotNo"].Value).Equals(""))
+                                    rd.Cells["LotNo"].Value = rdx.LotNo;
                             }
+                            if (rdx.DayN == "N")
+                            {
+                                rd.Cells["NightN"].Value = "N";
+                                AA3 += 1;
+                               if(Convert.ToString(rd.Cells["LotNo"].Value).Equals(""))
+                                    rd.Cells["LotNo"].Value = rdx.LotNo;
+                            }
+                          
+                                  
+                           
+                            
+                                            
+
                         }
+                        if (AA2 > 0 && AA3 > 0)
+                        {
+                            AA = 3;
+                            STA = "C";
+                        }
+                        else if (AA2 > 0 && AA3 == 0)
+                        {
+                            AA = 1;
+                            STA = "A";
+                        }
+                        else if (AA2 == 0 && AA3 > 0)
+                        {
+                            AA = 2;
+                            STA = "B";
+                        }                       
+                        if(checkOK.Equals("OK")||checkOK.Equals("NG"))
+                            rd.Cells["STA"].Value = STA;
                     }
+                    //New -
+
+                        //radGridView2.DataSource = db.sp_004_TPIC_SelectWO_RM_Dynamics(txtOrderNo.Text).ToList(); //db.tb_ProductionRMs.Where(r => r.OrderNo == txtOrderNo.Text).ToList();
+                        //if (radGridView2.Rows.Count > 0)
+                        //{
+                        //    int ck = 0;
+                        //    int ck2 = 1;
+                        //    foreach (GridViewRowInfo rd in radGridView2.Rows)
+                        //    {
+                        //        ck += 1;
+                        //        rd.Cells["No"].Value = ck;
+                        //        if (rd.Cells["CheckOK"].Value.Equals(""))
+                        //        {
+                        //            ck2 = 0;
+                        //        }
+                        //    }
+
+                        //    if (ck2 == 1)
+                        //    {
+                        //        chkCheckPart.Checked = true;
+                        //        tb_ProductionHD ph = db.tb_ProductionHDs.Where(w => w.OrderNo == txtOrderNo.Text).FirstOrDefault();
+                        //        if (ph != null)
+                        //        {
+                        //            ph.CheckOK = true;
+                        //            db.SubmitChanges();
+                        //        }
+                        //    }
+                        //}
 
                 }
+                CheckPrint();
             }
-            catch { }
+            catch(Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private void btnImport_Click(object sender, EventArgs e)
         {
+            CheckPrint();
             if (chkCheckPart.Checked)
             {
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
@@ -950,6 +1103,8 @@ namespace StockControl
                     int C = 0;
                     string ImagePath = "";
                     string ImageName = "";
+                    string Shelf = "";
+                    string Shelf1 = "";
 
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
                     {
@@ -971,7 +1126,11 @@ namespace StockControl
                             db.tb_ProductTAGs.DeleteAllOnSubmit(tm);
                             db.SubmitChanges();
                         }
-
+                        Shelf1 = db.g_getShelf_PD(txtPartNo.Text);                       
+                        if(Shelf1 != "")
+                        {
+                            Shelf ="$"+ Shelf1;
+                        }
                         for (int i = 1; i <= TAG; i++)
                         {
                             OfTAG = "";
@@ -986,9 +1145,10 @@ namespace StockControl
                                 Qty = Remain;
                                 Remain = 0;
                             }
+                           
                             OfTAG = i + "of" + TAG;
                             QrCode = "";
-                            QrCode = "PD," + txtOrderNo.Text + "," + Qty + "," + OrderQty + "," + txtLotNo.Text + "," + OfTAG + "," + txtPartNo.Text + "," + dtNdate.Value.ToString("ddMMyy");
+                            QrCode = "PD," + txtOrderNo.Text + "," + Qty + "," + OrderQty + "," + txtLotNo.Text + "," + OfTAG + "," + txtPartNo.Text + "," + dtNdate.Value.ToString("ddMMyy")+ Shelf;
                             //MessageBox.Show(QrCode);
                             byte[] barcode = dbClss.SaveQRCode2D(QrCode);
 
@@ -1014,7 +1174,7 @@ namespace StockControl
                             ts.CustomerName = "Nabtesco Automotive Products(Thailand) Co.,Ltd.";
                             ts.CSTMItem = txtCustomerItem.Text;
                             ts.CustItem2 = txtCustomerItem.Text;
-                            ts.SHIFT = "";// txtShift.Text;
+                            ts.SHIFT = Shelf1;//db.g_getShelf_PD(txtPartNo.Text);
 
                             //// ลูกค้า ISUSU  ///
                             if (txtCustomer.Text.Trim().ToUpper().Equals("ISUZU"))
@@ -1125,14 +1285,16 @@ namespace StockControl
         }
         private void ScanPartCheck(string SCAN)
         {
+            string PartCheck = "";
+            string LotNoxx = "";
             try
             {
                 //SP,PO17228088,46,46,1891T,1of5,41241038010N1,17102017
                 //SP,PO19027976,100,3000,OSP1908021,OSP1909016,5of30,44143525011N,081019
                 //PD,WO20003086,15,45,03GT,3of3,37100013420S,160320
                 string[] wk = SCAN.Split(',');
-                string PartCheck = "";
-                string LotNoxx = "";
+                
+               
                 decimal Qtyc = 1;
                 int SSQ = 0;
                 string ADDID = "";
@@ -1187,6 +1349,21 @@ namespace StockControl
                     ADDID = "ADD";
                     PartCheck = SCAN.ToUpper();
                 }
+                else if(PartCheck.ToUpper().Contains("METAL RUBBER (MR-20)"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
+                else if (PartCheck.ToUpper().Contains("GREASE G-40M"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
+                else if (PartCheck.ToUpper().Contains("COSMO RUBBER GREASE"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
                 else if (PartCheck.ToUpper().Contains("GREASE"))
                 {
                     ADDID = "ADD";
@@ -1197,7 +1374,21 @@ namespace StockControl
                     ADDID = "ADD";
                     PartCheck = SCAN.ToUpper();
                 }
-
+                else if(PartCheck.ToLower().Contains("liquid soap"))
+                {
+                    ADDID = "ADD";
+                    PartCheck = SCAN.ToUpper();
+                }
+                else if(PartCheck.ToUpper().Contains("SHACHIHATA REFILL GREEN")
+                    || PartCheck.ToUpper().Contains("SHACHIHATA REFILL RED")
+                    || PartCheck.ToUpper().Contains("SHACHIHATA SOLVENT"))
+                {
+                    ADDID = "ADD";
+                    //WO23137929
+                    //SHACHIHATA REFILL GREEN
+                    //SHACHIHATA REFILL RED
+                    //SHACHIHATA SOLVENT
+                }
 
                 int c = 0;
                 int id = 0;
@@ -1240,95 +1431,186 @@ namespace StockControl
                                 qc.TAG = SCAN;
                                 qc.Qty = Qtyc;
                                 qc.DayN = DN;//
-                                db.tb_QCCheckParts.InsertOnSubmit(qc);
+                                db.tb_QCCheckParts.InsertOnSubmit(qc);                                
                             }
 
                             db.SubmitChanges();
+                            
                             c += 1;
-
-                        }
-                    }
-
-                    foreach (GridViewRowInfo rd in radGridView2.Rows)
-                    {
-                        id = 0;
-                        if (rd.Cells["PartNoRM"].Value.ToString().ToUpper().Equals(PartCheck))
-                        {
-                            c += 1;
-                            //if (!rd.Cells["CheckOK"].Value.Equals("OK"))
-                            //{
-
-                            int.TryParse(rd.Cells["id"].Value.ToString(), out id);
-                            if (id > 0)
+                            //New+
+                            int cRow = radGridView2.Rows.Count();
+                            radGridView2.MasterTemplate.AllowAddNewRow = true;
+                            GridViewRowInfo newRow = radGridView2.Rows.AddNew();
+                            newRow.Cells["STA"].Value = "A";
+                            newRow.Cells["No"].Value = (cRow+1);
+                            newRow.Cells["CheckOK"].Value = "OK";
+                            newRow.Cells["PartNoRM"].Value = PartCheck.ToUpper();
+                            newRow.Cells["ItemName"].Value = PartCheck.ToUpper();
+                            newRow.Cells["LotNo"].Value = LotNoxx;
+                            newRow.Cells["Supplier"].Value = "";
+                            newRow.Cells["Shelves"].Value = "";
+                            newRow.Cells["Qty"].Value = 1;
+                            newRow.Cells["Total"].Value = 1;
+                            newRow.Cells["SKIP"].Value = false;
+                            newRow.Cells["id"].Value = Convert.ToInt32(db.PD_GetID_tb_ProductionRM(txtOrderNo.Text,PartCheck)).ToString();
+                            newRow.Cells["DayN"].Value = "";
+                            newRow.Cells["NightN"].Value = "";
+                            if (DN.Equals("D"))
                             {
-                                tb_ProductionRM re = db.tb_ProductionRMs.Where(r => r.id == id).FirstOrDefault();
-                                if (re != null)
-                                {
-                                    rd.Cells["CheckOK"].Value = "OK";
-                                    re.CheckOK = "OK";
-                                    /////////////Insert tb_QCCheckPart/////////
-                                    DN= dbShowData.CheckDayN(DateTime.Now);
-                                    tb_QCCheckPart qcp = db.tb_QCCheckParts.Where(cs => cs.DayN.Equals(DN) && cs.OrderNo.Equals(txtOrderNo.Text.ToUpper())
-                                    && cs.PartNo.Equals(PartCheck.ToUpper())
-                                    && cs.TAG.Equals(SCAN)
-                                        ).FirstOrDefault();
-
-                                    if (qcp == null)
-                                    {
-                                        tb_QCCheckPart qc = new tb_QCCheckPart();
-                                        qc.LotNo = LotNoxx;
-                                        qc.PartNo = PartCheck.ToUpper();
-                                        qc.ScanBy = dbClss.UserID;
-                                        qc.ScanDate = DateTime.Now;
-                                        qc.OrderNo = txtOrderNo.Text.ToUpper();
-                                        qc.TAG = SCAN;
-                                        qc.Qty = Qtyc;
-                                        qc.DayN = DN;//
-                                        db.tb_QCCheckParts.InsertOnSubmit(qc);
-                                    }
-                                    ////////////////////////////////////////////
-
-                                    db.SubmitChanges();
-
-
-                                }
+                                newRow.Cells["DayN"].Value = "D";
+                                newRow.Cells["STA"].Value = "A";
                             }
-                            //}
-
-
-
-
-                        }
-                        else
-                        {
+                            if (DN.Equals("N"))
+                            {
+                                newRow.Cells["NightN"].Value = "N";
+                                newRow.Cells["STA"].Value = "B";
+                            }
+                            radGridView2.Refresh();
+                            radGridView2.MasterTemplate.AllowAddNewRow = false;
+                            //New-
 
                         }
                     }
-                    //Update Lot//
-                    try
-                    {
-                        db.sp_54_UpdateLot(txtOrderNo.Text);
-                    }
-                    catch { }
+                    DN = dbShowData.CheckDayN(DateTime.Now);
+                    db.sp_54_UpdatePartCheck(txtOrderNo.Text, PartCheck, DN, LotNoxx, SCAN, Qtyc, dbClss.UserID);
+                    //foreach (GridViewRowInfo rd in radGridView2.Rows)
+                    //{
+                    //    id = 0;
+                    //    if (rd.Cells["PartNoRM"].Value.ToString().ToUpper().Equals(PartCheck))
+                    //    {
+                    //        c += 1;
+                          
+
+                    //        int.TryParse(rd.Cells["id"].Value.ToString(), out id);
+                    //        if (id > 0)
+                    //        {
+                    //            tb_ProductionRM re = db.tb_ProductionRMs.Where(r => r.id == id).FirstOrDefault();
+                    //            if (re != null)
+                    //            {
+                    //                rd.Cells["CheckOK"].Value = "OK";
+                    //                re.CheckOK = "OK";
+                    //                /////////////Insert tb_QCCheckPart/////////
+                    //                DN= dbShowData.CheckDayN(DateTime.Now);
+                    //                tb_QCCheckPart qcp = db.tb_QCCheckParts.Where(cs => cs.DayN.Equals(DN) && cs.OrderNo.Equals(txtOrderNo.Text.ToUpper())
+                    //                && cs.PartNo.Equals(PartCheck.ToUpper())
+                    //                && cs.TAG.Equals(SCAN)
+                    //                    ).FirstOrDefault();
+
+                    //                if (qcp == null)
+                    //                {
+                    //                    tb_QCCheckPart qc = new tb_QCCheckPart();
+                    //                    qc.LotNo = LotNoxx;
+                    //                    qc.PartNo = PartCheck.ToUpper();
+                    //                    qc.ScanBy = dbClss.UserID;
+                    //                    qc.ScanDate = DateTime.Now;
+                    //                    qc.OrderNo = txtOrderNo.Text.ToUpper();
+                    //                    qc.TAG = SCAN;
+                    //                    qc.Qty = Qtyc;
+                    //                    qc.DayN = DN;//
+                    //                    db.tb_QCCheckParts.InsertOnSubmit(qc);
+                    //                }
+                                  
+
+                    //                db.SubmitChanges();
+
+
+                    //            }
+                    //        }
+                            
+
+
+
+
+                    //    }
+                    //    else
+                    //    {
+
+                    //    }
+                    //}
+                    ////Update Lot//
+                    //try
+                    //{
+                    //    db.sp_54_UpdateLot(txtOrderNo.Text);
+                    //}
+                    //catch { }
                 }
                 if (c > 0)
                 {
-                    LoadBOMList();
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\beep-07.wav");
-                    player.Play();
+                   // LoadBOMList();
+                   // System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\beep-07.wav");
+                  //  player.Play();
                 }
                 else
                 {
                     // System.Media.SystemSounds.Beep.Play();
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\beep-05.wav");
-                    player.Play();
+                  //  System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\beep-05.wav");
+                  //  player.Play();
                 }
-                txtScan.Text = "";
-                txtScan.Focus();
+                
 
 
             }
+            catch(Exception ex) { MessageBox.Show("A:"+ex.Message); }
+            UpdataePartRM(PartCheck,LotNoxx);
+        }
+
+        private void UpdataePartRM(string PartNo,string LotNo)
+        {
+            try
+            {
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    if (LotNo.Equals(""))
+                        db.sp_54_UpdateLot2x(txtOrderNo.Text, PartNo);
+
+                    string DN = dbShowData.CheckDayN(DateTime.Now);
+                    foreach (GridViewRowInfo rd in radGridView2.Rows)
+                    {
+                        if (rd.Cells["PartNoRM"].Value.ToString().ToUpper().Equals(PartNo))
+                        {
+                            rd.Cells["CheckOK"].Value = "OK";
+
+                            if (DN.Equals("D"))
+                            {
+                                rd.Cells["STA"].Value = "A";
+                                rd.Cells["DayN"].Value = "D";
+                            }
+                            if (DN.Equals("N"))
+                            {
+                                rd.Cells["STA"].Value = "B";
+                                rd.Cells["NightN"].Value = "N";
+                            }
+                            if (Convert.ToString(rd.Cells["LotNo"].Value).Equals(""))
+                            {
+                                rd.Cells["LotNo"].Value = db.QC_GetWOPartNoRM(txtOrderNo.Text, PartNo, 3);
+                            }
+
+                            radGridView2.Refresh();
+                        }
+                    }
+                }
+                
+               
+            }
             catch { }
+            CheckPrint();
+            txtScan.Text = "";
+            txtScan.Focus();
+        }
+        private void CheckPrint()
+        {
+            int cc = 0;
+            foreach (GridViewRowInfo rd in radGridView2.Rows)
+            {
+                if (!Convert.ToString(rd.Cells["CheckOK"].Value).Equals("OK"))
+                {
+                    cc += 1;
+                }
+            }
+            if(cc==0)
+            {
+                chkCheckPart.Checked = true;
+            }
         }
 
         private void deleteItemToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1372,23 +1654,29 @@ namespace StockControl
             if (e.KeyChar == 13)
             {
                 string PPTAG = txtScanPO.Text.Trim();
-                ReceivePD(txtScanPO.Text.Trim());
+                int RT= ReceivePD(txtScanPO.Text.Trim());
                 //QC Check PD//
                 if(chkCheckQC.Checked)
                 {
-                    QCCheckPD(PPTAG);
+                    if (RT!=9)
+                    {
+                        QCCheckPD(PPTAG);
+                    }
+                    
                 }
             }
 
         }
         private void QCCheckPD(string PTAGx1)
         {
-            if (LineName2.Equals("TW01-PB"))
+            LineName2 = txtWorkCenter.Text.ToUpper();
+           
+            if (LineName2.Equals("TW01-PB") || LineName2.Equals("TRIAL"))
             {
                 QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-035_1", PTAGx1, LineName2, "PD", PTAGx1);
                 qcop.ShowDialog();
             }
-            else if (LineName2.Equals("TW10-CB"))
+            else if (LineName2.Equals("TW10-CB") || LineName2.Equals("TW20-CB"))
             {
                 QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-002", PTAGx1, LineName2, "PD", PTAGx1);
                 qcop.ShowDialog();
@@ -1398,15 +1686,56 @@ namespace StockControl
                 QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-112", PTAGx1, LineName2, "PD", PTAGx1);
                 qcop.ShowDialog();
             }
+            else if (LineName2.Equals("TS10-SC_CB"))
+            {
+                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-113", PTAGx1, LineName2, "PD", PTAGx1);
+                qcop.ShowDialog();
+            }
+            else if(LineName2.Equals("TR10-RV-6"))
+            {
+                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-153", PTAGx1, LineName2, "PD", PTAGx1);
+                qcop.ShowDialog();
+            }
+            else if(LineName2.Equals("TC10-CL-MT AAT")
+                || LineName2.Equals("TC20-MAIN_M")
+                || LineName2.Equals("TC30-MAIN_T")
+                || LineName2.Equals("TP10-CL-OPE_MAIN")
+                )
+            {
+                //TC20-MAIN_M
+                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-123", PTAGx1, LineName2, "PD", PTAGx1);
+                qcop.ShowDialog();
+            }
+            else if (LineName2.Equals("TD10-DR MAIN")                
+                || LineName2.Equals("TD20-KIT& SERVICE")
+                || LineName2.Equals("TD11-DR SUB 1")
+                || LineName2.Equals("TD12-DR SUB-2")
+                || LineName2.Equals("TD13-DR SUB-3")
+                || LineName2.Equals("TD14-DR SUB-4")
+                || LineName2.Equals("TD15-DR SUB-5")
+                || LineName2.Equals("TD16-DR SUB-6")
+                || LineName2.Equals("TD17-DR SUB-2")
+                )
+            {
+                //TC20-MAIN_M
+                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-010", PTAGx1, LineName2, "PD", PTAGx1);
+                qcop.ShowDialog();
+            }
         }
-        private void ReceivePD(string PKTAG)
+        private int ReceivePD(string PKTAG)
         {
+            int RT = 0;
             try
             {
+
                 //PD,PO17228088,46,46,1891T,1of5,41241038010N1,17102017
                 string[] wk = PKTAG.Split(',');
                 if (wk.Length > 7)
                 {
+                    if (!txtOrderNo.Text.ToUpper().Equals(wk[1].ToUpper()))
+                    {
+                        RT = 9;
+                    }
                     decimal Qty = 0;
                     decimal OrderQty = 0;
                     decimal.TryParse(wk[2], out Qty);
@@ -1459,6 +1788,7 @@ namespace StockControl
             catch { }
             txtScanPO.Text = "";
             txtScanPO.Focus();
+            return RT;
         }
 
         private void ลบรายการรบToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1539,31 +1869,50 @@ namespace StockControl
         {
             try
             {
-                if (MessageBox.Show("คุณต้องการ ปิด Order หรือไม่ ? \n จะไม่สามารถรับได้อีก", "ปิดรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (chkClose.Checked)
                 {
-                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    if (MessageBox.Show("คุณต้องการ เปิด Order จาก Clsed หรือไม่ ? \n จะสามารถรับได้อีก", "เปิดรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        decimal qty = 0;
-                        decimal orderqty = 0;
-                        decimal.TryParse(txtTotalQty1.Text, out qty);
-                        decimal.TryParse(txtOrderqty1.Text, out orderqty);
-                        if (qty > 0 && orderqty > 0)
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
                         {
-                            //Closed Production HD//
-                            tb_ProductionHD ph = db.tb_ProductionHDs.Where(p => p.OrderNo.ToLower() == txtOrderNo.Text.ToLower() && p.CheckOK == true && p.Closed == false).FirstOrDefault();
+                            tb_ProductionHD ph = db.tb_ProductionHDs.Where(p => p.OrderNo.ToLower() == txtOrderNo.Text.ToLower() && p.CheckOK == true && p.Closed == true).FirstOrDefault();
                             if (ph != null)
                             {
-                                ph.Closed = true;
-                                // ph.CreateBy = dbClss.UserID;
-                                // ph.CreateDate = DateTime.Now;
+                                chkClose.Checked = false;
+                                ph.Closed = false;
                                 db.SubmitChanges();
-                                chkClose.Checked = true;
-                                chkClosed.Checked = true;
-                                if (chkClose.Checked)
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (MessageBox.Show("คุณต้องการ ปิด Order หรือไม่ ? \n จะไม่สามารถรับได้อีก", "ปิดรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        using (DataClasses1DataContext db = new DataClasses1DataContext())
+                        {
+                            decimal qty = 0;
+                            decimal orderqty = 0;
+                            decimal.TryParse(txtTotalQty1.Text, out qty);
+                            decimal.TryParse(txtOrderqty1.Text, out orderqty);
+                            if (qty > 0 && orderqty > 0)
+                            {
+                                //Closed Production HD//
+                                tb_ProductionHD ph = db.tb_ProductionHDs.Where(p => p.OrderNo.ToLower() == txtOrderNo.Text.ToLower() && p.CheckOK == true && p.Closed == false).FirstOrDefault();
+                                if (ph != null)
                                 {
-                                    lblStatus.Text = "Completed";
-                                    lblStatus.ForeColor = Color.DarkGreen;
-                                    lblStatus.BackColor = Color.PaleGreen;
+                                    ph.Closed = true;
+                                    // ph.CreateBy = dbClss.UserID;
+                                    // ph.CreateDate = DateTime.Now;
+                                    db.SubmitChanges();
+                                    chkClose.Checked = true;
+                                    chkClosed.Checked = true;
+                                    if (chkClose.Checked)
+                                    {
+                                        lblStatus.Text = "Completed";
+                                        lblStatus.ForeColor = Color.DarkGreen;
+                                        lblStatus.BackColor = Color.PaleGreen;
+                                    }
                                 }
                             }
                         }
@@ -1741,72 +2090,73 @@ namespace StockControl
 
         private void radGridView2_RowFormatting(object sender, RowFormattingEventArgs e)
         {
-            try
-            {
-                if (e.RowElement.RowInfo.Cells["CheckOK"].Value.Equals("OK") || e.RowElement.RowInfo.Cells["CheckOK"].Value.Equals("SKIP"))
-                {
-                    e.RowElement.DrawFill = true;
-                    e.RowElement.GradientStyle = GradientStyles.Solid;
-                    e.RowElement.BackColor = Color.GreenYellow;
-                    int AA = 0;// dbShowData.CheckColorDayN(e.RowElement.RowInfo.Cells["PartNoRM"].Value.ToString(),txtOrderNo.Text.ToUpper());
-                    int AA2 = 0;
-                    int AA3 = 0;
-                    if (!e.RowElement.RowInfo.Cells["DayN"].Value.ToString().Equals(""))
-                    {
-                        AA2 = 1;
-                    }
-                    if (!e.RowElement.RowInfo.Cells["NightN"].Value.ToString().Equals(""))
-                    {
-                        AA3 = 1;
-                    }
-                    if (AA2 > 0 && AA3 > 0)
-                    {
-                        AA = 3;
-                    }
-                    else if (AA2 > 0 && AA3 == 0)
-                    {
-                        AA = 1;
-                    }
-                    else if (AA2 == 0 && AA3 > 0)
-                    {
-                        AA = 2;
-                    }
+           
+            //try
+            //{
+            //    if (e.RowElement.RowInfo.Cells["CheckOK"].Value.Equals("OK") || e.RowElement.RowInfo.Cells["CheckOK"].Value.Equals("SKIP"))
+            //    {
+            //        e.RowElement.DrawFill = true;
+            //        e.RowElement.GradientStyle = GradientStyles.Solid;
+            //        e.RowElement.BackColor = Color.GreenYellow;
+            //        int AA = 0;// dbShowData.CheckColorDayN(e.RowElement.RowInfo.Cells["PartNoRM"].Value.ToString(),txtOrderNo.Text.ToUpper());
+            //        int AA2 = 0;
+            //        int AA3 = 0;
+            //        if (!e.RowElement.RowInfo.Cells["DayN"].Value.ToString().Equals(""))
+            //        {
+            //            AA2 = 1;
+            //        }
+            //        if (!e.RowElement.RowInfo.Cells["NightN"].Value.ToString().Equals(""))
+            //        {
+            //            AA3 = 1;
+            //        }
+            //        if (AA2 > 0 && AA3 > 0)
+            //        {
+            //            AA = 3;
+            //        }
+            //        else if (AA2 > 0 && AA3 == 0)
+            //        {
+            //            AA = 1;
+            //        }
+            //        else if (AA2 == 0 && AA3 > 0)
+            //        {
+            //            AA = 2;
+            //        }
 
-                    if (AA == 1)
-                    {
-                        //e.RowElement.DrawFill = true;
-                        //e.RowElement.GradientStyle = GradientStyles.Solid;
-                        //e.RowElement.BackColor = Color.GreenYellow;
-                    }
-                    else if (AA == 2)
-                    {
-                        e.RowElement.DrawFill = true;
-                        e.RowElement.GradientStyle = GradientStyles.Solid;
-                        e.RowElement.BackColor = Color.NavajoWhite;
-                    }
-                    else if (AA == 3)
-                    {
-                        e.RowElement.DrawFill = true;
-                        e.RowElement.GradientStyle = GradientStyles.Solid;
-                        e.RowElement.BackColor = Color.LightPink;
-                    }
+            //        if (AA == 1)
+            //        {
+            //            //e.RowElement.DrawFill = true;
+            //            //e.RowElement.GradientStyle = GradientStyles.Solid;
+            //            //e.RowElement.BackColor = Color.GreenYellow;
+            //        }
+            //        else if (AA == 2)
+            //        {
+            //            e.RowElement.DrawFill = true;
+            //            e.RowElement.GradientStyle = GradientStyles.Solid;
+            //            e.RowElement.BackColor = Color.NavajoWhite;
+            //        }
+            //        else if (AA == 3)
+            //        {
+            //            e.RowElement.DrawFill = true;
+            //            e.RowElement.GradientStyle = GradientStyles.Solid;
+            //            e.RowElement.BackColor = Color.LightPink;
+            //        }
 
 
-                }
-                else if (e.RowElement.RowInfo.Cells["CheckOK"].Value.Equals("NG"))
-                {
-                    e.RowElement.DrawFill = true;
-                    e.RowElement.GradientStyle = GradientStyles.Solid;
-                    e.RowElement.BackColor = Color.Red;
-                }
-                else
-                {
-                    e.RowElement.ResetValue(LightVisualElement.BackColorProperty, ValueResetFlags.Local);
-                    e.RowElement.ResetValue(LightVisualElement.GradientStyleProperty, ValueResetFlags.Local);
-                    e.RowElement.ResetValue(LightVisualElement.DrawFillProperty, ValueResetFlags.Local);
-                }
-            }
-            catch { }
+            //    }
+            //    else if (e.RowElement.RowInfo.Cells["CheckOK"].Value.Equals("NG"))
+            //    {
+            //        e.RowElement.DrawFill = true;
+            //        e.RowElement.GradientStyle = GradientStyles.Solid;
+            //        e.RowElement.BackColor = Color.Red;
+            //    }
+            //    else
+            //    {
+            //        e.RowElement.ResetValue(LightVisualElement.BackColorProperty, ValueResetFlags.Local);
+            //        e.RowElement.ResetValue(LightVisualElement.GradientStyleProperty, ValueResetFlags.Local);
+            //        e.RowElement.ResetValue(LightVisualElement.DrawFillProperty, ValueResetFlags.Local);
+            //    }
+            //}
+            //catch { }
         }
 
         private void radButton1_Click_2(object sender, EventArgs e)
@@ -1817,12 +2167,9 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     tb_QCImageCheck im = db.tb_QCImageChecks.Where(u => u.PartNo.Equals(txtPartNo.Text)).FirstOrDefault();
-                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC1")).FirstOrDefault();
-                    string Path = "";
-                    if (ph != null)
-                    {
-                        Path = ph.PathFile;
-                    }
+                   
+                    string Path = dbClss.PartImgQC1;
+                   
                     if (im != null)
                     {
                         if (!im.Image1.Equals(""))
@@ -1843,13 +2190,14 @@ namespace StockControl
             {
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
+                   
                     tb_QCImageCheck im = db.tb_QCImageChecks.Where(u => u.PartNo.Equals(txtPartNo.Text)).FirstOrDefault();
-                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC2")).FirstOrDefault();
-                    string Path = "";
-                    if (ph != null)
-                    {
-                        Path = ph.PathFile;
-                    }
+                  //  tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC2")).FirstOrDefault();
+                    string Path = dbClss.PartImgQC2;
+                    //if (ph != null)
+                    //{
+                    //    Path = ph.PathFile;
+                    //}
                     if (im != null)
                     {
                         if (!im.Image2.Equals(""))
@@ -1872,12 +2220,12 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     tb_QCImageCheck im = db.tb_QCImageChecks.Where(u => u.PartNo.Equals(txtPartNo.Text)).FirstOrDefault();
-                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC3")).FirstOrDefault();
-                    string Path = "";
-                    if (ph != null)
-                    {
-                        Path = ph.PathFile;
-                    }
+                   // tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC3")).FirstOrDefault();
+                    string Path = dbClss.PartImgQC3;
+                    //if (ph != null)
+                    //{
+                    //    Path = ph.PathFile;
+                    //}
                     if (im != null)
                     {
                         if (!im.Image3.Equals(""))
@@ -1899,12 +2247,13 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
                     tb_QCImageCheck im = db.tb_QCImageChecks.Where(u => u.PartNo.Equals(txtPartNo.Text)).FirstOrDefault();
-                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC4")).FirstOrDefault();
-                    string Path = "";
-                    if (ph != null)
-                    {
-                        Path = ph.PathFile;
-                    }
+                  //  tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC4")).FirstOrDefault();
+                    string Path = dbClss.PartImgQC4;
+                    
+                    //if (ph != null)
+                    //{
+                    //    Path = ph.PathFile;
+                    //}
                     if (im != null)
                     {
                         if (!im.Image4.Equals(""))
@@ -1923,14 +2272,37 @@ namespace StockControl
         {
             //QCSetMasterPD qc = new QCSetMasterPD(txtOrderNo.Text.ToUpper());
             // qc.ShowDialog();
-
-            CheckLineName();
+            if (CheckSCanMachine())
+            {
+                CheckLineName();
+            }
+        }
+        private bool CheckSCanMachine()
+        {
+            bool ck = false;
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                var chdList = db.tb_QCCheckMachines.Where(p => p.WONo.Equals(txtOrderNo.Text) && Convert.ToString(p.DayN).Equals("")).ToList();
+                if (chdList.Count > 0)
+                {
+                    MessageBox.Show("ให้ทำการ Scan Machine No. ทุกรายการก่อน!!!");
+                }
+                else
+                {
+                    ck = true;
+                }
+                return ck;
+            }
         }
         private void CheckLineName()
         {
             txtISO.Text = "";
-            
-            QCSetMasterSelect ms = new QCSetMasterSelect(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text.ToUpper(), txtISO, "PD");
+            //if (txtWorkCenter.Text(""))
+            //{
+            //    LineName2 = txtWorkCenter.Text;
+            //}
+            LineName2 = txtWorkCenter.Text;
+            QCSetMasterSelect ms = new QCSetMasterSelect(txtOrderNo.Text.ToUpper(), txtWorkCenter.Text.ToUpper(), txtPartNo.Text.ToUpper(), txtISO, "PD");
             ms.ShowDialog();
             if (!txtISO.Text.Equals(""))
             {
@@ -1978,7 +2350,6 @@ namespace StockControl
                     {
                         txtTAG.Text = "New";
                         TAG1 = "New";
-
                     }
                     TAG2 = TAG1;
                 }
@@ -1994,23 +2365,58 @@ namespace StockControl
                     TAG2 = "None";
                     TAG1 = txtTAG.Text;
                 }
+                else if (FISO.Equals("FM-PD-110"))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD110";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
+                else if (FISO.Equals("FM-PD-013"))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD013";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
+                else if (FISO.Equals("FM-PD-122"))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD122";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
+                else if (FISO.Equals("FM-PD-014"))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD014";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
+                else if (FISO.Equals("FM-PD-095") || (FISO.Equals("FM-PD-096")))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD0956";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
+                else if (FISO.Equals("FM-PD-140"))
+                {
+                    txtTAG.Text = "PQC," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD140";
+                    TAG2 = "None";
+                    TAG1 = txtTAG.Text;
+                }
                 else if (FISO.Equals("FM-PD-002"))
                 {
                     if (txtTAG.Text.Equals(""))
                     {
                         txtTAG.Text = "New";
                         TAG1 = "New";
-
                     }
                     TAG2 = TAG1;
                 }
-                else if (FISO.Equals("FM-PD-112"))
+                else if (FISO.Equals("FM-PD-112") || FISO.Equals("FM-PD-113") || FISO.Equals("FM-PD-123") || FISO.Equals("FM-PD-010") || FISO.Equals("FM-PD-153")
+                    || FISO.Equals("FM-PD-164"))
                 {
                     if (txtTAG.Text.Equals(""))
                     {
                         txtTAG.Text = "New";
                         TAG1 = "New";
-
                     }
                     TAG2 = TAG1;
                 }
@@ -2027,6 +2433,19 @@ namespace StockControl
                         TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD003";
                         TAG2 = TAG1; 
                 }
+                else if (FISO.Equals("FM-PD-139"))
+                {
+
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+
+                    TAG2 = "";
+                    TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD139";
+                    TAG2 = TAG1;
+                }
                 else if (FISO.Equals("FM-PD-003_S"))
                 {
 
@@ -2038,6 +2457,72 @@ namespace StockControl
 
                     TAG2 = "";
                     TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD003_S";
+                    TAG2 = TAG1;
+                    //Head,WO23145208,1,1,38GT,1of1,44130040310,FMPD003_S
+                }
+                else if(FISO.Equals("FM-PD-156"))
+                {
+                    //FMPD156
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+
+                    TAG2 = "";
+                    TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD156";
+                    TAG2 = TAG1;
+                }
+                else if (FISO.Equals("FM-PD-157"))
+                {
+
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+
+                    TAG2 = "";
+                    TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD157";
+                    TAG2 = TAG1;
+                }
+                else if (FISO.Equals("FM-PD-163"))
+                {
+
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+
+                    TAG2 = "";
+                    TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD163";
+                    TAG2 = TAG1;
+                }
+                else if (FISO.Equals("FM-PD-011"))
+                {
+                    //FMPD156
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+
+                    TAG2 = "";
+                    TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD011";
+                    TAG2 = TAG1;
+                }
+                else if (FISO.Equals("FM-PD-077"))
+                {
+
+                    if (txtTAG.Text.Equals(""))
+                    {
+                        TAG1 = "New";
+                        txtTAG.Text = "New";
+                    }
+
+                    TAG2 = "";
+                    TAG1 = "Head," + txtOrderNo.Text.ToUpper() + ",1,1," + txtLotNo.Text + ",1of1," + txtPartNo.Text.ToUpper() + ",FMPD077";
                     TAG2 = TAG1;
                 }
                 else //if (FISO.Equals("FM-PD-035_1"))
@@ -2054,7 +2539,7 @@ namespace StockControl
                 {
                     //TAG1 = txtTAG.Text;
                    
-                    QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), FISO, TAG1, LineName2, "PD", TAG2);
+                    QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), FISO, TAG1, txtWorkCenter.Text.ToUpper(), "PD", TAG2);
                     qcop.ShowDialog();
                 }
                 else
@@ -2091,7 +2576,7 @@ namespace StockControl
         private void radGridView1_CellDoubleClick(object sender, GridViewCellEventArgs e)
         {
             txtISO.Text = "";
-            QCSetMasterSelect ms = new QCSetMasterSelect(txtOrderNo.Text.ToUpper(), LineName2, txtPartNo.Text.ToUpper(), txtISO, "PD");
+            QCSetMasterSelect ms = new QCSetMasterSelect(txtOrderNo.Text.ToUpper(), txtWorkCenter.Text, txtPartNo.Text.ToUpper(), txtISO, "PD");
             ms.ShowDialog();
             if (!txtISO.Text.Equals(""))
             {
@@ -2109,21 +2594,7 @@ namespace StockControl
             {
                 if (!txtScanMachine.Text.Equals("") && !txtOrderNo.Text.Equals(""))
                 {
-                    //GET Line//
-
-                    //using (DataClasses1DataContext db = new DataClasses1DataContext())
-                    //{
-                    //    tb_QCFormMasterLine qf = db.tb_QCFormMasterLines.Where(p => p.LineName.Equals(LineName2)&& p.Dept.Equals("PD")).FirstOrDefault();
-                    //    if(qf!=null)
-                    //    {
-                    //        FormISO2 = "FM-PD-001";
-                    //    }
-                    //}
-                    // MessageBox.Show(FormISO2);
-                    //if (LineName2.Equals("TW10-CB"))
-                    //{
-                    //    FormISO2 = "FM-PD-001";
-                    //}
+                   
                     dbShowData.InsertScanMachine(txtOrderNo.Text.ToUpper(), txtScanMachine.Text.ToUpper(), FormISO2, txtPartNo.Text.ToUpper());
                     QCLoadMC();
                     txtScanMachine.Text = "";
@@ -2155,6 +2626,7 @@ namespace StockControl
         {
             try
             {
+               // object idValue = e.RowElement.RowInfo.Cells["SC"].Value;
                 if (e.RowElement.RowInfo.Cells["SC"].Value.Equals("OK"))
                 {
                     if (!e.RowElement.RowInfo.Cells["DayN"].Value.Equals("") && !e.RowElement.RowInfo.Cells["Night"].Value.Equals(""))
@@ -2175,7 +2647,7 @@ namespace StockControl
                         e.RowElement.GradientStyle = GradientStyles.Solid;
                         e.RowElement.BackColor = Color.GreenYellow;
                     }
-                    
+
                 }
                 else
                 {
@@ -2198,7 +2670,7 @@ namespace StockControl
            // TimeSpan ts = new TimeSpan(20, 0, 0);
            // MessageBox.Show(ts.TotalMinutes.ToString());
 
-             QCUpdateCount qcc = new QCUpdateCount(txtOrderNo.Text,txtWorkCenter.Text);
+             QCUpdateCount qcc = new QCUpdateCount(txtOrderNo.Text,txtWorkCenter.Text,txtPartNo.Text);
              qcc.ShowDialog();
         }
 
@@ -2308,6 +2780,144 @@ namespace StockControl
                 }
             }
             catch { }
+        }
+
+        private void radButton9_Click(object sender, EventArgs e)
+        {
+            if (chkClose.Checked)
+            {
+                if (MessageBox.Show("คุณต้องการ เปิด Order จาก Clsed หรือไม่ ? \n จะสามารถรับได้อีก", "เปิดรายการ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        tb_ProductionHD ph = db.tb_ProductionHDs.Where(p => p.OrderNo.ToLower() == txtOrderNo.Text.ToLower() && p.Closed == true).FirstOrDefault();
+                        if (ph != null)
+                        {
+                            chkClose.Checked = false;
+                            ph.Closed = false;
+                            db.SubmitChanges();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                label4.Invoke((MethodInvoker)delegate
+                {
+                    label4.Text ="Auto Refresh:"+ DateTime.Now.ToString("hh:mm");
+                });
+               // LoadRefresh();
+            }
+            catch { }
+        }
+
+        private void chkRealTime_ToggleStateChanged(object sender, StateChangedEventArgs args)
+        {
+            if (chkRealTime.Checked)
+            {
+                timer1.Start();
+            }
+            else
+            {
+                timer1.Stop();
+            }
+        }
+        private void LoadRefresh()
+        {
+            try
+            {
+                string ConntA = DBLocal1;
+               // ConntA = DBLocal2;
+                int Seq = 0;
+                string status = "";
+                int CheckOKx = 0;
+                using (DataClasses1DataContext db = new DataClasses1DataContext(ConntA))
+                {
+                    foreach(var rd in radGridView4.Rows)
+                    {
+                        Seq = 0;
+                        status = "";
+                        if((rd.Cells["SC"].Value).Equals(""))
+                        {
+
+                        }
+                        int.TryParse(rd.Cells["Seq"].Value.ToString(), out Seq);
+                        //Find Status//
+                        status = db.PD_CheckMachine_Status(txtOrderNo.Text, Seq);
+                        if (status.Equals("OK"))
+                        {
+                            CheckOKx += 1;
+                            rd.Cells["SC"].Value = "OK";
+                        }
+                    }
+                }
+                if (CheckOKx > 0)
+                {
+                    radGridView4.Update();
+                    radGridView4.Refresh();
+                }
+
+
+            }
+            catch { }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+           // QCLoadMC();
+            LoadRefresh();
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radGridView4_CellDoubleClick(object sender, GridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex >= 0)
+                {
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        radGridView4.EndEdit();
+                        int seq = 0;
+                        string DataT = "";
+                        int.TryParse(radGridView4.Rows[e.RowIndex].Cells["Seq"].Value.ToString(), out seq);
+                        DataT = radGridView4.Rows[e.RowIndex].Cells["Toppic"].Value.ToString();
+
+                        if (seq > 0 && (DataT.Equals("Remark") || DataT.Equals("หมายเหตุ")))
+                        {
+                            // db.sp_46_QCUpdateLotCheckMC(txtOrderNo.Text, seq, (radGridView4.Rows[e.RowIndex].Cells["ValueX"].Value.ToString()));
+                            //  tb_QCCheckMachine qche=db.tb_QCCheckMachines.Where(p=>p.WONo.Equals("") && p.Seq.Equals(seq)).fir
+                            //Open Page
+                            txtSetUpRemark.Text = "";
+                            QCSetRemark qcst = new QCSetRemark(seq, txtOrderNo.Text,ref txtSetUpRemark);
+                            qcst.ShowDialog();
+                            if (!txtSetUpRemark.Text.Equals(""))
+                            {
+                                radGridView4.Rows[e.RowIndex].Cells["ValueX"].Value = txtSetUpRemark.Text;
+                                radGridView4.Update();
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if(!txtOrderNo.Text.Equals(""))
+            {
+                QCSetTimeStart qct = new QCSetTimeStart(txtOrderNo.Text);
+                qct.ShowDialog();
+            }
         }
     }
 

@@ -407,9 +407,9 @@ namespace StockControl
         {
             try
             {
-                string Inv = radGridView1.Rows[e.RowIndex].Cells["InvoiceNo"].Value.ToString();
-                ExShipment ex = new ExShipment(Inv);
-                ex.Show();
+                //string Inv = radGridView1.Rows[e.RowIndex].Cells["InvoiceNo"].Value.ToString();
+                //ExShipment ex = new ExShipment(Inv);
+                //ex.Show();
             }
             catch { }
         }
@@ -565,6 +565,22 @@ namespace StockControl
                 }
             }
             catch { }
+        }
+
+        private void radButtonElement7_Click(object sender, EventArgs e)
+        {
+            if (!txtINv.Text.Equals(""))
+            {
+                if (MessageBox.Show("Delete All Scan Part of " + txtINv.Text + "?", "Delete Scan", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        //  string wo=radGridView1.curr
+                        db.sp_Z_3_pd_List_Scan_partPDA_Delete(txtINv.Text);
+                        MessageBox.Show("Completed.");
+                    }
+                }
+            }
         }
     }
 }

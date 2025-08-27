@@ -279,8 +279,8 @@
             // radRibbonBarGroup1
             // 
             this.radRibbonBarGroup1.Items.AddRange(new Telerik.WinControls.RadItem[] {
-            this.radButtonElement6,
             this.radButtonElement1,
+            this.radButtonElement6,
             this.radButtonElement5});
             this.radRibbonBarGroup1.Name = "radRibbonBarGroup1";
             this.radRibbonBarGroup1.Text = "Print Report";
@@ -304,10 +304,9 @@
             this.radButtonElement1.Name = "radButtonElement1";
             this.radButtonElement1.Text = "Report Doc.";
             this.radButtonElement1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.radButtonElement1.Visibility = Telerik.WinControls.ElementVisibility.Collapsed;
             this.radButtonElement1.Click += new System.EventHandler(this.radButtonElement1_Click);
             ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement1.GetChildAt(1).GetChildAt(1))).LineLimit = false;
-            ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement1.GetChildAt(1).GetChildAt(1))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
+            ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement1.GetChildAt(1).GetChildAt(1))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(3)))), ((int)(((byte)(186)))));
             ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement1.GetChildAt(1).GetChildAt(1))).Alignment = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // radButtonElement5
@@ -318,6 +317,9 @@
             this.radButtonElement5.Text = "Link Data";
             this.radButtonElement5.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.radButtonElement5.Click += new System.EventHandler(this.radButtonElement5_Click);
+            ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement5.GetChildAt(1).GetChildAt(1))).LineLimit = false;
+            ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement5.GetChildAt(1).GetChildAt(1))).ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(0)))), ((int)(((byte)(78)))));
+            ((Telerik.WinControls.Primitives.TextPrimitive)(this.radButtonElement5.GetChildAt(1).GetChildAt(1))).Alignment = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // radRibbonBarGroup6
             // 
@@ -506,12 +508,12 @@
             gridViewTextBoxColumn11.Name = "CheckQty";
             gridViewTextBoxColumn11.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
             gridViewTextBoxColumn11.Width = 90;
-            gridViewTextBoxColumn12.FieldName = "OKQty";
+            gridViewTextBoxColumn12.FieldName = "OKQQ";
             gridViewTextBoxColumn12.HeaderText = "OK Qty";
             gridViewTextBoxColumn12.Name = "OKQty";
             gridViewTextBoxColumn12.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;
             gridViewTextBoxColumn12.Width = 90;
-            gridViewTextBoxColumn13.FieldName = "NGQty";
+            gridViewTextBoxColumn13.FieldName = "NGQQ";
             gridViewTextBoxColumn13.HeaderText = "NG Qty";
             gridViewTextBoxColumn13.Name = "NGQty";
             gridViewTextBoxColumn13.TextAlignment = System.Drawing.ContentAlignment.MiddleRight;

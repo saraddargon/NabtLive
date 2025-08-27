@@ -10,28 +10,29 @@ using Microsoft.VisualBasic.FileIO;
 using Telerik.WinControls.UI;
 namespace StockControl
 {
-    public partial class WarehousePartScan : Telerik.WinControls.UI.RadRibbonForm
+    public partial class QCSetTimeStart : Telerik.WinControls.UI.RadRibbonForm
     {
-        public WarehousePartScan()
+        public QCSetTimeStart()
         {
             InitializeComponent();
-        }
-        public WarehousePartScan(string WONox,string PartNox)
-        {
-            InitializeComponent();
-            WONo = WONox;
-            PartNo = PartNox;
         }
      
+        public QCSetTimeStart(string WONo)
+        {
+            InitializeComponent();        
+            WOs = WONo;
+           
+        }
+        TextBox setData = new TextBox();
         TextBox LinkPage = new TextBox();
-        TextBox LinkPage2 = new TextBox();
         string Link = "";
+        string WOs = "";
+        int id = 0;
         //private int RowView = 50;
         //private int ColView = 10;
         int AA = 0;
         RadTextBox NGidList = new RadTextBox();
-        string WONo = "";
-        string PartNo = "";
+        string QCNo = "";
         DataTable dt = new DataTable();
         private void radMenuItem2_Click(object sender, EventArgs e)
         {
@@ -56,10 +57,21 @@ namespace StockControl
         }
         private void Unit_Load(object sender, EventArgs e)
         {
-          //  MessageBox.Show(WONo);
-            radGridView1.AutoGenerateColumns = false;
+            // RMenu3.Click += RMenu3_Click;
+            // RMenu4.Click += RMenu4_Click;
+            // RMenu5.Click += RMenu5_Click;
+            // RMenu6.Click += RMenu6_Click;
+            //// radGridView1.ReadOnly = true;
+            // radGridView1.AutoGenerateColumns = false;
+            // GETDTRow();
+            dtDate.Value = DateTime.Now;
+            DateTime date = DateTime.Now;
+            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            //dtDate1.Value = firstDayOfMonth;
+            //dtDate2.Value = lastDayOfMonth;
             DataLoad();
-
+        
 
         }
 
@@ -88,25 +100,30 @@ namespace StockControl
 
         private void DataLoad()
         {
-            radGridView1.DataSource = null;
-            // int ck = 0;
             try
             {
+                int ck = 0;
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
 
-                    var ListQ = db.sp_Z_3_pd_List_Scan_part(WONo, PartNo).ToList();
-                    radGridView1.DataSource = ListQ;
-                    //foreach (var x in radGridView1.Rows)
-                    //{
-                    //    ck += 1;
-                    //    x.Cells["No"].Value = ck;
-                    //}
-
+                    tb_ProductionHD wo = db.tb_ProductionHDs.Where(p=>p.OrderNo.Equals(WOs)).FirstOrDefault();
+                    if (wo != null)
+                    {
+                        var pTime = db.sp_46_QCGetValue2601_Time(WOs).ToList();
+                        if (pTime.Count > 0)
+                        {
+                            var T = pTime.FirstOrDefault();
+                            txtStartTime.Text = T.BomTime;
+                            txtPrintTAG.Text = T.PrintTime;
+                            txtFixPrintTAG.Text = T.BomTime2;
+                            radTextBox1.Text = T.BomTime;
+                            radTextBox2.Text = T.PrintTime;
+                            radTextBox3.Text = T.BomTime2;
+                        }     
+                    }
                 }
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
-
+            catch { }
         }
         private bool CheckDuplicate(string code)
         {
@@ -157,7 +174,7 @@ namespace StockControl
            //// radGridView1.ReadOnly = true;
            // btnView.Enabled = false;
            // //btnEdit.Enabled = true;
-            radGridView1.AllowAddNewRow = false;
+           
             DataLoad();
         }
 
@@ -171,7 +188,7 @@ namespace StockControl
             //Select NCR List No."//
             try
             {
-              
+                Saveclick();
             }
             catch { }
         }
@@ -185,8 +202,64 @@ namespace StockControl
         {
             if (MessageBox.Show("ต้องการบันทึก ?", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-               // AddUnit();
-              //  DataLoad();
+                //AddUnit();
+                //DataLoad();
+                //  this.Close();
+                DateTime StartD = new DateTime();
+                DateTime PrintTAG = new DateTime();
+                DateTime PrintTAGFix = new DateTime();
+                int cc1 = 0;
+                int countA = 0;
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    tb_ProductionHD ng = db.tb_ProductionHDs.Where(w => w.OrderNo.Equals(WOs)).FirstOrDefault();
+                    if (ng != null)
+                    {
+                        StartD = Convert.ToDateTime(ng.Createdate);
+                        PrintTAG = Convert.ToDateTime(ng.PrintDate);
+                        cc1 = 0;
+                        if (ng.ScanBOM2 != null)
+                        {
+                            PrintTAGFix = Convert.ToDateTime(ng.ScanBOM2);
+                            cc1 = 1;
+                        }
+
+                        if(!txtStartTime.Text.Equals(radTextBox1.Text))
+                        {
+                            if (DateTime.TryParse(txtStartTime.Text, out StartD))
+                            {
+                                ng.Createdate = StartD;
+                            }
+                        }
+                        if(!txtPrintTAG.Text.Equals(radTextBox2.Text))
+                        {
+                            if (DateTime.TryParse(txtPrintTAG.Text, out PrintTAG))
+                            {
+                                ng.PrintDate = PrintTAG;
+                            }
+                        }
+                        if(!txtFixPrintTAG.Text.Equals(radTextBox3.Text))
+                        {
+                            if(!txtFixPrintTAG.Text.Equals(""))
+                            {
+                                if (DateTime.TryParse(txtFixPrintTAG.Text, out PrintTAGFix))
+                                {
+                                    ng.ScanBOM2 = PrintTAGFix;
+                                }
+                            }
+                        }
+                     
+                        db.SubmitChanges();
+                        countA += 1;
+                    }
+                    else
+                    {                      
+                      
+                    }
+                    if(countA>0)
+                        MessageBox.Show("บันทึกสำเร็จ");
+                    this.Close();
+                }
             }
         }
         private void DeleteClick()
@@ -249,7 +322,7 @@ namespace StockControl
         private void btnExport_Click(object sender, EventArgs e)
         {
             //dbClss.ExportGridCSV(radGridView1);
-           dbClss.ExportGridXlSX(radGridView1);
+           
         }
 
         private void btnImport_Click(object sender, EventArgs e)
@@ -264,12 +337,12 @@ namespace StockControl
 
         private void btnFilter1_Click(object sender, EventArgs e)
         {
-            radGridView1.EnableFiltering = true;
+           
         }
 
         private void btnUnfilter1_Click(object sender, EventArgs e)
         {
-            radGridView1.EnableFiltering = false;
+            
         }
 
         private void radMenuItem1_Click(object sender, EventArgs e)
@@ -307,12 +380,13 @@ namespace StockControl
 
         private void radButtonElement2_Click(object sender, EventArgs e)
         {
-       
+            ReqMoveStock rq = new ReqMoveStock("", QCNo);
+            rq.Show();
         }
 
         private void radButtonElement3_Click(object sender, EventArgs e)
         {
-          
+            MessageBox.Show("Create NCR No.");
         }
 
         private void radButtonElement4_Click(object sender, EventArgs e)
@@ -323,43 +397,6 @@ namespace StockControl
         private void radGridView1_CellClick_1(object sender, GridViewCellEventArgs e)
         {
             row = e.RowIndex;
-        }
-
-        private void radGridView1_CellEndEdit_1(object sender, GridViewCellEventArgs e)
-        {
-            try
-            {
-                if (MessageBox.Show("Update Qty this ID?", "Update Line", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    int id = 0;
-                    int.TryParse(radGridView1.CurrentRow.Cells["id"].Value.ToString(), out id);
-                    decimal qty = 0;
-                    decimal.TryParse(radGridView1.CurrentRow.Cells["Quantity"].Value.ToString(), out qty);
-                    using (DataClasses1DataContext db = new DataClasses1DataContext())
-                    {
-                        db.sp_Z_3_pd_List_Scan_partPDA_UpdateByid(WONo, id,qty);                        
-                    }
-                }
-            }
-            catch { }
-        }
-
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if(MessageBox.Show("Delete this ID?","Delete Line",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==DialogResult.Yes)
-                {
-                    int id = 0;
-                    int.TryParse(radGridView1.CurrentRow.Cells["id"].Value.ToString(), out id);
-                    using (DataClasses1DataContext db = new DataClasses1DataContext())
-                    {
-                        db.sp_Z_3_pd_List_Scan_partPDA_DeleteByid(WONo, id);
-                        DataLoad();
-                    }
-                }
-            }
-            catch { }
         }
     }
 }

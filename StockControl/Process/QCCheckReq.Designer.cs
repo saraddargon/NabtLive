@@ -729,7 +729,7 @@
             this.dtDate.Size = new System.Drawing.Size(30, 20);
             this.dtDate.TabIndex = 3;
             this.dtDate.TabStop = false;
-            this.dtDate.Text = "23 September 2018";
+            this.dtDate.Text = "Sunday, September 23, 2018";
             this.dtDate.Value = new System.DateTime(2018, 9, 23, 14, 16, 48, 927);
             this.dtDate.Visible = false;
             // 

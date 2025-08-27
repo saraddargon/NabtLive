@@ -27,6 +27,11 @@ namespace StockControl
         {
             InitializeComponent();
         }
+        public PCCheck(string CheckNo,int AA)
+        {
+            InitializeComponent();
+            txtCheckNo.Text = CheckNo;
+        }
 
         string PR1 = "";
         string PR2 = "";
@@ -54,12 +59,13 @@ namespace StockControl
             //RMenu4.Click += RMenu4_Click;
 
             LoadDefault();
-            txtCheckNo.Text = "";
+           // txtCheckNo.Text = "";
             ddlLocation.Text = "";
             txtItemCount.Text = "0";
             txtCheckBy.Text = dbClss.UserID;
             txtScanCode.Enabled = false;
             txtCheckNo.Enabled = true;
+            LoadData(txtCheckNo.Text);
         }
         private void LoadDefault()
         {

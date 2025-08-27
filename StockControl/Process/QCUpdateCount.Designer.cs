@@ -443,16 +443,17 @@
             gridViewTextBoxColumn1.FieldName = "Seq";
             gridViewTextBoxColumn1.HeaderText = "Seq";
             gridViewTextBoxColumn1.Name = "Seq";
+            gridViewTextBoxColumn1.ReadOnly = true;
             gridViewTextBoxColumn1.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             gridViewTextBoxColumn1.Width = 60;
             gridViewTextBoxColumn2.FieldName = "DayN";
             gridViewTextBoxColumn2.HeaderText = "DayN";
             gridViewTextBoxColumn2.Name = "DayN";
-            gridViewTextBoxColumn2.ReadOnly = true;
             gridViewTextBoxColumn2.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             gridViewTextBoxColumn3.FieldName = "ProcessName";
             gridViewTextBoxColumn3.HeaderText = "Process";
             gridViewTextBoxColumn3.Name = "ProcessName";
+            gridViewTextBoxColumn3.ReadOnly = true;
             gridViewTextBoxColumn3.Width = 250;
             gridViewTextBoxColumn4.FieldName = "A1";
             gridViewTextBoxColumn4.FormatString = "{0:N}";
@@ -469,12 +470,12 @@
             this.radGridView4.MasterTemplate.SelectionMode = Telerik.WinControls.UI.GridViewSelectionMode.CellSelect;
             this.radGridView4.MasterTemplate.ViewDefinition = tableViewDefinition1;
             this.radGridView4.Name = "radGridView4";
-            this.radGridView4.ReadOnly = true;
             this.radGridView4.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.radGridView4.ShowGroupPanel = false;
             this.radGridView4.Size = new System.Drawing.Size(606, 316);
             this.radGridView4.TabIndex = 0;
             this.radGridView4.ThemeName = "Office2010Blue";
+            this.radGridView4.CellEndEdit += new Telerik.WinControls.UI.GridViewCellEventHandler(this.radGridView4_CellEndEdit);
             this.radGridView4.CellClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.radGridView4_CellClick);
             // 
             // contextMenuStrip1

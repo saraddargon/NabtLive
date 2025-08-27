@@ -361,53 +361,151 @@ namespace StockControl
             {
                 if (rowx >= 0)
                 {
-                    if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-026_1"))
-                    {
-                        this.Cursor = Cursors.WaitCursor;
-                        dbShowData.PrintData(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
-                        this.Cursor = Cursors.Default;
-                    }
-                    else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-QA-056_02_1"))
-                    {
-                        this.Cursor = Cursors.WaitCursor;
-                        dbShowData.PrintData5601(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
-                        this.Cursor = Cursors.Default;
-                    }
+                    dbShowData.CallReportQC(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString(), 
+                        radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString(),
+                        radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString(),
+                        radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
 
-                    else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-QA-055_02_1"))
-                    {
-                        this.Cursor = Cursors.WaitCursor;
-                        dbShowData.PrintData5501(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
-                        this.Cursor = Cursors.Default;
-                    }
-                    else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-035_1"))
-                    {
-                        this.Cursor = Cursors.WaitCursor;
-                        dbShowData.PrintData035(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
-                        this.Cursor = Cursors.Default;
-                    }
-                    else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-033_1"))
-                    {
-                        this.Cursor = Cursors.WaitCursor;
-                        dbShowData.PrintData033(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
-                            , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
-                        this.Cursor = Cursors.Default;
-                    }
+                    //if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-026_1"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    dbShowData.PrintData(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-QA-056_02_1"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    dbShowData.PrintData5601(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-QA-055_02_1"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    dbShowData.PrintData5501(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-035_1"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    dbShowData.PrintData035(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-033_1"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    dbShowData.PrintData033(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-001"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //  //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintFMPD001(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-002"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintFMPD002(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-003"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintFMPD003(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-109"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintFMPD109(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-156")
+                    //    || radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-003_S"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                        
+                    //    dbShowData.PrintFMPD003_S(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+
+                    //    this.Cursor = Cursors.Default;
+                    //}
+
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-110"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintPD110(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-112"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintFMPD112(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-113"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintPD113(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
+                    //else if (radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString().Equals("FM-PD-157"))
+                    //{
+                    //    this.Cursor = Cursors.WaitCursor;
+                    //    //  dbShowData.PrintFMPD001(txtProdNo.Text.ToUpper(), txtPartNo.Text, txtQCNo.Text, FormISO);
+                    //    dbShowData.PrintPD157(radGridView1.Rows[rowx].Cells["WONo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["PartNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["QCNo"].Value.ToString()
+                    //        , radGridView1.Rows[rowx].Cells["FormISO"].Value.ToString());
+                    //    this.Cursor = Cursors.Default;
+                    //}
 
 
                 }
             }
             catch { }
-            this.Cursor = Cursors.Default;
+          //  this.Cursor = Cursors.Default;
         }
 
         private void radButtonElement2_Click(object sender, EventArgs e)

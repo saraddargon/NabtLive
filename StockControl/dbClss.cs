@@ -21,12 +21,18 @@ namespace StockControl
         /// <summary>
         /// ////
         /// </summary>
-        public static string versioin = "last update 25-apr-23-1";
+        public static string versioin = "last update 8-Jul-25-1";
+        public static string DbConn = @"Data Source=192.168.1.5;Initial Catalog=dbBarcodeNab;User ID=sa;Password=napt-2012;";
         public static string UserID = "";
         public static string UserName = "";
         public static bool UseQC = false;
         public static bool UsePDDept = false;
         public static bool UseQCDept = false;
+        public static string PartImgQC1 = "";
+        public static string PartImgQC2 = "";
+        public static string PartImgQC3 = "";
+        public static string PartImgQC4 = "";
+        public static bool PrintA = false;
         public static bool PermissionScreen(string ScreenName)
         {
             bool ck = false;
@@ -149,6 +155,44 @@ namespace StockControl
         public static string Right(this string value, int length)
         {
             return value.Substring(value.Length - length);
+        }
+        public static void getPath(string PathCode,int AC)
+        {
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                if (AC == 1)
+                {
+                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC1")).FirstOrDefault();
+                    if (ph != null)
+                    {
+                        PartImgQC1 = ph.PathFile;
+                    }
+                }
+                if (AC == 2)
+                {
+                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC2")).FirstOrDefault();
+                    if (ph != null)
+                    {
+                        PartImgQC2 = ph.PathFile;
+                    }
+                }
+                if (AC == 3)
+                {
+                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC3")).FirstOrDefault();
+                    if (ph != null)
+                    {
+                        PartImgQC3 = ph.PathFile;
+                    }
+                }
+                if (AC == 4)
+                {
+                    tb_Path ph = db.tb_Paths.Where(p => p.PathCode.Equals("QC4")).FirstOrDefault();
+                    if (ph != null)
+                    {
+                        PartImgQC4 = ph.PathFile;
+                    }
+                }
+            }
         }
         public static void AddError(string Mathod,string Error,string Screen)
         {
@@ -756,6 +800,20 @@ namespace StockControl
                 }
             }
             return bahtTH;
+        }
+
+        public static void QueryDB()
+        {
+
+        }
+        public static bool CheckPrintInvt(string Invt)
+        {
+            var Chk = true;
+            using (DataClasses1DataContext db = new DataClasses1DataContext())
+            {
+                Chk = Convert.ToBoolean(db.CheckInvoiceVAT(Invt));
+            }
+            return Chk;
         }
     }
 }

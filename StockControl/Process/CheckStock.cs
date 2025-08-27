@@ -94,8 +94,9 @@ namespace StockControl
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
 
-                    radGridView1.DataSource = db.tb_CheckStockLists.Where(c => c.CheckNo == txtCheckNo.Text 
-                    && (txtItemNo.Text==string.Empty || c.Code.Contains(txtItemNo.Text))).ToList();
+                    //radGridView1.DataSource = db.tb_CheckStockLists.Where(c => c.CheckNo == txtCheckNo.Text 
+                    //&& (txtItemNo.Text==string.Empty || c.Code.Contains(txtItemNo.Text))).ToList();
+                    radGridView1.DataSource = db.sp_93_CheckStockNo(txtCheckNo.Text,txtItemNo.Text,txtItemCat.Text).ToList();
                     foreach (var x in radGridView1.Rows)
                     {
                         ck += 1;
