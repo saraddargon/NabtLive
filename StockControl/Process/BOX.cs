@@ -129,7 +129,7 @@ namespace StockControl
                 {
 
                     // radGridView1.DataSource = db.sp_44_BOX_ListSelect_01().ToList();
-                    var ListQ = db.tb_BOXes.ToList();//.Where(r => r.Status.Equals("Active")).ToList();
+                    var ListQ =  db.tb_BOXes.Where(p=>p.Status.Equals("Active")).ToList();//.Where(r => r.Status.Equals("Active")).ToList();
                     radGridView1.DataSource = ListQ;
                     foreach (var x in radGridView1.Rows)
                     {                       

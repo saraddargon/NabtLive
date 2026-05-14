@@ -41,7 +41,9 @@ namespace StockControl
         string SPG33_2 = "７０６０～８４２０　N";
         string Piggy = "Piggy Back Checksheet การตรวจสอบด้วยตนเอง　（Size 24）";
         string LotMark = "Lot ที่ตอกสามารถอ่านได้อย่างชัดเจน ";
+        string LotMark2 = "ตำแหน่งของPort  และขนาดของเกลียว Service ( 3/8 ) Emergency  ( 3/8 ) ถูกต้อง    Lot ที่ตอกสามารถอ่านได้อย่างชัดเจน ";
         int OpenPage = 0;
+        DateTime Dt = new DateTime();
      
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -417,6 +419,7 @@ namespace StockControl
                     radButton1_Click_1(sender, e);
                     txtInspector.Focus();
                     LotMark = LotMark + " ( " + txtLotNo.Text + " )";
+                    LotMark2 = LotMark2 + " ( "+txtLotNo.Text+" )";
                 }
                 else
                 {
@@ -439,6 +442,7 @@ namespace StockControl
                   || FormISO.Equals("FM-PD-153")
                   || FormISO.Equals("FM-PD-010")
                   || FormISO.Equals("FM-PD-164")
+                  || FormISO.Equals("FM-PD-171")
                 )
             {
                 this.radPageView1.SelectedPage=radPageViewPage7;
@@ -478,6 +482,7 @@ namespace StockControl
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ กลาง");
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ ท้าย");
                     cboSelectCheckBy.Text = "ผู้ตรวจสอบ หัว";
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
 
                 }
                 else if (FormISO.Equals("FM-PD-035_1"))
@@ -488,6 +493,7 @@ namespace StockControl
                     cboSelectCheckBy.Items.Add("พนักงานตรวจ ก่อนผลิต");
                     cboSelectCheckBy.Items.Add("พนักงานตรวจ หลังผลิต");
                     cboSelectCheckBy.Text = "ผู้ตรวจสอบ";
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
                 }
                 else if (FormISO.Equals("FM-PD-001"))
                 {
@@ -522,6 +528,7 @@ namespace StockControl
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 3");
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 4");
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 5");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
                 }
                 else if (FormISO.Equals("FM-PD-003"))
                 {
@@ -530,6 +537,7 @@ namespace StockControl
                     cboSelectCheckBy.Text = "ผู้ตรวจสอบ 1";
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 1");
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ 2");
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
                 }
                 else if (FormISO.Equals("FM-PD-003_S") || FormISO.Equals("FM-PD-156") || FormISO.Equals("FM-PD-011")
                     || FormISO.Equals("FM-PD-157")
@@ -555,6 +563,7 @@ namespace StockControl
 
 
                     cboSelectCheckBy.Text = "ผู้ตรวจสอบ 1";
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
                 }
                 else if (FormISO.Equals("FM-PD-109"))
                 {
@@ -585,10 +594,10 @@ namespace StockControl
 
                 }
                 else if (FormISO.Equals("FM-PD-112")||FormISO.Equals("FM-PD-113") || FormISO.Equals("FM-PD-123") || FormISO.Equals("FM-PD-153") || FormISO.Equals("FM-PD-010")
-                    || FormISO.Equals("FM-PD-164"))
+                    || FormISO.Equals("FM-PD-164") || FormISO.Equals("FM-PD-171"))
                 {
                     cboSelectCheckBy.Items.Clear();
-                    // cboSelectCheckBy.Items.Add("");                  
+                    cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");                  
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบ");
                     cboSelectCheckBy.Items.Add("Check");
                     cboSelectCheckBy.Text = "ผู้ตรวจสอบ";
@@ -665,6 +674,7 @@ namespace StockControl
                     // cboSelectCheckBy.Items.Add("");
                     cboSelectCheckBy.Items.Add("ผู้จัดเตรียม Part");
                     cboSelectCheckBy.Items.Add("ผู้จัดทำเอกสาร");
+                    cboSelectCheckBy.Items.Add("Pack kit & Service");
                     cboSelectCheckBy.Items.Add("ผู้ตรวจสอบก่อนผลิต");
                     cboSelectCheckBy.Items.Add("ประกอบ");
                     cboSelectCheckBy.Text = "ผู้จัดทำเอกสาร";
@@ -1148,6 +1158,12 @@ namespace StockControl
                             txtQty.Text = Convert.ToDecimal(woList.OrderQty).ToString("###,###.##");
                             txtDayNight.Text = woList.DayNight.ToString();
 
+                            tb_ProductionHD woData = db.tb_ProductionHDs.Where(o => o.OrderNo == WOs).FirstOrDefault();
+                            if(woData!=null)
+                            {
+                                Dt = Convert.ToDateTime(woData.Createdate);
+                            }
+
                           //  txtOfTAG.Text = "";// woList.PrintTAG;
 
                             string Tx = db.get_QC_FromISOGet01(FormISO, 0);
@@ -1415,10 +1431,57 @@ namespace StockControl
         {
             SaveData();
         }
+        private bool CheckBeforeAppprove()
+        {
+            bool ck = true;
+            string checkData = "";
+            int cc = 0;
+            try
+            {
+                if (FormISO.Equals("FM-PD-001") ||
+                    FormISO.Equals("FM-PD-026_1") ||
+                    FormISO.Equals("FM-PD-109") ||
+                    FormISO.Equals("FM-PD-110") ||
+                    FormISO.Equals("FM-PD-122") ||
+                    FormISO.Equals("FM-PD-140") ||
+                    FormISO.Equals("FM-PD-170") ||
+                    FormISO.Equals("FM-PD-171") ||
+                    FormISO.Equals("FM-PD-013") ||
+                    FormISO.Equals("FM-PD-014") ||
+                    FormISO.Equals("FM-PD-095") ||
+                    FormISO.Equals("FM-PD-096"))
+                {
+                    foreach (var rd in radGridView1.Rows)
+                    {
+                        if (rd.Cells["UDesc"].Value.Equals("ผู้จัดทำเอกสาร"))
+                        {
+                            cc += 1;
+                        }
+                    }
+                    if (cc == 0)
+                    {
+                        ck = false;
+                        MessageBox.Show("ยังใส่ข้อมูลผู้จัดทำไม่ครบ", "ข้อมูลไม่ครบ", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+                    }
+                }
+
+
+            }
+            catch { ck = true; }
+            return ck;
+        }
         private void SaveData()
         {
             try
             {
+                if (chkApprove.Checked)
+                {
+                    if (!CheckBeforeAppprove())
+                    {
+                        return;
+                    }
+                }
+
                 if (MessageBox.Show("ต้องการบันทึกหรือไม่ ?", "บันทึก", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     using (DataClasses1DataContext db = new DataClasses1DataContext())
@@ -2729,12 +2792,23 @@ namespace StockControl
                         {
                             txtToppic.Text = qg.TopPic;
                             txtRank.Text = Convert.ToString(qg.Rank);
+                          
                             txtSetData.Text = qg.SetData;
                             if (FormISO.Equals("FM-PD-035_1"))
                             {
                                 if (qg.Seq.Equals(5))
                                 {
-                                    txtSetData.Text = txtSetData.Text + Environment.NewLine + LotMark;
+                                    //if (Dt <= Convert.ToDateTime("2026-04-22"))
+                                    //{
+                                    //    txtSetData.Text = txtSetData.Text + Environment.NewLine + LotMark;
+                                    //}
+                                }
+                                if(qg.Seq.Equals(6))
+                                {
+                                    if (Dt > Convert.ToDateTime("2026-04-08"))
+                                    {
+                                        txtSetData.Text =LotMark2;
+                                    }
                                 }
                             }
 

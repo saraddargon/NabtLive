@@ -21,7 +21,7 @@ namespace StockControl
         /// <summary>
         /// ////
         /// </summary>
-        public static string versioin = "last update 8-Jul-25-1";
+        public static string versioin = "last update 11-Feb-26-1";
         public static string DbConn = @"Data Source=192.168.1.5;Initial Catalog=dbBarcodeNab;User ID=sa;Password=napt-2012;";
         public static string UserID = "";
         public static string UserName = "";

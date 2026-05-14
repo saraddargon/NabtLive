@@ -1717,8 +1717,17 @@ namespace StockControl
                 || LineName2.Equals("TD17-DR SUB-2")
                 )
             {
-                //TC20-MAIN_M
-                QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), "FM-PD-010", PTAGx1, LineName2, "PD", PTAGx1);
+                //
+                string DataFrom = "FM-PD-010";
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {
+                    if(txtPartNo.Text.Equals("41230048971E"))
+                    {
+                        DataFrom = "FM-PD-164";
+                    }
+                }
+                    //TC20-MAIN_M
+                    QCFormPD026 qcop = new QCFormPD026(txtOrderNo.Text.ToUpper(), DataFrom, PTAGx1, LineName2, "PD", PTAGx1);
                 qcop.ShowDialog();
             }
         }
@@ -2560,12 +2569,15 @@ namespace StockControl
             {
                 if (e.RowIndex >= 0)
                 {
-                    if (radGridView3.Columns["Check"].Index == e.ColumnIndex)
+                    if (!txtMcCheckPart.Text.Equals(""))
                     {
-                        string FormISO = radGridView3.Rows[e.RowIndex].Cells["FormISO"].Value.ToString();
-                        if (!FormISO.Equals(""))
+                        if (radGridView3.Columns["Check"].Index == e.ColumnIndex)
                         {
-                            CheckLoad(FormISO);
+                            string FormISO = radGridView3.Rows[e.RowIndex].Cells["FormISO"].Value.ToString();
+                            if (!FormISO.Equals(""))
+                            {
+                                CheckLoad(FormISO);
+                            }
                         }
                     }
                 }
