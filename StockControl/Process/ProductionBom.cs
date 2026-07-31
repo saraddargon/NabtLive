@@ -1708,6 +1708,7 @@ namespace StockControl
             }
             else if (LineName2.Equals("TD10-DR MAIN")                
                 || LineName2.Equals("TD20-KIT& SERVICE")
+
                 || LineName2.Equals("TD11-DR SUB 1")
                 || LineName2.Equals("TD12-DR SUB-2")
                 || LineName2.Equals("TD13-DR SUB-3")
@@ -1721,9 +1722,10 @@ namespace StockControl
                 string DataFrom = "FM-PD-010";
                 using (DataClasses1DataContext db = new DataClasses1DataContext())
                 {
-                    if(txtPartNo.Text.Equals("41230048971E"))
+                    if(txtPartNo.Text.Equals("41230048971E") || txtPartNo.Text.Equals("41230038690NP"))
                     {
-                        DataFrom = "FM-PD-164";
+                        //DataFrom = "FM-PD-164";
+                        DataFrom = "FM-PD-171";
                     }
                 }
                     //TC20-MAIN_M

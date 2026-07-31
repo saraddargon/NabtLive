@@ -4008,6 +4008,26 @@ namespace StockControl
                     HeaderText = " Shipping Check  result in process  ( SPG B/ CH-W)";
                     FileName = "FM-PD-003_SPG.xlsx";
                 }
+                else 
+                {
+                    //หาวันที่ทำ Revision//
+                    using (DataClasses1DataContext db = new DataClasses1DataContext())
+                    {
+                        tb_ProductionHD pd1 = db.tb_ProductionHDs.Where(p => p.OrderNo.Equals(WO)).FirstOrDefault();
+                        if (pd1 != null)
+                        {
+                            DateTime dt1 = new DateTime();
+                            dt1 = Convert.ToDateTime(pd1.Createdate);
+                            dt1 = checkPDScanRC(WO, dt1);
+                            if (dt1 >= Convert.ToDateTime("2026-08-01"))
+                            {
+
+                                PrintFMPD003_STD01Aug26(WO, PartNo, QCNo1,FromIS);
+                                return;
+                            }                            
+                        }
+                    }
+                }
                 DATA = DATA + @"QC\" + FileName;
 
                 if (File.Exists(tempfile))
@@ -4236,6 +4256,265 @@ namespace StockControl
                                                     if (Colm.Equals("J") || Colm.Equals("K"))
                                                     {
                                                         if (row1 >= 15 && row1 <= 18)
+                                                        {
+                                                            PV = "";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        //Input Value///
+                                          InsertToExcel(ref worksheet, Colm + row1.ToString(), PV); 
+                                        }
+                                        catch (Exception ex) { MessageBox.Show(ex.Message); }
+                                    }
+
+                                }//foreach
+                            }//cunt A
+                        }//for
+                    }
+
+
+
+                }
+
+                excelBook.SaveAs(tempfile);
+                excelBook.Close(false);
+                excelApp.Quit();
+
+                releaseObject(worksheet);
+                releaseObject(excelBook);
+                releaseObject(excelApp);
+                Marshal.FinalReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+
+                GC.GetTotalMemory(false);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.GetTotalMemory(true);
+                System.Diagnostics.Process.Start(tempfile);
+
+            }
+            catch { }
+        }
+        public static void PrintFMPD003_STD01Aug26(string WO, string PartNo, string QCNo1, string FromIS)
+        {
+            try
+            {
+                string DATA = AppDomain.CurrentDomain.BaseDirectory;
+                string tempPath = System.IO.Path.GetTempPath();
+                string FileName = "FM-PD-003_STD.xlsx";
+                string tempfile = tempPath + FileName;
+               
+
+                string TypeReport = GetReportName("STD", PartNo, FromIS).ToUpper();
+                string HeaderText = " Shipping Check  result in process  ( Brake chamber)";
+                DATA = DATA + @"QC\" + FileName;
+
+                if (File.Exists(tempfile))
+                {
+                    try
+                    {
+                        File.Delete(tempfile);
+                    }
+                    catch { }
+                }
+
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelBook = excelApp.Workbooks.Open(
+                  DATA, 0, true, 5,
+                  "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false,
+                  0, true);
+                Excel.Sheets sheets = excelBook.Worksheets;
+                Excel.Worksheet worksheet = (Excel.Worksheet)sheets.get_Item(1);
+
+                // progressBar1.Maximum = 51;
+                // progressBar1.Minimum = 1;
+                int row1 = 14;
+
+                string PV = "P";
+                string QHNo = QCNo1;
+                string FormISO = FromIS;
+                string DN = "";                
+                string cCheckBy1 = "";
+                string cCheckBy2 = "";
+                string cCheckBy3 = "";
+                string LotRemark = "";
+                string E5 = "";
+                LoadToTempVersion(QCNo1);
+                using (DataClasses1DataContext db = new DataClasses1DataContext())
+                {   string PartName = "";
+                    string LotNo = "";
+                    ///////////////SETValue/////////////////
+                    var DValue = db.sp_46_QCSelectWO_01(WO).FirstOrDefault();
+                    if (DValue != null)
+                    {
+                        DN = DValue.DayNight;
+                        PartName = DValue.NAME;
+                        InsertToExcel(ref worksheet, "A4", HeaderText);
+                        InsertToExcel(ref worksheet, "C6", DValue.NAME);
+                        InsertToExcel(ref worksheet, "C7", DValue.CODE);
+                        InsertToExcel(ref worksheet, "C8", db.get_QC_ItemCustomerNo(DValue.CODE,""));                        
+                        E5 = " วัน "+ Convert.ToDateTime(DValue.DeliveryDate).ToString("dd") + " เดือน " + Convert.ToDateTime(DValue.DeliveryDate).ToString("MM") + " ปี  " + Convert.ToDateTime(DValue.DeliveryDate).ToString("yyyy") + "";
+                        InsertToExcel(ref worksheet, "C9", E5);
+                        InsertToExcel(ref worksheet, "C10",DValue.OrderQty);
+                        InsertToExcel(ref worksheet, "C11", DValue.LotNo);
+                        InsertToExcel(ref worksheet, "D13", DValue.PORDER);
+                        LotRemark = "ตอก Lot ที่ Base ต้องไม่ลืมตอก, ไม่ตอกผิดตำแหน่งที่กำหนดไว้  มีการตอก Lot ถูกต้อง , ชัดเจน , สามารถอ่านได้ ( " + DValue.LotNo + " ) ";
+                        try
+                        {
+                            tb_QCHD qh = db.tb_QCHDs.Where(w => w.QCNo.Equals(QCNo1)).FirstOrDefault();
+                            if (qh != null)
+                            {
+                                FormISO = qh.FormISO;
+                                LotNo = qh.LotNo;
+                                //////////Find UserName////////////
+                                var uc = db.tb_QCCheckUsers.Where(u => u.QCNo.Equals(QCNo1)).ToList();
+                                foreach (var rd in uc)
+                                {
+                                    DN = dbShowData.CheckDayN(Convert.ToDateTime(rd.ScanDate));
+
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 1"))
+                                        cCheckBy1 = rd.UserName;
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 2"))
+                                        cCheckBy2 = rd.UserName;
+                                    if (rd.UDesc.Equals("ผู้ตรวจสอบ 3"))
+                                        cCheckBy3 = rd.UserName;
+                                }
+
+
+                                InsertToExcel(ref worksheet, "J8", cCheckBy1);
+                                InsertToExcel(ref worksheet, "K8", cCheckBy2);
+                                InsertToExcel(ref worksheet, "H7", db.QC_GetUserName(qh.ApproveBy));
+                                QHNo = qh.QCNo;
+
+                                if (db.QC_CheckNG(QHNo) == "P")
+                                {
+                                    InsertToExcel(ref worksheet, "J10", "P");
+                                }
+                                else
+                                {
+                                    InsertToExcel(ref worksheet, "H10", "P");
+                                }
+
+                                //Excel.Range O19 = worksheet.get_Range("O19");
+                                //O19.Value2 = db.get_QC_DATAPoint(qh.QCNo, "", 8);
+                                //Excel.Range O20 = worksheet.get_Range("O20");
+                                //O20.Value2 = db.get_QC_DATAPoint(qh.QCNo, "", 9);
+                            }
+
+                        }
+                        catch { }
+
+                    }
+
+                    ////////////////////////////////////////
+                    ////Insert Desc.//
+                    int countA = 0;
+                    row1 = 14;
+                    string setPart = "";
+                    var vList = db.tb_QCGroupPartV3Temps.Where(p => p.FormISO.Equals(FromIS) && p.PartNo.Equals(PartNo) && !p.TopPic.Trim().Equals("")
+                                && p.GroupPart.Trim().Equals("")).OrderBy(s => s.Seq).ToList();
+                    foreach(var ls in vList)
+                    {
+                        countA += 1;
+                        row1 += 1;
+                        setPart = ls.SetData.Trim();
+                        if(ls.TopPic.Trim().Equals("Lot No."))
+                        {
+                            setPart = LotRemark;
+                        }
+                        InsertToExcel(ref worksheet, "A"+ row1.ToString(), countA);
+                        InsertToExcel(ref worksheet, "B" + row1.ToString(), ls.TopPic.Trim());
+                        InsertToExcel(ref worksheet, "D" + row1.ToString(), setPart);
+
+                    }
+
+                    ////////////////
+
+
+                    countA = 0;
+                    string Colm = "";
+                    var listPoint = db.sp_46_QCSelectWO_09_QCTAGSelectPD(QHNo).ToList();                    
+                    if (listPoint.Count > 0)
+                    {
+                        foreach (var rs in listPoint)
+                        {
+                            countA += 1; 
+                            if (countA <= 3)
+                            {
+                                row1 = 14;
+                                var listPart = db.tb_QCGroupPartV3Temps.Where(p => p.FormISO.Equals(FromIS) && p.PartNo.Equals(PartNo) && !p.TopPic.Trim().Equals("")
+                                                && p.GroupPart.Trim().Equals("")).OrderBy(s => s.Seq).ToList();
+                                foreach (var rd in listPart)
+                                {                                   
+                                    row1 += 1;                                   
+                                    if (!rd.SetData.Equals("") && row1 <= 40)
+                                    {
+                                        try
+                                        {
+
+                                            var gValue = db.sp_46_QCGetValue5601(rs.BarcodeTag, QHNo, rd.Seq).FirstOrDefault();
+                                            PV = "OK";
+
+                                            if (gValue.CountA > 0)
+                                            {
+                                                PV = "OK";
+                                                if (gValue.CountA > 0)
+                                                    PV = "NG";
+                                                if (gValue.CountA == 99)
+                                                    PV = "";
+                                            }
+
+
+
+                                            if (rs.BarcodeTag.Contains("Head"))
+                                            {
+                                                Colm = "H";
+                                            }
+                                            else if (rs.BarcodeTag.Contains("Middle"))
+                                            {
+                                                Colm = "J";
+                                            }
+                                            else
+                                            {
+                                                Colm = "K";
+                                            }
+                                           
+                                        
+
+                                            if (TypeReport.ToUpper().Equals("SPG"))
+                                            {
+                                                if(row1>=15 && row1<=22)
+                                                {
+                                                    //2-8
+                                                    //input digital
+                                                    if (row1 != 15)
+                                                        PV = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+                                                    if(Colm.Equals("J") || Colm.Equals("K"))
+                                                    {
+                                                        if (row1 >= 15 && row1 <= 19)
+                                                        {
+                                                            PV = "";
+                                                        }
+                                                    }
+                                                }
+                                               
+                                            }
+                                            else
+                                            {
+                                                if (row1 >= 15 && row1 <19)
+                                                {
+                                                    //2-4
+                                                    //Input digital
+                                                    if(row1!=15)
+                                                         PV = db.get_QC_DATAPoint(QHNo, rs.BarcodeTag, rd.Seq);
+
+                                                    if (Colm.Equals("J") || Colm.Equals("K"))
+                                                    {
+                                                        if (row1 ==15)
                                                         {
                                                             PV = "";
                                                         }
@@ -9149,7 +9428,7 @@ namespace StockControl
                         DateTime dt1 = new DateTime();
                         dt1 = Convert.ToDateTime(pd1.Createdate);
                         dt1 = checkPDScanRC(WO, dt1);
-                        if (dt1 > Convert.ToDateTime("2026-04-08"))
+                        if (dt1 >= Convert.ToDateTime("2025-08-18"))
                         {
 
                             PrintData035V2(WO, PartNo, QCNo1);
@@ -10571,7 +10850,7 @@ namespace StockControl
 
                                     Excel.Range order = worksheet.get_Range("J4");
                                     order.Value2 = qh.OrderQty;// db.get_QCSumQtyTAGNG(qh.QCNo, "", 98);
-                                    Excel.Range J16 = worksheet.get_Range("J16");
+                                    Excel.Range J16 = worksheet.get_Range("J17");
                                     J16.Value2 = GP5;
 
                                     Excel.Range KNG = worksheet.get_Range("K4");
@@ -10618,6 +10897,12 @@ namespace StockControl
                                     //db.get_QC_SetDataMaster2
                                     Excel.Range B15 = worksheet.get_Range("B15");
                                     B15.Value2 = C9;
+
+                                    Excel.Range B16 = worksheet.get_Range("B16");
+                                    SetData[7] = db.get_QC_SetDataMasterVx1(qh.FormISO, qh.PartNo, 10);
+                                    B16.Value2 = SetData[7];
+
+
                                 }
 
                                 if (PAGE2)
@@ -10645,7 +10930,7 @@ namespace StockControl
 
                                     Excel.Range order = worksheet2.get_Range("J4");
                                     order.Value2 = qh.OrderQty;//db.get_QCSumQtyTAGNG(qh.QCNo, "", 99);
-                                    Excel.Range J16 = worksheet2.get_Range("J16");
+                                    Excel.Range J16 = worksheet2.get_Range("J17");
                                     J16.Value2 = GP5;
 
                                     Excel.Range KNG = worksheet2.get_Range("K4");
@@ -10680,6 +10965,9 @@ namespace StockControl
                                     //  C9 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
                                     Excel.Range B15 = worksheet2.get_Range("B15");
                                     B15.Value2 = C9;
+
+                                    Excel.Range B16 = worksheet2.get_Range("B16");
+                                    B16.Value2 = SetData[7];
                                 }
                                 if (PAGE3)
                                 {
@@ -10706,7 +10994,7 @@ namespace StockControl
 
                                     Excel.Range order = worksheet3.get_Range("J4");
                                     order.Value2 = qh.OrderQty;//db.get_QCSumQtyTAGNG(qh.QCNo, "", 99);
-                                    Excel.Range J16 = worksheet3.get_Range("J16");
+                                    Excel.Range J16 = worksheet3.get_Range("J17");
                                     J16.Value2 = GP5;
 
                                     Excel.Range KNG = worksheet3.get_Range("K4");
@@ -10741,6 +11029,9 @@ namespace StockControl
                                     //  C9 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
                                     Excel.Range B15 = worksheet3.get_Range("B15");
                                     B15.Value2 = C9;
+
+                                    Excel.Range B16 = worksheet3.get_Range("B16");
+                                    B16.Value2 = SetData[7];
                                 }
                                 if (PAGE4)
                                 {
@@ -10767,7 +11058,7 @@ namespace StockControl
 
                                     Excel.Range order = worksheet4.get_Range("J4");
                                     order.Value2 = qh.OrderQty;//db.get_QCSumQtyTAGNG(qh.QCNo, "", 99);
-                                    Excel.Range J16 = worksheet4.get_Range("J16");
+                                    Excel.Range J16 = worksheet4.get_Range("J17");
                                     J16.Value2 = GP5;
 
                                     Excel.Range KNG = worksheet4.get_Range("K4");
@@ -10802,6 +11093,9 @@ namespace StockControl
                                     //  C9 = db.get_QC_SetDataMaster(qh.FormISO, qh.PartNo, 9);
                                     Excel.Range B15 = worksheet4.get_Range("B15");
                                     B15.Value2 = C9;
+
+                                    Excel.Range B16 = worksheet4.get_Range("B16");
+                                    B16.Value2 = SetData[7];
                                 }
 
                             }
@@ -10896,7 +11190,7 @@ namespace StockControl
 
                                 row1 += 1;
                                 Seq += 1;
-                                if (!rd.SetData.Equals("") && row1 <= 15)
+                                if (!rd.SetData.Equals("") && row1 <= 16)
                                 {
                                     try
                                     {
@@ -18016,7 +18310,7 @@ namespace StockControl
                                         }
                                         if (countA > 80 && countA <= 120)
                                         {
-                                           // InsertToExcel(ref worksheet3, Getcolumn(CountC + SetCol) + row1.ToString(), PV);
+                                            InsertToExcel(ref worksheet3, Getcolumn(CountC + SetCol) + row1.ToString(), PV);
                                         }
                                         if (countA > 120 && countA <= 160)
                                         {
@@ -18338,16 +18632,16 @@ namespace StockControl
                 excelApp.Quit();
                 releaseObject(worksheet);
                 releaseObject(worksheet2);
-                //releaseObject(worksheet3);
+                releaseObject(worksheet3);
                 releaseObject(excelBook);
                 releaseObject(excelApp);
 
                 Marshal.FinalReleaseComObject(worksheet);
                 Marshal.FinalReleaseComObject(worksheet2);
-              //  Marshal.FinalReleaseComObject(worksheet3);
+                Marshal.FinalReleaseComObject(worksheet3);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet2);
-                //System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet3);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet3);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(excelBook);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
 
@@ -27647,7 +27941,7 @@ namespace StockControl
             {
                 dbShowData.PrintFMPD140(WO, PartNo, QCNo1, FormISO);
             }
-            else if (FormISO.Equals("FM-PD-164") || (FormISO.Equals("FM-PD-170")))
+            else if (FormISO.Equals("FM-PD-164") || FormISO.Equals("FM-PD-171") || (FormISO.Equals("FM-PD-170")))
             {
                 dbShowData.PrintFMPD164(WO, PartNo, QCNo1, FormISO);
             }

@@ -1072,7 +1072,7 @@ namespace StockControl
                     }
                 }
                 else if (FormISO.Equals("FM-PD-112")||FormISO.Equals("FM-PD-113") || FormISO.Equals("FM-PD-123") || FormISO.Equals("FM-PD-153") || FormISO.Equals("FM-PD-010")
-                    || FormISO.Equals("FM-PD-164")
+                    || FormISO.Equals("FM-PD-164") || FormISO.Equals("FM-PD-171")
                     )
                 {
                     TypeP = "PD";
@@ -1456,6 +1456,14 @@ namespace StockControl
                         if (rd.Cells["UDesc"].Value.Equals("ผู้จัดทำเอกสาร"))
                         {
                             cc += 1;
+                        }
+                        if(FormISO.Equals("FM-PD-171"))
+                        {
+                            if(rd.Cells["UDesc"].Value.Equals("ผู้ตรวจสอบ"))
+                            {
+                                cc += 1;
+                            }
+
                         }
                     }
                     if (cc == 0)
@@ -3329,6 +3337,7 @@ namespace StockControl
                                                 decimal.TryParse(DATA2[2], out dcq);
                                                 if (DATA2.Length == 8)
                                                 {
+                                                    //MessageBox.Show(PTAG);
                                                     dbShowData.InsertTAG(PTAG, WOs, rlist.QCNo, dcq, DATA2[5], TypeP, rlist.LineName, "Normal", PTAG2);
                                                 }
                                                 ClearGobalNo();
